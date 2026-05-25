@@ -1,0 +1,1165 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Analysjakten – Nordia Kampanjbeslut</title>
+<style>
+:root {
+  --bg: #0f172a;
+  --surface: #1e293b;
+  --surface2: #293548;
+  --border: #334155;
+  --accent: #3b82f6;
+  --accent-dim: #1d4ed8;
+  --green: #10b981;
+  --yellow: #f59e0b;
+  --red: #ef4444;
+  --text: #f1f5f9;
+  --text2: #94a3b8;
+  --text3: #64748b;
+  --radius: 10px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  line-height: 1.6;
+}
+.screen { display: none; }
+.screen.active { display: block; }
+
+/* ── SHARED ─────────────────────────────────────────────── */
+.container { max-width: 1100px; margin: 0 auto; padding: 2rem 1.5rem; }
+h1 { font-size: 2rem; font-weight: 700; letter-spacing: -0.5px; }
+h2 { font-size: 1.4rem; font-weight: 600; }
+h3 { font-size: 1.1rem; font-weight: 600; }
+p { color: var(--text2); margin-bottom: 0.75rem; }
+p:last-child { margin-bottom: 0; }
+strong { color: var(--text); }
+.badge {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 99px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+.badge-blue { background: rgba(59,130,246,0.15); color: var(--accent); border: 1px solid rgba(59,130,246,0.3); }
+.badge-green { background: rgba(16,185,129,0.15); color: var(--green); border: 1px solid rgba(16,185,129,0.3); }
+.badge-yellow { background: rgba(245,158,11,0.15); color: var(--yellow); border: 1px solid rgba(245,158,11,0.3); }
+.badge-red { background: rgba(239,68,68,0.15); color: var(--red); border: 1px solid rgba(239,68,68,0.3); }
+.btn {
+  display: inline-block;
+  padding: 0.75rem 1.75rem;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 600;
+  transition: all 0.15s;
+}
+.btn-primary { background: var(--accent); color: #fff; }
+.btn-primary:hover { background: #2563eb; transform: translateY(-1px); }
+.btn-primary:disabled { background: var(--border); color: var(--text3); cursor: not-allowed; transform: none; }
+.btn-secondary { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
+.btn-secondary:hover { background: #334155; }
+
+/* ── STICKY BUDGET BAR ──────────────────────────────────── */
+#budget-bar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(15,23,42,0.95);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--border);
+  padding: 0.75rem 1.5rem;
+  display: none;
+}
+#budget-bar.visible { display: block; }
+.budget-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+.budget-label { font-size: 0.85rem; color: var(--text2); white-space: nowrap; }
+.budget-track {
+  flex: 1;
+  min-width: 120px;
+  height: 8px;
+  background: var(--surface2);
+  border-radius: 99px;
+  overflow: hidden;
+}
+.budget-fill {
+  height: 100%;
+  border-radius: 99px;
+  transition: width 0.3s ease, background 0.3s;
+  background: var(--accent);
+}
+.budget-fill.warn { background: var(--yellow); }
+.budget-fill.danger { background: var(--red); }
+#budget-credits {
+  font-size: 1.1rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+/* ── INTRO ──────────────────────────────────────────────── */
+.intro-hero {
+  text-align: center;
+  padding: 3rem 1rem 2rem;
+}
+.intro-hero .kicker {
+  color: var(--accent);
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
+}
+.intro-hero h1 { margin-bottom: 0.5rem; }
+.intro-hero .sub { font-size: 1.1rem; color: var(--text2); max-width: 600px; margin: 0 auto 2rem; }
+.intro-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+  margin: 2rem 0;
+}
+.intro-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.25rem;
+  text-align: left;
+}
+.intro-card .ic-icon { font-size: 1.6rem; margin-bottom: 0.5rem; }
+.intro-card h3 { margin-bottom: 0.4rem; }
+.scenario-box {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  margin: 1.5rem 0;
+}
+.scenario-box p { margin-bottom: 0.6rem; }
+.stat-row {
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  margin: 1.25rem 0;
+}
+.stat-pill {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.75rem 1.25rem;
+  text-align: center;
+}
+.stat-pill .sp-num { font-size: 1.6rem; font-weight: 700; color: var(--accent); }
+.stat-pill .sp-label { font-size: 0.78rem; color: var(--text2); }
+.team-row { display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; margin-top: 2rem; }
+.team-row input {
+  padding: 0.7rem 1rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  font-size: 1rem;
+  width: 280px;
+}
+.team-row input:focus { outline: none; border-color: var(--accent); }
+
+/* ── SHOP ───────────────────────────────────────────────── */
+.shop-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+.shop-header p { margin: 0; }
+.decision-preview {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--yellow);
+  border-radius: var(--radius);
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.5rem;
+  font-size: 0.9rem;
+  color: var(--text2);
+}
+.decision-preview strong { color: var(--text); display: block; margin-bottom: 0.25rem; }
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+.analysis-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  cursor: pointer;
+}
+.analysis-card:hover:not(.purchased) { border-color: var(--accent); box-shadow: 0 0 0 1px rgba(59,130,246,0.2); }
+.analysis-card.purchased { border-color: var(--green); background: rgba(16,185,129,0.05); cursor: default; }
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 1rem 1rem 0.5rem;
+  gap: 0.5rem;
+}
+.card-title { font-weight: 600; font-size: 0.95rem; flex: 1; }
+.card-cost {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--yellow);
+  white-space: nowrap;
+}
+.card-cost .coin { font-size: 0.8rem; }
+.card-question { padding: 0 1rem 0.75rem; font-size: 0.82rem; color: var(--text3); font-style: italic; }
+.card-category { padding: 0 1rem 0.75rem; }
+.card-buy-btn {
+  margin: 0 1rem 1rem;
+  width: calc(100% - 2rem);
+  padding: 0.5rem;
+  border-radius: 6px;
+  border: 1px solid var(--accent);
+  background: rgba(59,130,246,0.1);
+  color: var(--accent);
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 600;
+  transition: all 0.15s;
+}
+.card-buy-btn:hover { background: var(--accent); color: #fff; }
+.card-buy-btn:disabled { border-color: var(--border); background: transparent; color: var(--text3); cursor: not-allowed; }
+.card-bought-label {
+  margin: 0 1rem 1rem;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.85rem;
+  color: var(--green);
+  font-weight: 600;
+}
+/* Revealed card content */
+.card-reveal {
+  padding: 0 1rem;
+  display: none;
+}
+.analysis-card.purchased .card-reveal { display: block; }
+.reveal-section { margin-bottom: 0.75rem; }
+.reveal-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: var(--text3);
+  margin-bottom: 0.3rem;
+}
+.reveal-signal {
+  background: rgba(16,185,129,0.08);
+  border-left: 3px solid var(--green);
+  padding: 0.6rem 0.75rem;
+  border-radius: 0 6px 6px 0;
+  font-size: 0.82rem;
+  color: var(--text);
+}
+.reveal-limit {
+  background: rgba(245,158,11,0.08);
+  border-left: 3px solid var(--yellow);
+  padding: 0.6rem 0.75rem;
+  border-radius: 0 6px 6px 0;
+  font-size: 0.82rem;
+  color: var(--text2);
+  margin-bottom: 1rem;
+}
+/* Mini tables inside cards */
+.mini-table { width: 100%; border-collapse: collapse; font-size: 0.78rem; margin-bottom: 0.5rem; }
+.mini-table th { background: var(--surface2); color: var(--text2); font-weight: 600; padding: 4px 8px; text-align: left; }
+.mini-table td { padding: 4px 8px; border-top: 1px solid var(--border); }
+.mini-table tr:hover td { background: rgba(255,255,255,0.02); }
+.pos { color: var(--green); font-weight: 600; }
+.neg { color: var(--red); font-weight: 600; }
+.neu { color: var(--text2); }
+/* SVG chart labels */
+.chart-wrap { padding: 0.5rem 0; }
+svg text { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+
+/* ── SHOP ACTIONS ────────────────────────────────────────── */
+.shop-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  padding: 1rem 0 2rem;
+  border-top: 1px solid var(--border);
+}
+.purchased-count { color: var(--text2); font-size: 0.9rem; padding-top: 0.75rem; }
+
+/* ── DECISION ────────────────────────────────────────────── */
+.evidence-strip {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-bottom: 2rem;
+}
+.evidence-chip {
+  background: var(--surface);
+  border: 1px solid var(--green);
+  border-radius: 99px;
+  padding: 4px 12px;
+  font-size: 0.8rem;
+  color: var(--green);
+}
+.decision-options {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+.decision-option {
+  background: var(--surface);
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.25rem;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.decision-option:hover { border-color: var(--accent); }
+.decision-option.selected { border-color: var(--accent); background: rgba(59,130,246,0.1); }
+.do-icon { font-size: 1.5rem; margin-bottom: 0.5rem; }
+.do-label { font-weight: 600; margin-bottom: 0.4rem; }
+.do-desc { font-size: 0.82rem; color: var(--text2); }
+.decision-actions { display: flex; justify-content: flex-end; gap: 1rem; }
+
+/* ── RESULTS ─────────────────────────────────────────────── */
+.results-header {
+  text-align: center;
+  padding: 2.5rem 1rem 1.5rem;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 2rem;
+}
+.results-header .verdict {
+  font-size: 1.1rem;
+  color: var(--text2);
+  margin-top: 0.5rem;
+}
+.result-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+@media (max-width: 680px) { .result-grid { grid-template-columns: 1fr; } }
+.result-box {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.25rem;
+}
+.result-box h3 { margin-bottom: 0.75rem; color: var(--text2); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; }
+.decision-verdict {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 1rem;
+  font-weight: 600;
+}
+.verdict-icon { font-size: 1.5rem; }
+.cards-value-list { display: flex; flex-direction: column; gap: 0.5rem; }
+.cv-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+}
+.cv-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-top: 6px;
+  flex-shrink: 0;
+}
+.cv-dot.high { background: var(--green); }
+.cv-dot.medium { background: var(--yellow); }
+.cv-dot.low { background: var(--text3); }
+.facit-box {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+.facit-box h2 { margin-bottom: 1rem; }
+.facit-section { margin-bottom: 1.25rem; }
+.facit-section h3 { color: var(--text2); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.5rem; }
+.lesson-box {
+  background: rgba(59,130,246,0.08);
+  border: 1px solid rgba(59,130,246,0.3);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+.lesson-box .lesson-quote {
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--text);
+  font-style: italic;
+  margin-bottom: 0.5rem;
+}
+.lesson-box p { color: var(--text2); font-size: 0.9rem; margin: 0; }
+.restart-row { display: flex; justify-content: center; padding: 1rem 0 3rem; }
+.insight-items { display: flex; flex-direction: column; gap: 0.6rem; }
+.insight-item {
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-start;
+  font-size: 0.88rem;
+  color: var(--text2);
+}
+.insight-item .ii-icon { font-size: 1rem; flex-shrink: 0; margin-top: 1px; }
+</style>
+</head>
+<body>
+
+<!-- BUDGET BAR (sticky, shown during shop) -->
+<div id="budget-bar">
+  <div class="budget-inner">
+    <span class="budget-label">Analyskrediter kvar:</span>
+    <div class="budget-track"><div class="budget-fill" id="budget-fill"></div></div>
+    <span id="budget-credits"></span>
+  </div>
+</div>
+
+<!-- ══ SCREEN: INTRO ══════════════════════════════════════════ -->
+<div id="screen-intro" class="screen active">
+<div class="container">
+  <div class="intro-hero">
+    <div class="kicker">Workshopspel · Datadrivet beslutsfattande</div>
+    <h1>Analysjakten</h1>
+    <p class="sub">Du har begränsade resurser. Välj klokt – och fatta rätt beslut.</p>
+  </div>
+
+  <div class="scenario-box">
+    <h2 style="margin-bottom:1rem">Uppdraget: Nordia</h2>
+    <p><strong>Nordia</strong> är en nordisk retail-kedja. I juni–juli kördes <strong>"Sommarerbjudandet"</strong> – en kampanj med 20% rabatt på hela sortimentet i 4 veckor, riktad mot alla kunder.</p>
+    <p>Inget kontrollerat A/B-test genomfördes. Nu är kampanjen avslutad och ledningen vill fatta beslut om nästa steg.</p>
+    <p>På totalnivå ser resultaten positiva ut:</p>
+    <div class="stat-row">
+      <div class="stat-pill"><div class="sp-num">+18%</div><div class="sp-label">Försäljning</div></div>
+      <div class="stat-pill"><div class="sp-num">9,9 Mkr</div><div class="sp-label">Kampanjomsättning</div></div>
+      <div class="stat-pill"><div class="sp-num">4 veckor</div><div class="sp-label">Kampanjlängd</div></div>
+      <div class="stat-pill"><div class="sp-num">20%</div><div class="sp-label">Rabattnivå</div></div>
+    </div>
+    <p style="margin-top:0.5rem"><strong>Beslutet:</strong> Ska kampanjen köras igen – och i så fall hur?</p>
+  </div>
+
+  <div class="intro-cards">
+    <div class="intro-card">
+      <div class="ic-icon">🔍</div>
+      <h3>Välj dina analyser</h3>
+      <p>Du har <strong>16 analyskrediter</strong>. Varje analys kostar 2–5 krediter. Du kan inte köpa allt.</p>
+    </div>
+    <div class="intro-card">
+      <div class="ic-icon">📊</div>
+      <h3>Tolka signalerna</h3>
+      <p>Varje analys ger en signal och en begränsning. Ingen enskild analys ger hela svaret.</p>
+    </div>
+    <div class="intro-card">
+      <div class="ic-icon">🎯</div>
+      <h3>Fatta beslut</h3>
+      <p>Välj ett av fem möjliga beslut och motivera det med datan du köpt.</p>
+    </div>
+    <div class="intro-card">
+      <div class="ic-icon">📖</div>
+      <h3>Se facit</h3>
+      <p>Lär dig vad som faktiskt hände och hur din analysportfölj höll ihop.</p>
+    </div>
+  </div>
+
+  <div class="team-row">
+    <input type="text" id="team-name-input" placeholder="Gruppnamn (valfritt)" maxlength="40" />
+    <button class="btn btn-primary" onclick="startGame()">Starta spelet →</button>
+  </div>
+</div>
+</div>
+
+<!-- ══ SCREEN: SHOP ═══════════════════════════════════════════ -->
+<div id="screen-shop" class="screen">
+<div class="container">
+  <div class="shop-header">
+    <div>
+      <h2>Välj dina analyser</h2>
+      <p>Klicka på ett kort för att köpa analysen och se resultatet. Du kan inte köpa allt – prioritera.</p>
+    </div>
+    <div id="purchased-count-label" class="purchased-count"></div>
+  </div>
+
+  <div class="decision-preview">
+    <strong>Beslutet du ska fatta:</strong>
+    Ska Nordia köra kampanjen igen – och i så fall mot vilka kunder, med vilken mekanik?
+  </div>
+
+  <div id="cards-grid" class="cards-grid"></div>
+
+  <div class="shop-actions">
+    <button class="btn btn-secondary" onclick="goToIntro()">← Tillbaka</button>
+    <button class="btn btn-primary" id="proceed-to-decision" onclick="goToDecision()" disabled>Fatta beslut →</button>
+  </div>
+</div>
+</div>
+
+<!-- ══ SCREEN: DECISION ═══════════════════════════════════════ -->
+<div id="screen-decision" class="screen">
+<div class="container">
+  <h2 style="margin-bottom:0.5rem">Fatta ditt beslut</h2>
+  <p style="margin-bottom:1.25rem">Baserat på dina analyser – vad rekommenderar du?</p>
+
+  <div id="evidence-strip" class="evidence-strip"></div>
+
+  <div id="decision-options" class="decision-options"></div>
+
+  <div class="decision-actions">
+    <button class="btn btn-secondary" onclick="goToShop()">← Ändra analyser</button>
+    <button class="btn btn-primary" id="confirm-decision" onclick="submitDecision()" disabled>Bekräfta beslut →</button>
+  </div>
+</div>
+</div>
+
+<!-- ══ SCREEN: RESULTS ════════════════════════════════════════ -->
+<div id="screen-results" class="screen">
+<div class="container">
+  <div class="results-header">
+    <h1>Facit</h1>
+    <p class="verdict" id="results-verdict"></p>
+  </div>
+
+  <div class="result-grid">
+    <div class="result-box">
+      <h3>Ditt beslut</h3>
+      <div id="my-decision-display"></div>
+    </div>
+    <div class="result-box">
+      <h3>Bästa beslut</h3>
+      <div id="best-decision-display"></div>
+    </div>
+    <div class="result-box">
+      <h3>Dina analyser – värde i efterhand</h3>
+      <div id="cards-value-display" class="cards-value-list"></div>
+    </div>
+    <div class="result-box">
+      <h3>Viktigaste analyser du inte köpte</h3>
+      <div id="missed-cards-display" class="cards-value-list"></div>
+    </div>
+  </div>
+
+  <div class="facit-box">
+    <h2>Vad hände egentligen?</h2>
+    <div class="facit-section">
+      <h3>Kampanjens verkliga effekt</h3>
+      <p>Sommarerbjudandet genererade <strong>+18% i omsättning</strong>, men merparten kom från tre källor: (1) lapsade kunder som återaktiverades av rabatten, (2) "deal hunters" utan lojalitet, och (3) konkurrenten Markus & Co som hade allvarliga lagerproblem i juli – vilket gav Nordia ett tillfälligt marknadsandelstillskott.</p>
+    </div>
+    <div class="facit-section">
+      <h3>Det som doldes av aggregatdata</h3>
+      <div class="insight-items">
+        <div class="insight-item"><span class="ii-icon">📉</span><span>Bruttomarginalen föll från 38% till 33% – rabatten åt upp vinsten trots volymökning.</span></div>
+        <div class="insight-item"><span class="ii-icon">🔄</span><span>Lojala stamkunder behövde ingen rabatt – de hade köpt ändå. Kampanjen gav dem rabatt i onödan.</span></div>
+        <div class="insight-item"><span class="ii-icon">📦</span><span>En del av försäljningen "lånades" från höst – kunder köpte i förtid, vilket gav en dipp efteråt.</span></div>
+        <div class="insight-item"><span class="ii-icon">🎯</span><span>Kampanjens nya kunder hade 11% återköpsfrekvens vs 69–74% för befintliga kunder.</span></div>
+      </div>
+    </div>
+    <div class="facit-section">
+      <h3>Rätt beslut</h3>
+      <p><strong>Kör kampanjen mot vilande kunder</strong> (ej köpt på 6–18 månader) med en mer måttlig rabatt (10–15%). Dessa kunder svarar på prisstimulanser, har acceptabel retention och CLV-effekten är positiv. Uteslut lojala VIP-kunder som inte behöver rabatten. Designa med kontrollgrupp.</p>
+    </div>
+  </div>
+
+  <div class="lesson-box">
+    <div class="lesson-quote">"Bra analys är inte mest analys. Bra analys är den minsta analys som räcker för att ändra, bekräfta eller förbättra ett viktigt beslut."</div>
+    <p>Det räckte med 3–4 rätt valda analyser för att se sanningen. Nyckeln var att titta på <em>segment</em>, inte aggregat.</p>
+  </div>
+
+  <div class="restart-row">
+    <button class="btn btn-primary" onclick="restartGame()">Spela igen</button>
+  </div>
+</div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════════════
+// GAME DATA
+// ══════════════════════════════════════════════════════════════
+
+const BUDGET = 16;
+
+const CARDS = [
+  {
+    id: 'sales_overview',
+    name: 'Försäljningsöversikt',
+    category: 'Vad hände?',
+    categoryColor: 'badge-blue',
+    cost: 2,
+    question: 'Hur utvecklades försäljningen under och efter kampanjen?',
+    value: 'low',
+    viz: `
+      <div class="chart-wrap">
+        <svg width="100%" height="130" viewBox="0 0 280 130">
+          <text x="0" y="10" font-size="9" fill="#64748b">Omsättning (Mkr) – i år vs förra året</text>
+          ${[['Maj',42,41,30],['Jun',49,41,90],['Jul',50,42,150],['Aug',38,40,210]].map(([m,a,b,x])=>`
+            <rect x="${x}" y="${130-(a/50)*100}" width="20" height="${(a/50)*100}" fill="#3b82f6" rx="2" opacity="0.9"/>
+            <rect x="${x+22}" y="${130-(b/50)*100}" width="20" height="${(b/50)*100}" fill="#334155" rx="2"/>
+            <text x="${x+11}" y="125" text-anchor="middle" font-size="9" fill="#94a3b8">${m}</text>
+            <text x="${x+11}" y="${130-(a/50)*100-3}" text-anchor="middle" font-size="8" fill="#e2e8f0">${a/10}</text>
+          `).join('')}
+          <rect x="0" y="115" width="10" height="6" fill="#3b82f6" rx="1"/>
+          <text x="13" y="121" font-size="8" fill="#94a3b8">I år</text>
+          <rect x="35" y="115" width="10" height="6" fill="#334155" rx="1"/>
+          <text x="48" y="121" font-size="8" fill="#94a3b8">Förra året</text>
+        </svg>
+      </div>`,
+    signal: 'Försäljningen ökade med +18% under kampanjperioden (jun–jul) jämfört med föregående år. Efterperioden (aug) visade en svag dipp under föregående år.',
+    limitation: 'Visar att försäljningen ökade, men inte om kampanjen orsakade det eller om det var lönsamt. Ger ingen information om kundgrupper.'
+  },
+  {
+    id: 'segment',
+    name: 'Kundgruppssegmentering',
+    category: 'Vilka kunder?',
+    categoryColor: 'badge-blue',
+    cost: 3,
+    question: 'Varifrån kom tillväxten – och vilka kundgrupper reagerade?',
+    value: 'high',
+    viz: `
+      <div class="chart-wrap">
+        <svg width="100%" height="120" viewBox="0 0 280 120">
+          <text x="0" y="10" font-size="9" fill="#64748b">Försäljningstillväxt per segment</text>
+          ${[['Lojala VIP',8,20],['Stamkunder',12,40],['Vilande kunder',58,60],['Nya kunder',89,80]].map(([label,pct,y])=>`
+            <text x="0" y="${y+8}" font-size="9" fill="#94a3b8">${label}</text>
+            <rect x="110" y="${y}" width="${Math.min(pct*1.5,160)}" height="12" fill="${pct>40?'#10b981':pct>15?'#3b82f6':'#334155'}" rx="2" opacity="0.85"/>
+            <text x="${110+Math.min(pct*1.5,160)+4}" y="${y+9}" font-size="9" fill="#e2e8f0">+${pct}%</text>
+          `).join('')}
+        </svg>
+      </div>`,
+    signal: 'Tillväxten drevs framför allt av vilande (+58%) och nya kunder (+89%). Lojala stamkunder visade liten förändring (+8–12%).',
+    limitation: 'Visar vilka som köpte under kampanjen, men inte om dessa kunder är lönsamma eller om de kommer att köpa igen.'
+  },
+  {
+    id: 'margin',
+    name: 'Marginalsanalys',
+    category: 'Var det lönsamt?',
+    categoryColor: 'badge-yellow',
+    cost: 3,
+    question: 'Hur påverkades bruttomarginalen av kampanjen?',
+    value: 'high',
+    viz: `
+      <table class="mini-table">
+        <tr><th></th><th>Kampanjperiod</th><th>Föreg. år samma period</th></tr>
+        <tr><td>Omsättning</td><td class="pos">9,9 Mkr</td><td>8,4 Mkr</td></tr>
+        <tr><td>Bruttomarginal</td><td class="neg">33%</td><td class="pos">38%</td></tr>
+        <tr><td>Täckningsbidrag</td><td>3,3 Mkr</td><td>3,2 Mkr</td></tr>
+        <tr><td>Antal köp</td><td>+31%</td><td>–</td></tr>
+      </table>`,
+    signal: 'Bruttomarginalen föll med 5 procentenheter. Täckningsbidraget ökade med knappt 100 Tkr trots +18% omsättning. Volymtillväxten åts till stor del upp av rabatten.',
+    limitation: 'Visar bruttomarginal, men inte kampanjens totalkostnad inklusive marknadsföring, eller effekten på kundvärde på längre sikt.'
+  },
+  {
+    id: 'trend',
+    name: 'Trendbrott – veckodata',
+    category: 'Vad hände?',
+    categoryColor: 'badge-blue',
+    cost: 3,
+    question: 'Finns det tecken på att försäljning dragits fram i tid (kannibalisering)?',
+    value: 'medium',
+    viz: `
+      <div class="chart-wrap">
+        <svg width="100%" height="130" viewBox="0 0 280 130">
+          <text x="0" y="10" font-size="9" fill="#64748b">Veckoomsättning (Mkr), relativ bas=1.0</text>
+          ${(()=>{
+            const pts=[[0,1.0],[1,1.02],[2,1.05],[3,1.25],[4,1.40],[5,1.45],[6,1.42],[7,0.85],[8,0.90],[9,0.96],[10,1.01]];
+            const labels=['V-2','V-1','V0','K1','K2','K3','K4','E1','E2','E3','E4'];
+            const xscale=25;const yscale=80;const xoff=15;const yoff=115;
+            const path=pts.map(([x,y],i)=>`${i===0?'M':'L'}${x*xscale+xoff},${yoff-y*yscale}`).join(' ');
+            const area=`M${pts[0][0]*xscale+xoff},${yoff} `+pts.map(([x,y])=>`L${x*xscale+xoff},${yoff-y*yscale}`).join(' ')+` L${pts[pts.length-1][0]*xscale+xoff},${yoff} Z`;
+            return `
+              <defs><linearGradient id="lg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#3b82f6" stop-opacity="0.3"/><stop offset="100%" stop-color="#3b82f6" stop-opacity="0"/></linearGradient></defs>
+              <path d="${area}" fill="url(#lg)"/>
+              <path d="${path}" fill="none" stroke="#3b82f6" stroke-width="2"/>
+              <line x1="${3*xscale+xoff}" y1="${yoff-0.5*yscale}" x2="${3*xscale+xoff}" y2="${yoff}" stroke="#f59e0b" stroke-width="1" stroke-dasharray="3,3"/>
+              <line x1="${7*xscale+xoff}" y1="${yoff-0.5*yscale}" x2="${7*xscale+xoff}" y2="${yoff}" stroke="#f59e0b" stroke-width="1" stroke-dasharray="3,3"/>
+              <text x="${4.5*xscale+xoff}" y="${yoff-0.5*yscale-3}" text-anchor="middle" font-size="8" fill="#f59e0b">Kampanj</text>
+              ${labels.map((l,i)=>i%2===0?`<text x="${i*xscale+xoff}" y="${yoff+10}" text-anchor="middle" font-size="8" fill="#64748b">${l}</text>`:``).join('')}
+            `;
+          })()}
+        </svg>
+      </div>`,
+    signal: 'Tydlig försäljningsspike under kampanjen. Veckan direkt efter kampanjslutet var omsättningen 15% under normalnivå – ett möjligt tecken på framflyttad försäljning.',
+    limitation: 'Kan inte skilja säsongseffekter från faktisk kannibalisering. Ingen kontrollgrupp gör kausalanalys svår.'
+  },
+  {
+    id: 'counterfactual',
+    name: 'Kontrafaktisk modell',
+    category: 'Vad hade hänt utan kampanjen?',
+    categoryColor: 'badge-yellow',
+    cost: 5,
+    question: 'Hur stor var den faktiska kampanjeffekten, rensat från trends och säsong?',
+    value: 'medium',
+    viz: `
+      <table class="mini-table">
+        <tr><th>Komponent</th><th>Uppskattning</th><th>Osäkerhet</th></tr>
+        <tr><td>Total omsättningstillväxt</td><td>+18%</td><td class="neu">–</td></tr>
+        <tr><td>Organisk trend + säsong</td><td>~+4%</td><td class="neu">±2pp</td></tr>
+        <tr><td>Konkurrenteffekt (lagerbrist)</td><td>~+5%</td><td class="neg">±3pp</td></tr>
+        <tr><td>Faktisk kampanjlift</td><td class="pos">~+9%</td><td class="neg">±4pp</td></tr>
+        <tr><td>Varav framflyttad försäljning</td><td class="neg">~-3%</td><td class="neg">±3pp</td></tr>
+      </table>`,
+    signal: 'Modellen tyder på att den verkliga inkrementella kampanjeffekten är ~6–9%, inte 18%. Hälften av den synliga tillväxten förklaras av externa faktorer och framflyttning.',
+    limitation: 'Modellskattning med hög osäkerhet (±4 procentenheter). Utan en kontrollgrupp kan vi aldrig veta med säkerhet.'
+  },
+  {
+    id: 'retention',
+    name: 'Återköpsanalys',
+    category: 'Fortsatte kunderna handla?',
+    categoryColor: 'badge-blue',
+    cost: 3,
+    question: 'Hur stor andel av kampanjkunderna köpte igen inom 90 dagar?',
+    value: 'high',
+    viz: `
+      <table class="mini-table">
+        <tr><th>Segment</th><th>Köpte i kampanj</th><th>Återköp 90 dagar</th></tr>
+        <tr><td>Lojala VIP</td><td>Ja</td><td class="pos">74%</td></tr>
+        <tr><td>Stamkunder</td><td>Ja</td><td class="pos">61%</td></tr>
+        <tr><td>Vilande (återaktiverade)</td><td>Ja</td><td class="neu">31%</td></tr>
+        <tr><td>Nya via kampanj</td><td>Ja</td><td class="neg">11%</td></tr>
+        <tr><td>Lojala (köpte ej i kampanj)</td><td>Nej</td><td class="pos">69%</td></tr>
+      </table>`,
+    signal: 'Kampanjens nya kunder har bara 11% återköpsfrekvens – i nivå med engångskunder. Vilande kunder presterar 31%, vilket är bättre. Lojala kunder köpte lika ofta oavsett kampanj.',
+    limitation: 'Tidsfönstret är 90 dagar – kan vara för kort för att se hela bilden. Återköpsfrekvens säger inget om köpbelopps storlek.'
+  },
+  {
+    id: 'survey',
+    name: 'Kundenkät',
+    category: 'Kundupplevelse',
+    categoryColor: 'badge-blue',
+    cost: 2,
+    question: 'Varför köpte kunderna – var det rabatten eller ett faktiskt behov?',
+    value: 'low',
+    viz: `
+      <div class="chart-wrap">
+        <svg width="100%" height="120" viewBox="0 0 280 120">
+          <text x="0" y="10" font-size="9" fill="#64748b">"Varför köpte du under kampanjen?" (n=450)</text>
+          ${[['Rabatten lockade mig',68,'#ef4444',25],['Hade ändå planerat köpa',19,'#3b82f6',45],['Rekommendation/gåva',8,'#f59e0b',65],['Annat',5,'#64748b',85]].map(([label,pct,color,y])=>`
+            <text x="0" y="${y+8}" font-size="9" fill="#94a3b8">${label}</text>
+            <rect x="155" y="${y}" width="${pct*1.0}" height="11" fill="${color}" rx="2" opacity="0.8"/>
+            <text x="${155+pct*1.0+4}" y="${y+9}" font-size="9" fill="#e2e8f0">${pct}%</text>
+          `).join('')}
+        </svg>
+      </div>`,
+    signal: '68% av köparna uppger att rabatten var den primära anledningen. Bara 19% hade planerat köpet oavsett kampanj – stor andel är deal-driven.',
+    limitation: 'Enkätsvar återspeglar vad kunder säger, inte nödvändigtvis vad de faktiskt gör. Svarsfrekvens 23% kan ge selektionssnedvridning.'
+  },
+  {
+    id: 'competitor',
+    name: 'Konkurrens & marknad',
+    category: 'Externa faktorer',
+    categoryColor: 'badge-yellow',
+    cost: 2,
+    question: 'Påverkades resultaten av externa faktorer utanför kampanjen?',
+    value: 'medium',
+    viz: `
+      <table class="mini-table">
+        <tr><th>Observation</th><th>Bedömning</th></tr>
+        <tr><td>Markus &amp; Co – lagerproblem jun–jul</td><td class="neg">Bekräftat</td></tr>
+        <tr><td>Nordias marknadsandel +1,8pp under perioden</td><td class="pos">Bekräftat</td></tr>
+        <tr><td>Andel av Nordias tillväxt som ej är kampanj</td><td class="neu">~5% av 18%</td></tr>
+        <tr><td>Konkurrenten tillbaka i aug</td><td class="neu">Delvis förklaring till aug-dipp</td></tr>
+      </table>`,
+    signal: 'En del av Nordias tillväxt kom från att en stor konkurrent hade allvarliga lagerproblem. Uppskattningsvis 5 av de 18 procentenheter är "gårdagens konkurrentkunder".',
+    limitation: 'Svårt att exakt kvantifiera konkurrenteffekten. Markus & Co:s problem är dokumenterade men exakta marknadsandelar är uppskattningar.'
+  },
+  {
+    id: 'clv',
+    name: 'Lönsamhet per segment',
+    category: 'Var det lönsamt?',
+    categoryColor: 'badge-yellow',
+    cost: 4,
+    question: 'Vilket kundvärde skapade eller förstörde kampanjen – per segment?',
+    value: 'high',
+    viz: `
+      <table class="mini-table">
+        <tr><th>Segment</th><th>Rabattkostnad</th><th>CLV-effekt</th><th>Netto</th></tr>
+        <tr><td>Lojala VIP</td><td class="neg">-280kr</td><td class="neu">+190kr</td><td class="neg">-90kr</td></tr>
+        <tr><td>Vilande kunder</td><td class="neg">-180kr</td><td class="pos">+240kr</td><td class="pos">+60kr</td></tr>
+        <tr><td>Nya kampanjkunder</td><td class="neg">-220kr</td><td class="neg">+45kr</td><td class="neg">-175kr</td></tr>
+      </table>`,
+    signal: 'Kampanjen skapade värde för vilande kunder (+60kr netto) men förstörde värde för lojala VIP-kunder (-90kr) och nya kampanjkunder (-175kr).',
+    limitation: 'CLV-beräkningar är känsliga för antaganden om framtida köpfrekvens. Estimaten baseras på 90-dagarsbeteende, vilket är osäkert.'
+  },
+  {
+    id: 'elasticity',
+    name: 'Priskänslighet per segment',
+    category: 'Kundinsikt',
+    categoryColor: 'badge-blue',
+    cost: 4,
+    question: 'Vilka kundsegment behöver egentligen en rabatt för att köpa?',
+    value: 'high',
+    viz: `
+      <div class="chart-wrap">
+        <svg width="100%" height="115" viewBox="0 0 280 115">
+          <text x="0" y="10" font-size="9" fill="#64748b">Priselasticitet (lägre = mer priskänslig)</text>
+          ${[['Lojala VIP',-0.3,'#10b981',25],['Stamkunder',-0.7,'#3b82f6',45],['Vilande kunder',-1.2,'#f59e0b',65],['Nya / deal-hunters',-2.6,'#ef4444',85]].map(([label,e,color,y])=>`
+            <text x="0" y="${y+8}" font-size="9" fill="#94a3b8">${label}</text>
+            <rect x="115" y="${y}" width="${Math.abs(e)*50}" height="11" fill="${color}" rx="2" opacity="0.8"/>
+            <text x="${115+Math.abs(e)*50+4}" y="${y+9}" font-size="9" fill="#e2e8f0">${e}</text>
+          `).join('')}
+        </svg>
+      </div>`,
+    signal: 'Lojala kunder är mycket prisokänsliga – de köper ändå. Vilande kunder svarar tydligt på rabatter. Nya "deal-hunters" är extremt priskänsliga och köper bara vid stora rabatter.',
+    limitation: 'Elasticiteter skattade från historisk data. Det är osäkert hur väl de generaliserar till framtida kampanjer med andra rabattnivåer.'
+  },
+  {
+    id: 'nps',
+    name: 'NPS & varumärkesmätning',
+    category: 'Kundupplevelse',
+    categoryColor: 'badge-blue',
+    cost: 2,
+    question: 'Stärktes eller försvagades varumärket och kundlojaliteten av kampanjen?',
+    value: 'low',
+    viz: `
+      <table class="mini-table">
+        <tr><th>Mätpunkt</th><th>Före kampanj</th><th>Efter kampanj</th></tr>
+        <tr><td>NPS (net promoter)</td><td>43</td><td>41</td></tr>
+        <tr><td>Brand preference</td><td>62%</td><td>63%</td></tr>
+        <tr><td>Upplevd kvalitet</td><td>71%</td><td>69%</td></tr>
+      </table>`,
+    signal: 'Inga statistiskt signifikanta förändringar i NPS eller varumärkesstyrka. Kampanjen varken stärkte eller skadade varumärket mätbart.',
+    limitation: 'NPS-förändringen på -2 är inom felmarginal. Mätningen fångar inte skillnader mellan segment – lojala och deal-hunters svarar troligen väldigt olika.'
+  },
+  {
+    id: 'roi',
+    name: 'ROI-kalkyl',
+    category: 'Var det lönsamt?',
+    categoryColor: 'badge-yellow',
+    cost: 3,
+    question: 'Var kampanjen lönsam i sin helhet?',
+    value: 'medium',
+    viz: `
+      <table class="mini-table">
+        <tr><th>Post</th><th>Belopp</th></tr>
+        <tr><td>Ökad omsättning (bruttouppskattning)</td><td class="pos">+1 500 Tkr</td></tr>
+        <tr><td>Rabattkostnad (alla köp × 20%)</td><td class="neg">-1 980 Tkr</td></tr>
+        <tr><td>Marknadsinvestering</td><td class="neg">-400 Tkr</td></tr>
+        <tr style="font-weight:600"><td>Netto kampanjresultat</td><td class="neg">-880 Tkr</td></tr>
+      </table>`,
+    signal: 'Kampanjen var negativ på totalnivå (-880 Tkr). Rabattkostnaden överstiger det inkrementella täckningsbidraget.',
+    limitation: 'Beräknar inte kundvärde per segment eller framtida köpbeteende. Överskattar troligen rabattkostnaden för de kunder som faktiskt påverkades av rabatten.'
+  }
+];
+
+const DECISIONS = [
+  {
+    id: 'broad',
+    icon: '🔄',
+    label: 'Kör kampanjen brett igen',
+    desc: 'Samma upplägg – 20% rabatt till alla kunder i 4 veckor',
+    quality: 'poor',
+    explanation: 'Kampanjen drivs av vilande kunder och deal-hunters. En bred utrullning ger samma problem: onödig rabatt till lojala kunder och låg retention bland nya. Negativ ROI upprepas.'
+  },
+  {
+    id: 'targeted',
+    icon: '🎯',
+    label: 'Kör mot utvalda kunder',
+    desc: 'Rikta kampanjen mot vilande kunder (ej köpt på 6–18 månader), exkludera lojala VIP',
+    quality: 'best',
+    explanation: 'Det bästa beslutet givet tillgänglig data. Vilande kunder svarar på kampanjen och har positiv netto-CLV (+60kr). Lojala kunder behöver ingen rabatt. Minskar rabattkostnaden och förbättrar ROI markant.'
+  },
+  {
+    id: 'mechanic',
+    icon: '🔧',
+    label: 'Ändra kampanjmekaniken',
+    desc: 'Byt ut rabatten mot ett lojalitetsprogram eller bonusstruktur',
+    quality: 'good',
+    explanation: 'Välmotiverat om man sett att lojala kunder inte behöver rabatt och att deal-hunters förvanskar kundmixen. Lojalitetsprogram driver retention bättre. Kräver mer arbete att implementera men är strategiskt rätt.'
+  },
+  {
+    id: 'stop',
+    icon: '🛑',
+    label: 'Stoppa kampanjen',
+    desc: 'Kör inga fler rabattkampanjer – lägg om budgeten på annat',
+    quality: 'poor',
+    explanation: 'Överkorrekt. Kampanjen har faktisk positiv effekt för vilande kunder – att stoppa helt kastar bort ett verksamt verktyg. Rätt diagnos (dålig ROI totalt) men fel kur.'
+  },
+  {
+    id: 'test',
+    icon: '🧪',
+    label: 'Designa ett kontrollerat test',
+    desc: 'Kör A/B-test mot ett urval av kunder innan bredare beslut',
+    quality: 'good',
+    explanation: 'Klokt om man saknar segmentdata. Säkerställer kausal läsning. Något konservativt om man redan har segmentanalysen – då pekar data tydligt nog för ett riktat beslut.'
+  }
+];
+
+// ══════════════════════════════════════════════════════════════
+// GAME STATE
+// ══════════════════════════════════════════════════════════════
+
+const state = {
+  budget: BUDGET,
+  spent: 0,
+  purchased: new Set(),
+  decision: null,
+  teamName: ''
+};
+
+function remaining() { return state.budget - state.spent; }
+
+// ══════════════════════════════════════════════════════════════
+// NAVIGATION
+// ══════════════════════════════════════════════════════════════
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-' + id).classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+function startGame() {
+  state.teamName = document.getElementById('team-name-input').value.trim();
+  state.purchased.clear();
+  state.spent = 0;
+  state.decision = null;
+  renderShop();
+  showScreen('shop');
+  document.getElementById('budget-bar').classList.add('visible');
+  updateBudgetBar();
+}
+
+function goToIntro() {
+  document.getElementById('budget-bar').classList.remove('visible');
+  showScreen('intro');
+}
+
+function goToShop() {
+  showScreen('shop');
+  document.getElementById('budget-bar').classList.add('visible');
+}
+
+function goToDecision() {
+  renderDecision();
+  showScreen('decision');
+}
+
+function submitDecision() {
+  if (!state.decision) return;
+  renderResults();
+  showScreen('results');
+  document.getElementById('budget-bar').classList.remove('visible');
+}
+
+function restartGame() {
+  state.purchased.clear();
+  state.spent = 0;
+  state.decision = null;
+  document.getElementById('team-name-input').value = state.teamName;
+  showScreen('intro');
+}
+
+// ══════════════════════════════════════════════════════════════
+// BUDGET BAR
+// ══════════════════════════════════════════════════════════════
+
+function updateBudgetBar() {
+  const rem = remaining();
+  const pct = (rem / BUDGET) * 100;
+  const fill = document.getElementById('budget-fill');
+  fill.style.width = pct + '%';
+  fill.className = 'budget-fill' + (pct < 20 ? ' danger' : pct < 40 ? ' warn' : '');
+  document.getElementById('budget-credits').textContent = rem + ' / ' + BUDGET + ' krediter';
+}
+
+// ══════════════════════════════════════════════════════════════
+// SHOP RENDER
+// ══════════════════════════════════════════════════════════════
+
+function renderShop() {
+  const grid = document.getElementById('cards-grid');
+  grid.innerHTML = CARDS.map(card => renderCard(card)).join('');
+  updatePurchasedCount();
+}
+
+function renderCard(card) {
+  const bought = state.purchased.has(card.id);
+  const canAfford = remaining() >= card.cost;
+  return `
+    <div class="analysis-card ${bought ? 'purchased' : ''}" id="card-${card.id}">
+      <div class="card-header">
+        <div class="card-title">${card.name}</div>
+        <div class="card-cost"><span class="coin">●</span> ${card.cost}</div>
+      </div>
+      <div class="card-category"><span class="badge ${card.categoryColor}">${card.category}</span></div>
+      <div class="card-question">${card.question}</div>
+      ${bought ? `
+        <div class="card-reveal">
+          <div class="reveal-section">
+            <div class="reveal-label">Resultat</div>
+            ${card.viz}
+          </div>
+          <div class="reveal-section">
+            <div class="reveal-label">Signal</div>
+            <div class="reveal-signal">${card.signal}</div>
+          </div>
+          <div class="reveal-section">
+            <div class="reveal-label">Begränsning</div>
+            <div class="reveal-limit">${card.limitation}</div>
+          </div>
+        </div>
+        <div class="card-bought-label">✓ Köpt</div>
+      ` : `
+        <button class="card-buy-btn" onclick="buyCard('${card.id}')" ${canAfford ? '' : 'disabled'}>
+          ${canAfford ? `Köp för ${card.cost} krediter` : 'Inte råd'}
+        </button>
+      `}
+    </div>`;
+}
+
+function buyCard(id) {
+  const card = CARDS.find(c => c.id === id);
+  if (!card || state.purchased.has(id)) return;
+  if (remaining() < card.cost) return;
+  state.purchased.add(id);
+  state.spent += card.cost;
+  updateBudgetBar();
+  // Re-render the specific card and update affordability on others
+  document.getElementById('card-' + id).outerHTML = renderCard(card);
+  // Re-attach event listeners by re-rendering all un-purchased cards' buttons
+  CARDS.forEach(c => {
+    if (!state.purchased.has(c.id)) {
+      const el = document.getElementById('card-' + c.id);
+      if (el) el.outerHTML = renderCard(c);
+    }
+  });
+  updatePurchasedCount();
+  updateProceedButton();
+}
+
+function updatePurchasedCount() {
+  const n = state.purchased.size;
+  document.getElementById('purchased-count-label').textContent = n > 0 ? `${n} analys${n !== 1 ? 'er' : ''} köpt` : '';
+  updateProceedButton();
+}
+
+function updateProceedButton() {
+  document.getElementById('proceed-to-decision').disabled = state.purchased.size === 0;
+}
+
+// ══════════════════════════════════════════════════════════════
+// DECISION RENDER
+// ══════════════════════════════════════════════════════════════
+
+function renderDecision() {
+  // Evidence strip
+  const strip = document.getElementById('evidence-strip');
+  const purchasedNames = CARDS.filter(c => state.purchased.has(c.id)).map(c => c.name);
+  strip.innerHTML = purchasedNames.map(n => `<span class="evidence-chip">✓ ${n}</span>`).join('');
+
+  // Decision options
+  const opts = document.getElementById('decision-options');
+  opts.innerHTML = DECISIONS.map(d => `
+    <div class="decision-option ${state.decision === d.id ? 'selected' : ''}" onclick="selectDecision('${d.id}')">
+      <div class="do-icon">${d.icon}</div>
+      <div class="do-label">${d.label}</div>
+      <div class="do-desc">${d.desc}</div>
+    </div>`).join('');
+
+  document.getElementById('confirm-decision').disabled = !state.decision;
+}
+
+function selectDecision(id) {
+  state.decision = id;
+  renderDecision();
+}
+
+// ══════════════════════════════════════════════════════════════
+// RESULTS RENDER
+// ══════════════════════════════════════════════════════════════
+
+function renderResults() {
+  const chosenDecision = DECISIONS.find(d => d.id === state.decision);
+  const bestDecision = DECISIONS.find(d => d.quality === 'best');
+
+  // Verdict
+  const isBest = chosenDecision.quality === 'best';
+  const isGood = chosenDecision.quality === 'good';
+  const teamPart = state.teamName ? ` · ${state.teamName}` : '';
+  document.getElementById('results-verdict').textContent =
+    isBest ? '🎯 Rätt beslut – det stämmer med facit!' + teamPart :
+    isGood ? '✅ Bra beslut – välmotiverat, nära facit.' + teamPart :
+    '⚠️ Suboptimalt beslut – se vad du missade.' + teamPart;
+
+  // My decision
+  document.getElementById('my-decision-display').innerHTML = `
+    <div class="decision-verdict">
+      <span class="verdict-icon">${chosenDecision.icon}</span>
+      <div>
+        <div style="font-weight:600">${chosenDecision.label}</div>
+        <div style="font-size:0.82rem;color:var(--text2);margin-top:0.25rem">${chosenDecision.explanation}</div>
+      </div>
+    </div>`;
+
+  // Best decision
+  document.getElementById('best-decision-display').innerHTML = `
+    <div class="decision-verdict">
+      <span class="verdict-icon">${bestDecision.icon}</span>
+      <div>
+        <div style="font-weight:600">${bestDecision.label}</div>
+        <div style="font-size:0.82rem;color:var(--text2);margin-top:0.25rem">${bestDecision.explanation}</div>
+      </div>
+    </div>`;
+
+  // Cards value
+  const cardValueMap = { high: 'Hög beslutskraft', medium: 'Medelbeslutskraft', low: 'Låg beslutskraft' };
+  const cardDotMap = { high: 'high', medium: 'medium', low: 'low' };
+  const purchasedList = CARDS.filter(c => state.purchased.has(c.id));
+  document.getElementById('cards-value-display').innerHTML = purchasedList.length > 0
+    ? purchasedList.map(c => `
+        <div class="cv-item">
+          <div class="cv-dot ${cardDotMap[c.value]}"></div>
+          <div><strong>${c.name}</strong> – ${cardValueMap[c.value]}</div>
+        </div>`).join('')
+    : '<p style="font-size:0.85rem">Inga analyser köptes.</p>';
+
+  // Missed high-value cards
+  const missed = CARDS.filter(c => !state.purchased.has(c.id) && c.value === 'high');
+  document.getElementById('missed-cards-display').innerHTML = missed.length > 0
+    ? missed.map(c => `
+        <div class="cv-item">
+          <div class="cv-dot high"></div>
+          <div><strong>${c.name}</strong> (${c.cost} kr) – ${c.question}</div>
+        </div>`).join('')
+    : '<p style="font-size:0.85rem;color:var(--green)">Du köpte alla nyckelanalyser!</p>';
+}
+
+// ══════════════════════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════════════════════
+
+showScreen('intro');
+</script>
+</body>
+</html>
