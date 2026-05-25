@@ -258,7 +258,6 @@ strong { color: var(--text); }
   color: var(--green);
   font-weight: 600;
 }
-/* Revealed card content */
 .card-reveal {
   padding: 0 1rem;
   display: none;
@@ -290,7 +289,6 @@ strong { color: var(--text); }
   color: var(--text2);
   margin-bottom: 1rem;
 }
-/* Mini tables inside cards */
 .mini-table { width: 100%; border-collapse: collapse; font-size: 0.78rem; margin-bottom: 0.5rem; }
 .mini-table th { background: var(--surface2); color: var(--text2); font-weight: 600; padding: 4px 8px; text-align: left; }
 .mini-table td { padding: 4px 8px; border-top: 1px solid var(--border); }
@@ -298,7 +296,6 @@ strong { color: var(--text); }
 .pos { color: var(--green); font-weight: 600; }
 .neg { color: var(--red); font-weight: 600; }
 .neu { color: var(--text2); }
-/* SVG chart labels */
 .chart-wrap { padding: 0.5rem 0; }
 svg text { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
 
@@ -436,11 +433,23 @@ svg text { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-seri
   color: var(--text2);
 }
 .insight-item .ii-icon { font-size: 1rem; flex-shrink: 0; margin-top: 1px; }
+.segment-key {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+.sk-item {
+  background: var(--surface2);
+  border-radius: 6px;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.82rem;
+}
+.sk-item strong { display: block; color: var(--accent); }
 </style>
 </head>
 <body>
 
-<!-- BUDGET BAR (sticky, shown during shop) -->
 <div id="budget-bar">
   <div class="budget-inner">
     <span class="budget-label">Analyskrediter kvar:</span>
@@ -464,19 +473,19 @@ svg text { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-seri
     <p>Inget kontrollerat A/B-test genomfördes. Nu är kampanjen avslutad och ledningen vill fatta beslut om nästa steg.</p>
     <p>På totalnivå ser resultaten positiva ut:</p>
     <div class="stat-row">
-      <div class="stat-pill"><div class="sp-num">+18%</div><div class="sp-label">Försäljning</div></div>
+      <div class="stat-pill"><div class="sp-num">+18%</div><div class="sp-label">Försäljning vs föregående år</div></div>
       <div class="stat-pill"><div class="sp-num">9,9 Mkr</div><div class="sp-label">Kampanjomsättning</div></div>
       <div class="stat-pill"><div class="sp-num">4 veckor</div><div class="sp-label">Kampanjlängd</div></div>
       <div class="stat-pill"><div class="sp-num">20%</div><div class="sp-label">Rabattnivå</div></div>
     </div>
-    <p style="margin-top:0.5rem"><strong>Beslutet:</strong> Ska kampanjen köras igen – och i så fall hur?</p>
+    <p style="margin-top:0.5rem"><strong>Beslutet:</strong> Ska kampanjen köras igen – och i så fall mot vilka kunder, med vilken mekanik?</p>
   </div>
 
   <div class="intro-cards">
     <div class="intro-card">
       <div class="ic-icon">🔍</div>
       <h3>Välj dina analyser</h3>
-      <p>Du har <strong>16 analyskrediter</strong>. Varje analys kostar 2–5 krediter. Du kan inte köpa allt.</p>
+      <p>Du har <strong>12 analyskrediter</strong>. Varje analys kostar 2–5 krediter. Du kan inte köpa allt.</p>
     </div>
     <div class="intro-card">
       <div class="ic-icon">📊</div>
@@ -573,28 +582,41 @@ svg text { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-seri
 
   <div class="facit-box">
     <h2>Vad hände egentligen?</h2>
+
+    <div class="facit-section">
+      <h3>Vad segmenten visade sig vara</h3>
+      <div class="segment-key">
+        <div class="sk-item"><strong>Segment A</strong>Lojala stamkunder – hög köpfrekvens, köper oavsett kampanj</div>
+        <div class="sk-item"><strong>Segment B</strong>Regelbundna kunder – viss priskänslighet, stabil bas</div>
+        <div class="sk-item"><strong>Segment C</strong>Vilande kunder – ej köpt på 6–18 mån, svarade på kampanjen</div>
+        <div class="sk-item"><strong>Segment D</strong>Kampanjaktiverade – lockades av rabatten, låg återköpsfrekvens</div>
+      </div>
+    </div>
+
     <div class="facit-section">
       <h3>Kampanjens verkliga effekt</h3>
-      <p>Sommarerbjudandet genererade <strong>+18% i omsättning</strong>, men merparten kom från tre källor: (1) lapsade kunder som återaktiverades av rabatten, (2) "deal hunters" utan lojalitet, och (3) konkurrenten Markus & Co som hade allvarliga lagerproblem i juli – vilket gav Nordia ett tillfälligt marknadsandelstillskott.</p>
+      <p>Omsättningen ökade med +18% jämfört med samma period föregående år, men en analys av underliggande faktorer tyder på att den verkliga inkrementella effekten var lägre. En del av uppgången beror sannolikt på att en stor konkurrent hade lagerproblem under perioden. En del tyder på framflyttad försäljning – kunder som ändå hade köpt, men valde att köpa under kampanjen.</p>
     </div>
+
     <div class="facit-section">
       <h3>Det som doldes av aggregatdata</h3>
       <div class="insight-items">
-        <div class="insight-item"><span class="ii-icon">📉</span><span>Bruttomarginalen föll från 38% till 33% – rabatten åt upp vinsten trots volymökning.</span></div>
-        <div class="insight-item"><span class="ii-icon">🔄</span><span>Lojala stamkunder behövde ingen rabatt – de hade köpt ändå. Kampanjen gav dem rabatt i onödan.</span></div>
-        <div class="insight-item"><span class="ii-icon">📦</span><span>En del av försäljningen "lånades" från höst – kunder köpte i förtid, vilket gav en dipp efteråt.</span></div>
-        <div class="insight-item"><span class="ii-icon">🎯</span><span>Kampanjens nya kunder hade 11% återköpsfrekvens vs 69–74% för befintliga kunder.</span></div>
+        <div class="insight-item"><span class="ii-icon">📉</span><span>Bruttomarginalen sjönk. Trots omsättningstillväxt ökade täckningsbidraget marginellt – rabatten åt upp en stor del av vinsten.</span></div>
+        <div class="insight-item"><span class="ii-icon">🔄</span><span>Segment A (lojala) köpte med stor sannolikhet oavsett kampanj. Rabatten gav dem inget mervärde – den kostade Nordia pengar utan att driva tillväxt.</span></div>
+        <div class="insight-item"><span class="ii-icon">📦</span><span>Signaler i data tyder på att en del försäljning dragits framåt i tid. Veckan efter kampanjslutet visade omsättningen en tydlig dipp.</span></div>
+        <div class="insight-item"><span class="ii-icon">🎯</span><span>Segment D (kampanjaktiverade) hade låg efteraktivitet. Segment C (vilande) visade svag men existerande återköpssignal – det enda segment där kampanjen sannolikt skapade nettovärde.</span></div>
       </div>
     </div>
+
     <div class="facit-section">
       <h3>Rätt beslut</h3>
-      <p><strong>Kör kampanjen mot vilande kunder</strong> (ej köpt på 6–18 månader) med en mer måttlig rabatt (10–15%). Dessa kunder svarar på prisstimulanser, har acceptabel retention och CLV-effekten är positiv. Uteslut lojala VIP-kunder som inte behöver rabatten. Designa med kontrollgrupp.</p>
+      <p><strong>Kör kampanjen mot vilande kunder (Segment C)</strong> med en mer måttlig rabatt (10–15%). Dessa kunder svarar på prisstimulans och visar tecken på existerande köpintention. Exkludera Segment A som inte behöver rabatten, och Segment D som enbart lockas av hög rabatt utan att bli lojala. Designa med kontrollgrupp för att kunna mäta effekten nästa gång.</p>
     </div>
   </div>
 
   <div class="lesson-box">
     <div class="lesson-quote">"Bra analys är inte mest analys. Bra analys är den minsta analys som räcker för att ändra, bekräfta eller förbättra ett viktigt beslut."</div>
-    <p>Det räckte med 3–4 rätt valda analyser för att se sanningen. Nyckeln var att titta på <em>segment</em>, inte aggregat.</p>
+    <p>Det räckte med 3–4 rätt valda analyser för att se signalen. Nyckeln var att titta på <em>segment</em>, inte aggregat – och att inte förväxla positiv kundupplevelse med lönsam tillväxt.</p>
   </div>
 
   <div class="restart-row">
@@ -608,7 +630,7 @@ svg text { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-seri
 // GAME DATA
 // ══════════════════════════════════════════════════════════════
 
-const BUDGET = 16;
+const BUDGET = 12;
 
 const CARDS = [
   {
@@ -617,12 +639,12 @@ const CARDS = [
     category: 'Vad hände?',
     categoryColor: 'badge-blue',
     cost: 2,
-    question: 'Hur utvecklades försäljningen under och efter kampanjen?',
+    question: 'Hur utvecklades försäljningen under och efter kampanjen jämfört med föregående år?',
     value: 'low',
     viz: `
       <div class="chart-wrap">
         <svg width="100%" height="130" viewBox="0 0 280 130">
-          <text x="0" y="10" font-size="9" fill="#64748b">Omsättning (Mkr) – i år vs förra året</text>
+          <text x="0" y="10" font-size="9" fill="#64748b">Omsättning (Mkr) – i år vs samma period föregående år</text>
           ${[['Maj',42,41,30],['Jun',49,41,90],['Jul',50,42,150],['Aug',38,40,210]].map(([m,a,b,x])=>`
             <rect x="${x}" y="${130-(a/50)*100}" width="20" height="${(a/50)*100}" fill="#3b82f6" rx="2" opacity="0.9"/>
             <rect x="${x+22}" y="${130-(b/50)*100}" width="20" height="${(b/50)*100}" fill="#334155" rx="2"/>
@@ -632,11 +654,11 @@ const CARDS = [
           <rect x="0" y="115" width="10" height="6" fill="#3b82f6" rx="1"/>
           <text x="13" y="121" font-size="8" fill="#94a3b8">I år</text>
           <rect x="35" y="115" width="10" height="6" fill="#334155" rx="1"/>
-          <text x="48" y="121" font-size="8" fill="#94a3b8">Förra året</text>
+          <text x="48" y="121" font-size="8" fill="#94a3b8">Föregående år</text>
         </svg>
       </div>`,
-    signal: 'Försäljningen ökade med +18% under kampanjperioden (jun–jul) jämfört med föregående år. Efterperioden (aug) visade en svag dipp under föregående år.',
-    limitation: 'Visar att försäljningen ökade, men inte om kampanjen orsakade det eller om det var lönsamt. Ger ingen information om kundgrupper.'
+    signal: 'Omsättningen ökade med +18% under kampanjperioden (jun–jul) jämfört med samma period föregående år. Efterperioden (aug) visade en svag dipp under föregående års nivå.',
+    limitation: 'Visar att omsättningen ökade jämfört med föregående år, men inte om kampanjen orsakade det, om det var lönsamt, eller vilka kunder som stod för tillväxten.'
   },
   {
     id: 'segment',
@@ -644,21 +666,21 @@ const CARDS = [
     category: 'Vilka kunder?',
     categoryColor: 'badge-blue',
     cost: 3,
-    question: 'Varifrån kom tillväxten – och vilka kundgrupper reagerade?',
+    question: 'Varifrån kom tillväxten – och vilka kundsegment reagerade på kampanjen?',
     value: 'high',
     viz: `
       <div class="chart-wrap">
         <svg width="100%" height="120" viewBox="0 0 280 120">
-          <text x="0" y="10" font-size="9" fill="#64748b">Försäljningstillväxt per segment</text>
-          ${[['Lojala VIP',8,20],['Stamkunder',12,40],['Vilande kunder',58,60],['Nya kunder',89,80]].map(([label,pct,y])=>`
+          <text x="0" y="10" font-size="9" fill="#64748b">Omsättningstillväxt per segment (vs föregående år)</text>
+          ${[['Segment A',8,20],['Segment B',12,40],['Segment C',58,60],['Segment D',89,80]].map(([label,pct,y])=>`
             <text x="0" y="${y+8}" font-size="9" fill="#94a3b8">${label}</text>
-            <rect x="110" y="${y}" width="${Math.min(pct*1.5,160)}" height="12" fill="${pct>40?'#10b981':pct>15?'#3b82f6':'#334155'}" rx="2" opacity="0.85"/>
-            <text x="${110+Math.min(pct*1.5,160)+4}" y="${y+9}" font-size="9" fill="#e2e8f0">+${pct}%</text>
+            <rect x="90" y="${y}" width="${Math.min(pct*1.5,180)}" height="12" fill="${pct>40?'#3b82f6':'#334155'}" rx="2" opacity="0.85"/>
+            <text x="${90+Math.min(pct*1.5,180)+4}" y="${y+9}" font-size="9" fill="#e2e8f0">+${pct}%</text>
           `).join('')}
         </svg>
       </div>`,
-    signal: 'Tillväxten drevs framför allt av vilande (+58%) och nya kunder (+89%). Lojala stamkunder visade liten förändring (+8–12%).',
-    limitation: 'Visar vilka som köpte under kampanjen, men inte om dessa kunder är lönsamma eller om de kommer att köpa igen.'
+    signal: 'Tillväxten tyder på att den drevs framför allt av Segment C (+58%) och Segment D (+89%). Segment A och B visade begränsad förändring (+8–12%).',
+    limitation: 'Visar vilka segment som köpte mer under kampanjen jämfört med föregående år, men inte om dessa kunder är lönsamma, om de kommer tillbaka, eller om kampanjen faktiskt orsakade ökningen.'
   },
   {
     id: 'margin',
@@ -666,18 +688,18 @@ const CARDS = [
     category: 'Var det lönsamt?',
     categoryColor: 'badge-yellow',
     cost: 3,
-    question: 'Hur påverkades bruttomarginalen av kampanjen?',
+    question: 'Hur påverkades bruttomarginalen av kampanjen jämfört med föregående år?',
     value: 'high',
     viz: `
       <table class="mini-table">
-        <tr><th></th><th>Kampanjperiod</th><th>Föreg. år samma period</th></tr>
+        <tr><th></th><th>Kampanjperiod (i år)</th><th>Samma period föregående år</th></tr>
         <tr><td>Omsättning</td><td class="pos">9,9 Mkr</td><td>8,4 Mkr</td></tr>
         <tr><td>Bruttomarginal</td><td class="neg">33%</td><td class="pos">38%</td></tr>
         <tr><td>Täckningsbidrag</td><td>3,3 Mkr</td><td>3,2 Mkr</td></tr>
-        <tr><td>Antal köp</td><td>+31%</td><td>–</td></tr>
+        <tr><td>Antal köp</td><td>+31% vs föreg. år</td><td>–</td></tr>
       </table>`,
-    signal: 'Bruttomarginalen föll med 5 procentenheter. Täckningsbidraget ökade med knappt 100 Tkr trots +18% omsättning. Volymtillväxten åts till stor del upp av rabatten.',
-    limitation: 'Visar bruttomarginal, men inte kampanjens totalkostnad inklusive marknadsföring, eller effekten på kundvärde på längre sikt.'
+    signal: 'Bruttomarginalen sjönk med 5 procentenheter jämfört med samma period föregående år. Täckningsbidraget ökade med knappt 100 Tkr trots +18% omsättning. Det tyder på att volymtillväxten till stor del åts upp av rabatten.',
+    limitation: 'Visar bruttomarginal på totalnivå, men inte kampanjens totalkostnad inklusive marknadsföring, och ger ingen information om lönsamheten per kundsegment.'
   },
   {
     id: 'trend',
@@ -685,12 +707,12 @@ const CARDS = [
     category: 'Vad hände?',
     categoryColor: 'badge-blue',
     cost: 3,
-    question: 'Finns det tecken på att försäljning dragits fram i tid (kannibalisering)?',
+    question: 'Finns det indikationer på att försäljning dragits fram i tid snarare än skapats?',
     value: 'medium',
     viz: `
       <div class="chart-wrap">
         <svg width="100%" height="130" viewBox="0 0 280 130">
-          <text x="0" y="10" font-size="9" fill="#64748b">Veckoomsättning (Mkr), relativ bas=1.0</text>
+          <text x="0" y="10" font-size="9" fill="#64748b">Veckoomsättning (index, bas = 1,0 = normalnivå)</text>
           ${(()=>{
             const pts=[[0,1.0],[1,1.02],[2,1.05],[3,1.25],[4,1.40],[5,1.45],[6,1.42],[7,0.85],[8,0.90],[9,0.96],[10,1.01]];
             const labels=['V-2','V-1','V0','K1','K2','K3','K4','E1','E2','E3','E4'];
@@ -709,8 +731,8 @@ const CARDS = [
           })()}
         </svg>
       </div>`,
-    signal: 'Tydlig försäljningsspike under kampanjen. Veckan direkt efter kampanjslutet var omsättningen 15% under normalnivå – ett möjligt tecken på framflyttad försäljning.',
-    limitation: 'Kan inte skilja säsongseffekter från faktisk kannibalisering. Ingen kontrollgrupp gör kausalanalys svår.'
+    signal: 'Tydlig ökning under kampanjperioden. Veckan direkt efter kampanjslutet visade omsättningen en dipp under normalnivå – en möjlig indikation på framflyttad försäljning snarare än nyskapad efterfrågan.',
+    limitation: 'Kan inte skilja säsongseffekter, väderpåverkan eller konkurrenthändelser från faktisk framflyttning. Utan kontrollgrupp är kausalanalys inte möjlig.'
   },
   {
     id: 'counterfactual',
@@ -718,61 +740,62 @@ const CARDS = [
     category: 'Vad hade hänt utan kampanjen?',
     categoryColor: 'badge-yellow',
     cost: 5,
-    question: 'Hur stor var den faktiska kampanjeffekten, rensat från trends och säsong?',
+    question: 'Hur stor var den uppskattade kampanjeffekten, rensat från trend, säsong och externa faktorer?',
     value: 'medium',
     viz: `
       <table class="mini-table">
-        <tr><th>Komponent</th><th>Uppskattning</th><th>Osäkerhet</th></tr>
-        <tr><td>Total omsättningstillväxt</td><td>+18%</td><td class="neu">–</td></tr>
+        <tr><th>Komponent</th><th>Uppskattning</th><th>Konfidensintervall</th></tr>
+        <tr><td>Total omsättningstillväxt (vs föreg. år)</td><td>+18%</td><td class="neu">–</td></tr>
         <tr><td>Organisk trend + säsong</td><td>~+4%</td><td class="neu">±2pp</td></tr>
-        <tr><td>Konkurrenteffekt (lagerbrist)</td><td>~+5%</td><td class="neg">±3pp</td></tr>
-        <tr><td>Faktisk kampanjlift</td><td class="pos">~+9%</td><td class="neg">±4pp</td></tr>
-        <tr><td>Varav framflyttad försäljning</td><td class="neg">~-3%</td><td class="neg">±3pp</td></tr>
+        <tr><td>Indikation: konkurrenteffekt</td><td>~+5%</td><td class="neg">±3pp</td></tr>
+        <tr><td>Skattad kampanjlift</td><td class="pos">~+9%</td><td class="neg">±4pp</td></tr>
+        <tr><td>Varav möjlig framflyttad försäljning</td><td class="neg">~-3%</td><td class="neg">±3pp</td></tr>
       </table>`,
-    signal: 'Modellen tyder på att den verkliga inkrementella kampanjeffekten är ~6–9%, inte 18%. Hälften av den synliga tillväxten förklaras av externa faktorer och framflyttning.',
-    limitation: 'Modellskattning med hög osäkerhet (±4 procentenheter). Utan en kontrollgrupp kan vi aldrig veta med säkerhet.'
+    signal: 'Modellen tyder på att den uppskattade inkrementella kampanjeffekten är ~6–9%, inte 18%. En stor del av den synliga tillväxten kan förklaras av externa faktorer och möjlig framflyttning.',
+    limitation: 'Modellbaserad uppskattning med hög osäkerhet (±4 procentenheter). Eftersom inget randomiserat test genomfördes kan vi inte fastställa den sanna kampanjeffekten med säkerhet.'
   },
   {
     id: 'retention',
-    name: 'Återköpsanalys',
+    name: 'Efterperiodssignal – återköp',
     category: 'Fortsatte kunderna handla?',
     categoryColor: 'badge-blue',
     cost: 3,
-    question: 'Hur stor andel av kampanjkunderna köpte igen inom 90 dagar?',
+    question: 'Visar data tecken på att kampanjkunderna fortsatte handla efter att kampanjen avslutades?',
     value: 'high',
     viz: `
       <table class="mini-table">
-        <tr><th>Segment</th><th>Köpte i kampanj</th><th>Återköp 90 dagar</th></tr>
-        <tr><td>Lojala VIP</td><td>Ja</td><td class="pos">74%</td></tr>
-        <tr><td>Stamkunder</td><td>Ja</td><td class="pos">61%</td></tr>
-        <tr><td>Vilande (återaktiverade)</td><td>Ja</td><td class="neu">31%</td></tr>
-        <tr><td>Nya via kampanj</td><td>Ja</td><td class="neg">11%</td></tr>
-        <tr><td>Lojala (köpte ej i kampanj)</td><td>Nej</td><td class="pos">69%</td></tr>
+        <tr><th>Segment</th><th>Köpte under kampanj</th><th>Tecken på återköp (90 dagar)</th></tr>
+        <tr><td>Segment A</td><td>Ja</td><td class="pos">74% aktiva</td></tr>
+        <tr><td>Segment B</td><td>Ja</td><td class="pos">61% aktiva</td></tr>
+        <tr><td>Segment C</td><td>Ja</td><td class="neu">31% aktiva</td></tr>
+        <tr><td>Segment D</td><td>Ja</td><td class="neg">11% aktiva</td></tr>
+        <tr><td>Segment A (ej kampanj)</td><td>Nej</td><td class="pos">69% aktiva</td></tr>
       </table>`,
-    signal: 'Kampanjens nya kunder har bara 11% återköpsfrekvens – i nivå med engångskunder. Vilande kunder presterar 31%, vilket är bättre. Lojala kunder köpte lika ofta oavsett kampanj.',
-    limitation: 'Tidsfönstret är 90 dagar – kan vara för kort för att se hela bilden. Återköpsfrekvens säger inget om köpbelopps storlek.'
+    signal: 'Segment A och B visar starkare efteraktivitet, medan Segment D visar svaga tecken på återköp. Segment C befinner sig i mitten. Noterbart: Segment A:s aktivitetsnivå skiljer sig knappt mot de som inte köpte under kampanjen.',
+    limitation: 'Efterperioden är 90 dagar – ett kort fönster. Signalen ska ses som en indikation, inte ett definitivt bevis på kundvärde. Aktivitet ≠ lönsamhet.'
   },
   {
     id: 'survey',
-    name: 'Kundenkät',
+    name: 'Kundupplevelse & feedback',
     category: 'Kundupplevelse',
     categoryColor: 'badge-blue',
     cost: 2,
-    question: 'Varför köpte kunderna – var det rabatten eller ett faktiskt behov?',
+    question: 'Hur upplevde kunderna kampanjen – och vad säger det om beslutet?',
     value: 'low',
     viz: `
       <div class="chart-wrap">
-        <svg width="100%" height="120" viewBox="0 0 280 120">
-          <text x="0" y="10" font-size="9" fill="#64748b">"Varför köpte du under kampanjen?" (n=450)</text>
-          ${[['Rabatten lockade mig',68,'#ef4444',25],['Hade ändå planerat köpa',19,'#3b82f6',45],['Rekommendation/gåva',8,'#f59e0b',65],['Annat',5,'#64748b',85]].map(([label,pct,color,y])=>`
+        <svg width="100%" height="100" viewBox="0 0 280 100">
+          <text x="0" y="10" font-size="9" fill="#64748b">"Vad tyckte du om kampanjen?" (n=450)</text>
+          ${[['Mycket positiv',54,'#10b981',25],['Ganska positiv',31,'#3b82f6',45],['Neutral',11,'#64748b',65],['Negativ',4,'#ef4444',85]].map(([label,pct,color,y])=>`
             <text x="0" y="${y+8}" font-size="9" fill="#94a3b8">${label}</text>
-            <rect x="155" y="${y}" width="${pct*1.0}" height="11" fill="${color}" rx="2" opacity="0.8"/>
-            <text x="${155+pct*1.0+4}" y="${y+9}" font-size="9" fill="#e2e8f0">${pct}%</text>
+            <rect x="110" y="${y}" width="${pct*1.3}" height="11" fill="${color}" rx="2" opacity="0.8"/>
+            <text x="${110+pct*1.3+4}" y="${y+9}" font-size="9" fill="#e2e8f0">${pct}%</text>
           `).join('')}
         </svg>
-      </div>`,
-    signal: '68% av köparna uppger att rabatten var den primära anledningen. Bara 19% hade planerat köpet oavsett kampanj – stor andel är deal-driven.',
-    limitation: 'Enkätsvar återspeglar vad kunder säger, inte nödvändigtvis vad de faktiskt gör. Svarsfrekvens 23% kan ge selektionssnedvridning.'
+      </div>
+      <div style="font-size:0.78rem;color:var(--text2);padding:0.25rem 0 0.5rem">NPS under kampanjperioden: <strong style="color:var(--green)">+48</strong> &nbsp;|&nbsp; Rekommendation: 82% "Ja"</div>`,
+    signal: 'Kampanjen mottogs mycket positivt av kunderna. Nöjdheten var hög under perioden, NPS ökade och majoriteten rekommenderade Nordia vidare. Stark upplevd kampanjeffekt.',
+    limitation: 'Att kunder uppskattar en rabatt bevisar inte att kampanjen skapade lönsam eller långsiktig tillväxt. Hög nöjdhet kan spegla att erbjudandet var attraktivt – inte att det var affärsmässigt hållbart.'
   },
   {
     id: 'competitor',
@@ -780,36 +803,37 @@ const CARDS = [
     category: 'Externa faktorer',
     categoryColor: 'badge-yellow',
     cost: 2,
-    question: 'Påverkades resultaten av externa faktorer utanför kampanjen?',
+    question: 'Kan en del av tillväxten förklaras av externa faktorer snarare än kampanjen?',
     value: 'medium',
     viz: `
       <table class="mini-table">
         <tr><th>Observation</th><th>Bedömning</th></tr>
-        <tr><td>Markus &amp; Co – lagerproblem jun–jul</td><td class="neg">Bekräftat</td></tr>
+        <tr><td>Konkurrent A – allvarliga lagerproblem jun–jul</td><td class="neg">Bekräftat</td></tr>
         <tr><td>Nordias marknadsandel +1,8pp under perioden</td><td class="pos">Bekräftat</td></tr>
-        <tr><td>Andel av Nordias tillväxt som ej är kampanj</td><td class="neu">~5% av 18%</td></tr>
-        <tr><td>Konkurrenten tillbaka i aug</td><td class="neu">Delvis förklaring till aug-dipp</td></tr>
+        <tr><td>Indikation: andel av tillväxt ej kampanjrelaterad</td><td class="neu">~5 av 18pp</td></tr>
+        <tr><td>Konkurrenten normaliserad i aug</td><td class="neu">Tyder på tillfällig effekt</td></tr>
       </table>`,
-    signal: 'En del av Nordias tillväxt kom från att en stor konkurrent hade allvarliga lagerproblem. Uppskattningsvis 5 av de 18 procentenheter är "gårdagens konkurrentkunder".',
-    limitation: 'Svårt att exakt kvantifiera konkurrenteffekten. Markus & Co:s problem är dokumenterade men exakta marknadsandelar är uppskattningar.'
+    signal: 'Indikationer tyder på att en del av Nordias tillväxt kom från att en stor konkurrent hade lagerproblem. Uppskattningsvis kan ~5 av de 18 procentenheterna vara tillfälligt tillgängliga marknadsandelar snarare än en effekt av kampanjen.',
+    limitation: 'Svårt att exakt kvantifiera konkurrenteffekten. Uppskattningarna baseras på marknadsdata med osäkerhet. Effekten är troligen tillfällig.'
   },
   {
     id: 'clv',
-    name: 'Lönsamhet per segment',
+    name: 'Segmenterad affärssignal',
     category: 'Var det lönsamt?',
     categoryColor: 'badge-yellow',
     cost: 4,
-    question: 'Vilket kundvärde skapade eller förstörde kampanjen – per segment?',
+    question: 'Skiljer sig segmentens affärsmässiga signaler efter kampanjen – rabattuttag, marginal och aktivitet?',
     value: 'high',
     viz: `
       <table class="mini-table">
-        <tr><th>Segment</th><th>Rabattkostnad</th><th>CLV-effekt</th><th>Netto</th></tr>
-        <tr><td>Lojala VIP</td><td class="neg">-280kr</td><td class="neu">+190kr</td><td class="neg">-90kr</td></tr>
-        <tr><td>Vilande kunder</td><td class="neg">-180kr</td><td class="pos">+240kr</td><td class="pos">+60kr</td></tr>
-        <tr><td>Nya kampanjkunder</td><td class="neg">-220kr</td><td class="neg">+45kr</td><td class="neg">-175kr</td></tr>
+        <tr><th>Segment</th><th>Rabattuttag/kund</th><th>Snittköp 30 dagar efter</th><th>Marginal­signal</th></tr>
+        <tr><td>Segment A</td><td>280kr</td><td class="pos">390kr</td><td class="neu">Stabil</td></tr>
+        <tr><td>Segment B</td><td>200kr</td><td class="neu">240kr</td><td class="neu">Svagt sjunkande</td></tr>
+        <tr><td>Segment C</td><td>170kr</td><td class="neg">95kr</td><td class="neg">Oklar</td></tr>
+        <tr><td>Segment D</td><td>210kr</td><td class="neg">30kr</td><td class="neg">Låg aktivitet</td></tr>
       </table>`,
-    signal: 'Kampanjen skapade värde för vilande kunder (+60kr netto) men förstörde värde för lojala VIP-kunder (-90kr) och nya kampanjkunder (-175kr).',
-    limitation: 'CLV-beräkningar är känsliga för antaganden om framtida köpfrekvens. Estimaten baseras på 90-dagarsbeteende, vilket är osäkert.'
+    signal: 'Segmenten verkar skilja sig i affärsmässig hållbarhet. Segment A visar hög efteraktivitet trots högt rabattuttag. Segment C har lägre efteraktivitet men också lägre rabattuttag per kund. Segment D visar låg aktivitet efter kampanjen.',
+    limitation: 'Data är från 30 dagar efter kampanjen – ett kort fönster som kan spegla säsongseffekter eller framflyttning snarare än verkligt kundbeteende. Analysen visar signaler om värde, men är inte ett definitivt facit för långsiktig lönsamhet.'
   },
   {
     id: 'elasticity',
@@ -817,21 +841,21 @@ const CARDS = [
     category: 'Kundinsikt',
     categoryColor: 'badge-blue',
     cost: 4,
-    question: 'Vilka kundsegment behöver egentligen en rabatt för att köpa?',
+    question: 'Hur pass priskänsliga verkar de olika kundsegmenten historiskt sett?',
     value: 'high',
     viz: `
       <div class="chart-wrap">
         <svg width="100%" height="115" viewBox="0 0 280 115">
-          <text x="0" y="10" font-size="9" fill="#64748b">Priselasticitet (lägre = mer priskänslig)</text>
-          ${[['Lojala VIP',-0.3,'#10b981',25],['Stamkunder',-0.7,'#3b82f6',45],['Vilande kunder',-1.2,'#f59e0b',65],['Nya / deal-hunters',-2.6,'#ef4444',85]].map(([label,e,color,y])=>`
+          <text x="0" y="10" font-size="9" fill="#64748b">Historisk priselasticitet per segment (estimat)</text>
+          ${[['Segment A',-0.3,'#10b981',25],['Segment B',-0.7,'#3b82f6',45],['Segment C',-1.2,'#f59e0b',65],['Segment D',-2.6,'#ef4444',85]].map(([label,e,color,y])=>`
             <text x="0" y="${y+8}" font-size="9" fill="#94a3b8">${label}</text>
-            <rect x="115" y="${y}" width="${Math.abs(e)*50}" height="11" fill="${color}" rx="2" opacity="0.8"/>
-            <text x="${115+Math.abs(e)*50+4}" y="${y+9}" font-size="9" fill="#e2e8f0">${e}</text>
+            <rect x="90" y="${y}" width="${Math.abs(e)*50}" height="11" fill="${color}" rx="2" opacity="0.8"/>
+            <text x="${90+Math.abs(e)*50+4}" y="${y+9}" font-size="9" fill="#e2e8f0">${e}</text>
           `).join('')}
         </svg>
       </div>`,
-    signal: 'Lojala kunder är mycket prisokänsliga – de köper ändå. Vilande kunder svarar tydligt på rabatter. Nya "deal-hunters" är extremt priskänsliga och köper bara vid stora rabatter.',
-    limitation: 'Elasticiteter skattade från historisk data. Det är osäkert hur väl de generaliserar till framtida kampanjer med andra rabattnivåer.'
+    signal: 'Historisk data tyder på att Segment A och B har relativt hög köpfrekvens även utan rabatter – rabattbehovet verkar lägre. Segment C och D visar tydligare historisk respons på prissänkningar.',
+    limitation: 'Historisk priselasticitet är ett estimat och bevisar inte hur kunderna faktiskt påverkades i just denna kampanj. Elasticiteter kan förändras över tid och skilja sig mellan kanaler.'
   },
   {
     id: 'nps',
@@ -839,36 +863,35 @@ const CARDS = [
     category: 'Kundupplevelse',
     categoryColor: 'badge-blue',
     cost: 2,
-    question: 'Stärktes eller försvagades varumärket och kundlojaliteten av kampanjen?',
+    question: 'Påverkades varumärkesuppfattning och kundlojalitet av kampanjen?',
     value: 'low',
     viz: `
       <table class="mini-table">
         <tr><th>Mätpunkt</th><th>Före kampanj</th><th>Efter kampanj</th></tr>
-        <tr><td>NPS (net promoter)</td><td>43</td><td>41</td></tr>
+        <tr><td>NPS (net promoter score)</td><td>43</td><td>41</td></tr>
         <tr><td>Brand preference</td><td>62%</td><td>63%</td></tr>
         <tr><td>Upplevd kvalitet</td><td>71%</td><td>69%</td></tr>
       </table>`,
-    signal: 'Inga statistiskt signifikanta förändringar i NPS eller varumärkesstyrka. Kampanjen varken stärkte eller skadade varumärket mätbart.',
-    limitation: 'NPS-förändringen på -2 är inom felmarginal. Mätningen fångar inte skillnader mellan segment – lojala och deal-hunters svarar troligen väldigt olika.'
+    signal: 'Inga statistiskt signifikanta förändringar i NPS eller varumärkesuppfattning. Kampanjen tyder inte på att ha skadat eller stärkt varumärket mätbart på aggregatnivå.',
+    limitation: 'NPS-förändringen på -2 är inom felmarginal. Mätningen fångar inte segmentskillnader. Stabilt NPS på totalnivå utesluter inte att kundmixens sammansättning förändrats.'
   },
   {
     id: 'roi',
-    name: 'ROI-kalkyl',
+    name: 'Preliminär ROI-kalkyl',
     category: 'Var det lönsamt?',
     categoryColor: 'badge-yellow',
     cost: 3,
-    question: 'Var kampanjen lönsam i sin helhet?',
+    question: 'Var kampanjen lönsam – beroende på vilket antagande man väljer?',
     value: 'medium',
     viz: `
       <table class="mini-table">
-        <tr><th>Post</th><th>Belopp</th></tr>
-        <tr><td>Ökad omsättning (bruttouppskattning)</td><td class="pos">+1 500 Tkr</td></tr>
-        <tr><td>Rabattkostnad (alla köp × 20%)</td><td class="neg">-1 980 Tkr</td></tr>
-        <tr><td>Marknadsinvestering</td><td class="neg">-400 Tkr</td></tr>
-        <tr style="font-weight:600"><td>Netto kampanjresultat</td><td class="neg">-880 Tkr</td></tr>
+        <tr><th>Scenario</th><th>Antagande</th><th>Indikativt netto</th></tr>
+        <tr><td>Optimistisk</td><td>Hög organisk lift, låg pull-forward</td><td class="pos">+340 Tkr</td></tr>
+        <tr><td>Bas</td><td>Medel lift, viss pull-forward</td><td class="neg">-180 Tkr</td></tr>
+        <tr><td>Konservativ</td><td>Låg lift, hög pull-forward</td><td class="neg">-680 Tkr</td></tr>
       </table>`,
-    signal: 'Kampanjen var negativ på totalnivå (-880 Tkr). Rabattkostnaden överstiger det inkrementella täckningsbidraget.',
-    limitation: 'Beräknar inte kundvärde per segment eller framtida köpbeteende. Överskattar troligen rabattkostnaden för de kunder som faktiskt påverkades av rabatten.'
+    signal: 'I bas- och konservativa scenarier tyder beräkningen på att kampanjens totala lönsamhet är tveksam. Utfallet är känsligt för antaganden om organisk tillväxt och framflyttning.',
+    limitation: 'ROI-kalkylen bygger på antaganden och allokeringar. Den säger inte säkert vilka kundgrupper som faktiskt skapade värde, eller hur stor del av omsättningen som var inkrementell.'
   }
 ];
 
@@ -879,15 +902,15 @@ const DECISIONS = [
     label: 'Kör kampanjen brett igen',
     desc: 'Samma upplägg – 20% rabatt till alla kunder i 4 veckor',
     quality: 'poor',
-    explanation: 'Kampanjen drivs av vilande kunder och deal-hunters. En bred utrullning ger samma problem: onödig rabatt till lojala kunder och låg retention bland nya. Negativ ROI upprepas.'
+    explanation: 'Signalerna i data tyder på att kampanjen inte var lönsam på totalnivå. En bred utrullning riskerar att upprepa mönstret: onödig rabatt till kunder med hög naturlig köpfrekvens, och låg efteraktivitet bland kampanjaktiverade kunder.'
   },
   {
     id: 'targeted',
     icon: '🎯',
     label: 'Kör mot utvalda kunder',
-    desc: 'Rikta kampanjen mot vilande kunder (ej köpt på 6–18 månader), exkludera lojala VIP',
+    desc: 'Rikta kampanjen mot Segment C – tidigare aktiva kunder som inte handlat nyligen',
     quality: 'best',
-    explanation: 'Det bästa beslutet givet tillgänglig data. Vilande kunder svarar på kampanjen och har positiv netto-CLV (+60kr). Lojala kunder behöver ingen rabatt. Minskar rabattkostnaden och förbättrar ROI markant.'
+    explanation: 'Det bästa beslutet givet tillgängliga signaler. Segment C (vilande kunder) svarar på prisstimulans och visar existerande köpintention. Att exkludera Segment A minskar onödig rabattkostnad. Designa med kontrollgrupp för att mäta effekten.'
   },
   {
     id: 'mechanic',
@@ -895,7 +918,7 @@ const DECISIONS = [
     label: 'Ändra kampanjmekaniken',
     desc: 'Byt ut rabatten mot ett lojalitetsprogram eller bonusstruktur',
     quality: 'good',
-    explanation: 'Välmotiverat om man sett att lojala kunder inte behöver rabatt och att deal-hunters förvanskar kundmixen. Lojalitetsprogram driver retention bättre. Kräver mer arbete att implementera men är strategiskt rätt.'
+    explanation: 'Välmotiverat om data visar att rabatter lockar fel kunder. Lojalitetsprogram kan driva retention bättre än engångsrabatter. Kräver mer implementation men är strategiskt rimligt – särskilt om priskänslighetsdata finns som stöd.'
   },
   {
     id: 'stop',
@@ -903,7 +926,7 @@ const DECISIONS = [
     label: 'Stoppa kampanjen',
     desc: 'Kör inga fler rabattkampanjer – lägg om budgeten på annat',
     quality: 'poor',
-    explanation: 'Överkorrekt. Kampanjen har faktisk positiv effekt för vilande kunder – att stoppa helt kastar bort ett verksamt verktyg. Rätt diagnos (dålig ROI totalt) men fel kur.'
+    explanation: 'Överkorrekt. Trots tveksam total-ROI tyder signaler på att kampanjen kan ha värde för specifika segment. Att stoppa helt kastar bort ett potentiellt verksamt verktyg baserat på aggregatdata.'
   },
   {
     id: 'test',
@@ -911,7 +934,7 @@ const DECISIONS = [
     label: 'Designa ett kontrollerat test',
     desc: 'Kör A/B-test mot ett urval av kunder innan bredare beslut',
     quality: 'good',
-    explanation: 'Klokt om man saknar segmentdata. Säkerställer kausal läsning. Något konservativt om man redan har segmentanalysen – då pekar data tydligt nog för ett riktat beslut.'
+    explanation: 'Klokt om man saknar segmentdata eller vill ha kausalt stöd. Kontrollerat test eliminerar osäkerheten om kampanjens verkliga effekt. Något konservativt om man redan har tydliga segmentsignaler – men rätt metodmässigt.'
   }
 ];
 
@@ -1045,14 +1068,9 @@ function buyCard(id) {
   state.purchased.add(id);
   state.spent += card.cost;
   updateBudgetBar();
-  // Re-render the specific card and update affordability on others
-  document.getElementById('card-' + id).outerHTML = renderCard(card);
-  // Re-attach event listeners by re-rendering all un-purchased cards' buttons
   CARDS.forEach(c => {
-    if (!state.purchased.has(c.id)) {
-      const el = document.getElementById('card-' + c.id);
-      if (el) el.outerHTML = renderCard(c);
-    }
+    const el = document.getElementById('card-' + c.id);
+    if (el) el.outerHTML = renderCard(c);
   });
   updatePurchasedCount();
   updateProceedButton();
@@ -1073,12 +1091,10 @@ function updateProceedButton() {
 // ══════════════════════════════════════════════════════════════
 
 function renderDecision() {
-  // Evidence strip
   const strip = document.getElementById('evidence-strip');
   const purchasedNames = CARDS.filter(c => state.purchased.has(c.id)).map(c => c.name);
   strip.innerHTML = purchasedNames.map(n => `<span class="evidence-chip">✓ ${n}</span>`).join('');
 
-  // Decision options
   const opts = document.getElementById('decision-options');
   opts.innerHTML = DECISIONS.map(d => `
     <div class="decision-option ${state.decision === d.id ? 'selected' : ''}" onclick="selectDecision('${d.id}')">
@@ -1103,7 +1119,6 @@ function renderResults() {
   const chosenDecision = DECISIONS.find(d => d.id === state.decision);
   const bestDecision = DECISIONS.find(d => d.quality === 'best');
 
-  // Verdict
   const isBest = chosenDecision.quality === 'best';
   const isGood = chosenDecision.quality === 'good';
   const teamPart = state.teamName ? ` · ${state.teamName}` : '';
@@ -1112,7 +1127,6 @@ function renderResults() {
     isGood ? '✅ Bra beslut – välmotiverat, nära facit.' + teamPart :
     '⚠️ Suboptimalt beslut – se vad du missade.' + teamPart;
 
-  // My decision
   document.getElementById('my-decision-display').innerHTML = `
     <div class="decision-verdict">
       <span class="verdict-icon">${chosenDecision.icon}</span>
@@ -1122,7 +1136,6 @@ function renderResults() {
       </div>
     </div>`;
 
-  // Best decision
   document.getElementById('best-decision-display').innerHTML = `
     <div class="decision-verdict">
       <span class="verdict-icon">${bestDecision.icon}</span>
@@ -1132,7 +1145,6 @@ function renderResults() {
       </div>
     </div>`;
 
-  // Cards value
   const cardValueMap = { high: 'Hög beslutskraft', medium: 'Medelbeslutskraft', low: 'Låg beslutskraft' };
   const cardDotMap = { high: 'high', medium: 'medium', low: 'low' };
   const purchasedList = CARDS.filter(c => state.purchased.has(c.id));
@@ -1144,7 +1156,6 @@ function renderResults() {
         </div>`).join('')
     : '<p style="font-size:0.85rem">Inga analyser köptes.</p>';
 
-  // Missed high-value cards
   const missed = CARDS.filter(c => !state.purchased.has(c.id) && c.value === 'high');
   document.getElementById('missed-cards-display').innerHTML = missed.length > 0
     ? missed.map(c => `
