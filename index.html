@@ -11,7 +11,6 @@
   --surface2: #293548;
   --border: #334155;
   --accent: #3b82f6;
-  --accent-dim: #1d4ed8;
   --green: #10b981;
   --yellow: #f59e0b;
   --red: #ef4444;
@@ -31,7 +30,6 @@ body {
 .screen { display: none; }
 .screen.active { display: block; }
 
-/* ── SHARED ─────────────────────────────────────────────── */
 .container { max-width: 1100px; margin: 0 auto; padding: 2rem 1.5rem; }
 h1 { font-size: 2rem; font-weight: 700; letter-spacing: -0.5px; }
 h2 { font-size: 1.4rem; font-weight: 600; }
@@ -48,423 +46,271 @@ strong { color: var(--text); }
   letter-spacing: 0.5px;
   text-transform: uppercase;
 }
-.badge-blue { background: rgba(59,130,246,0.15); color: var(--accent); border: 1px solid rgba(59,130,246,0.3); }
-.badge-green { background: rgba(16,185,129,0.15); color: var(--green); border: 1px solid rgba(16,185,129,0.3); }
-.badge-yellow { background: rgba(245,158,11,0.15); color: var(--yellow); border: 1px solid rgba(245,158,11,0.3); }
-.badge-red { background: rgba(239,68,68,0.15); color: var(--red); border: 1px solid rgba(239,68,68,0.3); }
+.badge-blue  { background: rgba(59,130,246,0.15); color: var(--accent); border: 1px solid rgba(59,130,246,0.3); }
+.badge-yellow{ background: rgba(245,158,11,0.15); color: var(--yellow); border: 1px solid rgba(245,158,11,0.3); }
 .btn {
-  display: inline-block;
-  padding: 0.75rem 1.75rem;
-  border-radius: 8px;
-  border: none;
-  cursor: pointer;
-  font-size: 1rem;
-  font-weight: 600;
-  transition: all 0.15s;
+  display: inline-block; padding: 0.75rem 1.75rem;
+  border-radius: 8px; border: none; cursor: pointer;
+  font-size: 1rem; font-weight: 600; transition: all 0.15s;
 }
 .btn-primary { background: var(--accent); color: #fff; }
 .btn-primary:hover { background: #2563eb; transform: translateY(-1px); }
-.btn-primary:disabled { background: var(--border); color: var(--text3); cursor: not-allowed; transform: none; }
 .btn-secondary { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
 .btn-secondary:hover { background: #334155; }
 
-/* ── STICKY BUDGET BAR ──────────────────────────────────── */
-#budget-bar {
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  background: rgba(15,23,42,0.95);
+/* ── COST TRACKER (sticky) ──────────────────────────────── */
+#cost-bar {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(15,23,42,0.96);
   backdrop-filter: blur(8px);
   border-bottom: 1px solid var(--border);
-  padding: 0.75rem 1.5rem;
+  padding: 0.65rem 1.5rem;
   display: none;
 }
-#budget-bar.visible { display: block; }
-.budget-inner {
-  max-width: 1100px;
-  margin: 0 auto;
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  flex-wrap: wrap;
+#cost-bar.visible { display: block; }
+.cost-inner {
+  max-width: 1100px; margin: 0 auto;
+  display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap;
 }
-.budget-label { font-size: 0.85rem; color: var(--text2); white-space: nowrap; }
-.budget-track {
-  flex: 1;
-  min-width: 120px;
-  height: 8px;
-  background: var(--surface2);
-  border-radius: 99px;
-  overflow: hidden;
+.cost-pill {
+  display: flex; align-items: center; gap: 0.5rem;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 99px; padding: 4px 14px;
 }
-.budget-fill {
-  height: 100%;
-  border-radius: 99px;
-  transition: width 0.3s ease, background 0.3s;
-  background: var(--accent);
-}
-.budget-fill.warn { background: var(--yellow); }
-.budget-fill.danger { background: var(--red); }
-#budget-credits {
-  font-size: 1.1rem;
-  font-weight: 700;
-  white-space: nowrap;
-}
+.cost-pill .cp-label { font-size: 0.8rem; color: var(--text2); }
+.cost-pill .cp-val   { font-size: 0.95rem; font-weight: 700; }
+.cost-hint { font-size: 0.78rem; color: var(--text3); flex: 1; text-align: right; }
 
 /* ── INTRO ──────────────────────────────────────────────── */
-.intro-hero {
-  text-align: center;
-  padding: 3rem 1rem 2rem;
-}
+.intro-hero { text-align: center; padding: 3rem 1rem 2rem; }
 .intro-hero .kicker {
-  color: var(--accent);
-  font-size: 0.85rem;
-  font-weight: 600;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  margin-bottom: 0.5rem;
+  color: var(--accent); font-size: 0.85rem; font-weight: 600;
+  letter-spacing: 1px; text-transform: uppercase; margin-bottom: 0.5rem;
 }
 .intro-hero h1 { margin-bottom: 0.5rem; }
 .intro-hero .sub { font-size: 1.1rem; color: var(--text2); max-width: 600px; margin: 0 auto 2rem; }
 .intro-cards {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 1rem;
-  margin: 2rem 0;
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem; margin: 2rem 0;
 }
 .intro-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 1.25rem;
-  text-align: left;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 1.25rem; text-align: left;
 }
 .intro-card .ic-icon { font-size: 1.6rem; margin-bottom: 0.5rem; }
 .intro-card h3 { margin-bottom: 0.4rem; }
 .scenario-box {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-left: 3px solid var(--accent);
-  border-radius: var(--radius);
-  padding: 1.5rem;
-  margin: 1.5rem 0;
+  background: var(--surface); border: 1px solid var(--border);
+  border-left: 3px solid var(--accent); border-radius: var(--radius);
+  padding: 1.5rem; margin: 1.5rem 0;
 }
 .scenario-box p { margin-bottom: 0.6rem; }
-.stat-row {
-  display: flex;
-  gap: 1.5rem;
-  flex-wrap: wrap;
-  margin: 1.25rem 0;
-}
+.stat-row { display: flex; gap: 1.5rem; flex-wrap: wrap; margin: 1.25rem 0; }
 .stat-pill {
-  background: var(--surface2);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 0.75rem 1.25rem;
-  text-align: center;
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 8px; padding: 0.75rem 1.25rem; text-align: center;
 }
-.stat-pill .sp-num { font-size: 1.6rem; font-weight: 700; color: var(--accent); }
+.stat-pill .sp-num   { font-size: 1.6rem; font-weight: 700; color: var(--accent); }
 .stat-pill .sp-label { font-size: 0.78rem; color: var(--text2); }
 .team-row { display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; margin-top: 2rem; }
 .team-row input {
-  padding: 0.7rem 1rem;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  color: var(--text);
-  font-size: 1rem;
-  width: 280px;
+  padding: 0.7rem 1rem; background: var(--surface);
+  border: 1px solid var(--border); border-radius: 8px;
+  color: var(--text); font-size: 1rem; width: 280px;
 }
 .team-row input:focus { outline: none; border-color: var(--accent); }
 
-/* ── SHOP ───────────────────────────────────────────────── */
-.shop-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-  flex-wrap: wrap;
-  gap: 1rem;
-  margin-bottom: 1.5rem;
+/* ── ANALYSRUM ──────────────────────────────────────────── */
+.room-header {
+  display: flex; justify-content: space-between; align-items: flex-end;
+  flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem;
 }
-.shop-header p { margin: 0; }
+.room-header p { margin: 0; }
 .decision-preview {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-left: 3px solid var(--yellow);
-  border-radius: var(--radius);
-  padding: 1rem 1.25rem;
-  margin-bottom: 1.5rem;
-  font-size: 0.9rem;
-  color: var(--text2);
+  background: var(--surface); border: 1px solid var(--border);
+  border-left: 3px solid var(--yellow); border-radius: var(--radius);
+  padding: 1rem 1.25rem; margin-bottom: 1.5rem;
+  font-size: 0.9rem; color: var(--text2);
 }
 .decision-preview strong { color: var(--text); display: block; margin-bottom: 0.25rem; }
 .cards-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 1rem;
-  margin-bottom: 2rem;
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1rem; margin-bottom: 2rem;
 }
 .analysis-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  overflow: hidden;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); overflow: hidden;
   transition: border-color 0.2s, box-shadow 0.2s;
-  cursor: pointer;
 }
-.analysis-card:hover:not(.purchased) { border-color: var(--accent); box-shadow: 0 0 0 1px rgba(59,130,246,0.2); }
-.analysis-card.purchased { border-color: var(--green); background: rgba(16,185,129,0.05); cursor: default; }
+.analysis-card:not(.opened):hover { border-color: var(--accent); box-shadow: 0 0 0 1px rgba(59,130,246,0.2); cursor: pointer; }
+.analysis-card.opened { border-color: var(--green); background: rgba(16,185,129,0.04); }
 .card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  padding: 1rem 1rem 0.5rem;
-  gap: 0.5rem;
+  display: flex; justify-content: space-between; align-items: flex-start;
+  padding: 1rem 1rem 0.5rem; gap: 0.5rem;
 }
-.card-title { font-weight: 600; font-size: 0.95rem; flex: 1; }
-.card-cost {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  font-weight: 700;
-  font-size: 0.9rem;
-  color: var(--yellow);
-  white-space: nowrap;
-}
-.card-cost .coin { font-size: 0.8rem; }
+.card-title  { font-weight: 600; font-size: 0.95rem; flex: 1; }
+.card-cost   { display: flex; align-items: center; gap: 4px; font-weight: 700; font-size: 0.9rem; color: var(--yellow); white-space: nowrap; }
 .card-question { padding: 0 1rem 0.75rem; font-size: 0.82rem; color: var(--text3); font-style: italic; }
 .card-category { padding: 0 1rem 0.75rem; }
-.card-buy-btn {
-  margin: 0 1rem 1rem;
-  width: calc(100% - 2rem);
-  padding: 0.5rem;
-  border-radius: 6px;
-  border: 1px solid var(--accent);
-  background: rgba(59,130,246,0.1);
-  color: var(--accent);
-  cursor: pointer;
-  font-size: 0.85rem;
-  font-weight: 600;
-  transition: all 0.15s;
+.card-open-btn {
+  margin: 0 1rem 1rem; width: calc(100% - 2rem); padding: 0.5rem;
+  border-radius: 6px; border: 1px solid var(--accent);
+  background: rgba(59,130,246,0.1); color: var(--accent);
+  cursor: pointer; font-size: 0.85rem; font-weight: 600; transition: all 0.15s;
 }
-.card-buy-btn:hover { background: var(--accent); color: #fff; }
-.card-buy-btn:disabled { border-color: var(--border); background: transparent; color: var(--text3); cursor: not-allowed; }
-.card-bought-label {
-  margin: 0 1rem 1rem;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 0.85rem;
-  color: var(--green);
-  font-weight: 600;
+.card-open-btn:hover { background: var(--accent); color: #fff; }
+.card-opened-label {
+  margin: 0 1rem 1rem; display: flex; align-items: center; gap: 6px;
+  font-size: 0.85rem; color: var(--green); font-weight: 600;
 }
-.card-reveal {
-  padding: 0 1rem;
-  display: none;
-}
-.analysis-card.purchased .card-reveal { display: block; }
+.card-reveal { padding: 0 1rem; display: none; }
+.analysis-card.opened .card-reveal { display: block; }
 .reveal-section { margin-bottom: 0.75rem; }
 .reveal-label {
-  font-size: 0.7rem;
-  font-weight: 700;
-  letter-spacing: 0.8px;
-  text-transform: uppercase;
-  color: var(--text3);
-  margin-bottom: 0.3rem;
+  font-size: 0.7rem; font-weight: 700; letter-spacing: 0.8px;
+  text-transform: uppercase; color: var(--text3); margin-bottom: 0.3rem;
 }
 .reveal-signal {
-  background: rgba(16,185,129,0.08);
-  border-left: 3px solid var(--green);
-  padding: 0.6rem 0.75rem;
-  border-radius: 0 6px 6px 0;
-  font-size: 0.82rem;
-  color: var(--text);
+  background: rgba(16,185,129,0.08); border-left: 3px solid var(--green);
+  padding: 0.6rem 0.75rem; border-radius: 0 6px 6px 0;
+  font-size: 0.82rem; color: var(--text);
 }
 .reveal-limit {
-  background: rgba(245,158,11,0.08);
-  border-left: 3px solid var(--yellow);
-  padding: 0.6rem 0.75rem;
-  border-radius: 0 6px 6px 0;
-  font-size: 0.82rem;
-  color: var(--text2);
-  margin-bottom: 1rem;
+  background: rgba(245,158,11,0.08); border-left: 3px solid var(--yellow);
+  padding: 0.6rem 0.75rem; border-radius: 0 6px 6px 0;
+  font-size: 0.82rem; color: var(--text2); margin-bottom: 1rem;
 }
 .mini-table { width: 100%; border-collapse: collapse; font-size: 0.78rem; margin-bottom: 0.5rem; }
 .mini-table th { background: var(--surface2); color: var(--text2); font-weight: 600; padding: 4px 8px; text-align: left; }
 .mini-table td { padding: 4px 8px; border-top: 1px solid var(--border); }
-.mini-table tr:hover td { background: rgba(255,255,255,0.02); }
 .pos { color: var(--green); font-weight: 600; }
-.neg { color: var(--red); font-weight: 600; }
+.neg { color: var(--red);   font-weight: 600; }
 .neu { color: var(--text2); }
 .chart-wrap { padding: 0.5rem 0; }
 svg text { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
 
-/* ── SHOP ACTIONS ────────────────────────────────────────── */
-.shop-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 1rem;
-  padding: 1rem 0 2rem;
-  border-top: 1px solid var(--border);
+.room-actions {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 1rem 0 2rem; border-top: 1px solid var(--border); flex-wrap: wrap; gap: 1rem;
 }
-.purchased-count { color: var(--text2); font-size: 0.9rem; padding-top: 0.75rem; }
+.opened-summary { font-size: 0.9rem; color: var(--text2); }
+.opened-summary strong { color: var(--text); }
 
-/* ── DECISION ────────────────────────────────────────────── */
-.evidence-strip {
-  display: flex;
-  gap: 0.75rem;
-  flex-wrap: wrap;
-  margin-bottom: 2rem;
-}
+/* ── BESLUTSRUM ─────────────────────────────────────────── */
+.evidence-strip { display: flex; gap: 0.75rem; flex-wrap: wrap; margin-bottom: 1.5rem; }
 .evidence-chip {
-  background: var(--surface);
-  border: 1px solid var(--green);
-  border-radius: 99px;
-  padding: 4px 12px;
-  font-size: 0.8rem;
-  color: var(--green);
+  background: var(--surface); border: 1px solid var(--green);
+  border-radius: 99px; padding: 4px 12px; font-size: 0.8rem; color: var(--green);
+}
+.evidence-empty {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 99px; padding: 4px 16px; font-size: 0.82rem; color: var(--text3);
+  font-style: italic;
 }
 .decision-options {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
-  gap: 1rem;
-  margin-bottom: 2rem;
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+  gap: 1rem; margin-bottom: 2rem;
 }
 .decision-option {
-  background: var(--surface);
-  border: 2px solid var(--border);
-  border-radius: var(--radius);
-  padding: 1.25rem;
-  cursor: pointer;
-  transition: all 0.15s;
+  background: var(--surface); border: 2px solid var(--border);
+  border-radius: var(--radius); padding: 1.25rem; cursor: pointer; transition: all 0.15s;
 }
-.decision-option:hover { border-color: var(--accent); }
-.decision-option.selected { border-color: var(--accent); background: rgba(59,130,246,0.1); }
-.do-icon { font-size: 1.5rem; margin-bottom: 0.5rem; }
+.decision-option:hover   { border-color: var(--accent); }
+.decision-option.selected{ border-color: var(--accent); background: rgba(59,130,246,0.1); }
+.do-icon  { font-size: 1.5rem; margin-bottom: 0.5rem; }
 .do-label { font-weight: 600; margin-bottom: 0.4rem; }
-.do-desc { font-size: 0.82rem; color: var(--text2); }
-.decision-actions { display: flex; justify-content: flex-end; gap: 1rem; }
+.do-desc  { font-size: 0.82rem; color: var(--text2); }
+.decision-actions { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
+.decision-cost-note { font-size: 0.85rem; color: var(--text3); }
 
-/* ── RESULTS ─────────────────────────────────────────────── */
-.results-header {
-  text-align: center;
-  padding: 2.5rem 1rem 1.5rem;
-  border-bottom: 1px solid var(--border);
-  margin-bottom: 2rem;
-}
-.results-header .verdict {
-  font-size: 1.1rem;
-  color: var(--text2);
-  margin-top: 0.5rem;
-}
+/* ── FACIT ──────────────────────────────────────────────── */
+.results-header { text-align: center; padding: 2.5rem 1rem 1.5rem; border-bottom: 1px solid var(--border); margin-bottom: 2rem; }
+.results-header .verdict { font-size: 1.1rem; color: var(--text2); margin-top: 0.5rem; }
 .result-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1.5rem;
-  margin-bottom: 2rem;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;
 }
 @media (max-width: 680px) { .result-grid { grid-template-columns: 1fr; } }
 .result-box {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 1.25rem;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 1.25rem;
 }
 .result-box h3 { margin-bottom: 0.75rem; color: var(--text2); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; }
-.decision-verdict {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  font-size: 1rem;
-  font-weight: 600;
+.decision-verdict { display: flex; align-items: flex-start; gap: 0.75rem; }
+.verdict-icon { font-size: 1.5rem; flex-shrink: 0; margin-top: 2px; }
+.efficiency-row {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1.5rem;
 }
-.verdict-icon { font-size: 1.5rem; }
-.cards-value-list { display: flex; flex-direction: column; gap: 0.5rem; }
-.cv-item {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.5rem;
-  font-size: 0.85rem;
+@media (max-width: 600px) { .efficiency-row { grid-template-columns: 1fr; } }
+.eff-box {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 1rem; text-align: center;
 }
-.cv-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  margin-top: 6px;
-  flex-shrink: 0;
-}
-.cv-dot.high { background: var(--green); }
+.eff-box .eff-num  { font-size: 1.8rem; font-weight: 700; margin-bottom: 0.2rem; }
+.eff-box .eff-label{ font-size: 0.78rem; color: var(--text2); }
+.eff-box .eff-sub  { font-size: 0.72rem; color: var(--text3); margin-top: 0.2rem; }
+.cards-value-list  { display: flex; flex-direction: column; gap: 0.5rem; }
+.cv-item { display: flex; align-items: flex-start; gap: 0.5rem; font-size: 0.85rem; }
+.cv-dot  { width: 8px; height: 8px; border-radius: 50%; margin-top: 6px; flex-shrink: 0; }
+.cv-dot.high   { background: var(--green); }
 .cv-dot.medium { background: var(--yellow); }
-.cv-dot.low { background: var(--text3); }
+.cv-dot.low    { background: var(--text3); }
 .facit-box {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-left: 3px solid var(--accent);
-  border-radius: var(--radius);
-  padding: 1.5rem;
-  margin-bottom: 1.5rem;
+  background: var(--surface); border: 1px solid var(--border);
+  border-left: 3px solid var(--accent); border-radius: var(--radius);
+  padding: 1.5rem; margin-bottom: 1.5rem;
 }
 .facit-box h2 { margin-bottom: 1rem; }
 .facit-section { margin-bottom: 1.25rem; }
 .facit-section h3 { color: var(--text2); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.5rem; }
+.insight-items { display: flex; flex-direction: column; gap: 0.6rem; }
+.insight-item { display: flex; gap: 0.75rem; align-items: flex-start; font-size: 0.88rem; color: var(--text2); }
+.insight-item .ii-icon { font-size: 1rem; flex-shrink: 0; margin-top: 1px; }
+.segment-key { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-top: 0.75rem; }
+.sk-item { background: var(--surface2); border-radius: 6px; padding: 0.5rem 0.75rem; font-size: 0.82rem; }
+.sk-item strong { display: block; color: var(--accent); }
+.min-path-box {
+  background: rgba(16,185,129,0.06); border: 1px solid rgba(16,185,129,0.25);
+  border-radius: var(--radius); padding: 1rem 1.25rem; margin-bottom: 1.5rem;
+}
+.min-path-box h3 { color: var(--green); font-size: 0.9rem; margin-bottom: 0.6rem; }
+.min-path-chips { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.5rem; }
+.min-path-chip {
+  background: rgba(16,185,129,0.12); border: 1px solid rgba(16,185,129,0.3);
+  border-radius: 99px; padding: 3px 12px; font-size: 0.8rem; color: var(--green);
+}
 .lesson-box {
-  background: rgba(59,130,246,0.08);
-  border: 1px solid rgba(59,130,246,0.3);
-  border-radius: var(--radius);
-  padding: 1.5rem;
-  margin-bottom: 2rem;
-  text-align: center;
+  background: rgba(59,130,246,0.08); border: 1px solid rgba(59,130,246,0.3);
+  border-radius: var(--radius); padding: 1.5rem; margin-bottom: 2rem; text-align: center;
 }
-.lesson-box .lesson-quote {
-  font-size: 1.15rem;
-  font-weight: 600;
-  color: var(--text);
-  font-style: italic;
-  margin-bottom: 0.5rem;
-}
+.lesson-box .lesson-quote { font-size: 1.15rem; font-weight: 600; color: var(--text); font-style: italic; margin-bottom: 0.5rem; }
 .lesson-box p { color: var(--text2); font-size: 0.9rem; margin: 0; }
 .restart-row { display: flex; justify-content: center; padding: 1rem 0 3rem; }
-.insight-items { display: flex; flex-direction: column; gap: 0.6rem; }
-.insight-item {
-  display: flex;
-  gap: 0.75rem;
-  align-items: flex-start;
-  font-size: 0.88rem;
-  color: var(--text2);
-}
-.insight-item .ii-icon { font-size: 1rem; flex-shrink: 0; margin-top: 1px; }
-.segment-key {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0.5rem;
-  margin-top: 0.75rem;
-}
-.sk-item {
-  background: var(--surface2);
-  border-radius: 6px;
-  padding: 0.5rem 0.75rem;
-  font-size: 0.82rem;
-}
-.sk-item strong { display: block; color: var(--accent); }
 </style>
 </head>
 <body>
 
-<div id="budget-bar">
-  <div class="budget-inner">
-    <span class="budget-label">Analyskrediter kvar:</span>
-    <div class="budget-track"><div class="budget-fill" id="budget-fill"></div></div>
-    <span id="budget-credits"></span>
+<!-- COST TRACKER (sticky) -->
+<div id="cost-bar">
+  <div class="cost-inner">
+    <div class="cost-pill">
+      <span class="cp-label">Analyskostnad:</span>
+      <span class="cp-val" id="cost-amount">0 krediter</span>
+    </div>
+    <div class="cost-pill">
+      <span class="cp-label">Öppnade analyser:</span>
+      <span class="cp-val" id="analyses-count">0</span>
+    </div>
+    <span class="cost-hint">Öppna fler analyser eller gå till beslutsrummet när du vet tillräckligt</span>
   </div>
 </div>
 
-<!-- ══ SCREEN: INTRO ══════════════════════════════════════════ -->
+<!-- ══ INTRO ══════════════════════════════════════════════════ -->
 <div id="screen-intro" class="screen active">
 <div class="container">
   <div class="intro-hero">
     <div class="kicker">Workshopspel · Datadrivet beslutsfattande</div>
     <h1>Analysjakten</h1>
-    <p class="sub">Du har begränsade resurser. Välj klokt – och fatta rätt beslut.</p>
+    <p class="sub">Öppna de analyser du behöver. Gå till beslutsrummet när du vet tillräckligt.</p>
   </div>
 
   <div class="scenario-box">
@@ -484,23 +330,23 @@ svg text { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-seri
   <div class="intro-cards">
     <div class="intro-card">
       <div class="ic-icon">🔍</div>
-      <h3>Välj dina analyser</h3>
-      <p>Du har <strong>12 analyskrediter</strong>. Varje analys kostar 2–5 krediter. Du kan inte köpa allt.</p>
+      <h3>Öppna analyser</h3>
+      <p>Du kan öppna hur många analyser du vill. Varje analys kostar analyskrediter. Det finns ingen hård gräns.</p>
     </div>
     <div class="intro-card">
-      <div class="ic-icon">📊</div>
-      <h3>Tolka signalerna</h3>
-      <p>Varje analys ger en signal och en begränsning. Ingen enskild analys ger hela svaret.</p>
+      <div class="ic-icon">⚖️</div>
+      <h3>Avgör när du vet tillräckligt</h3>
+      <p>Mer analys ger mer underlag – men kostar mer. Din uppgift är att avgöra när du har <em>tillräckligt</em> för att fatta beslut.</p>
     </div>
     <div class="intro-card">
       <div class="ic-icon">🎯</div>
-      <h3>Fatta beslut</h3>
-      <p>Välj ett av fem möjliga beslut och motivera det med datan du köpt.</p>
+      <h3>Gå till beslutsrummet</h3>
+      <p>När du är redo – välj ett av fem beslut och bekräfta din rekommendation.</p>
     </div>
     <div class="intro-card">
       <div class="ic-icon">📖</div>
       <h3>Se facit</h3>
-      <p>Lär dig vad som faktiskt hände och hur din analysportfölj höll ihop.</p>
+      <p>Fick du rätt beslut? Och var din analyskostnad tillräcklig – eller för hög?</p>
     </div>
   </div>
 
@@ -511,15 +357,15 @@ svg text { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-seri
 </div>
 </div>
 
-<!-- ══ SCREEN: SHOP ═══════════════════════════════════════════ -->
+<!-- ══ ANALYSRUM ═══════════════════════════════════════════════ -->
 <div id="screen-shop" class="screen">
 <div class="container">
-  <div class="shop-header">
+  <div class="room-header">
     <div>
-      <h2>Välj dina analyser</h2>
-      <p>Klicka på ett kort för att köpa analysen och se resultatet. Du kan inte köpa allt – prioritera.</p>
+      <h2>Analysrum</h2>
+      <p>Öppna de analyser du vill ha. Gå till beslutsrummet när du vet tillräckligt.</p>
     </div>
-    <div id="purchased-count-label" class="purchased-count"></div>
+    <div id="opened-count-label" class="opened-summary"></div>
   </div>
 
   <div class="decision-preview">
@@ -529,37 +375,46 @@ svg text { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-seri
 
   <div id="cards-grid" class="cards-grid"></div>
 
-  <div class="shop-actions">
+  <div class="room-actions">
     <button class="btn btn-secondary" onclick="goToIntro()">← Tillbaka</button>
-    <button class="btn btn-primary" id="proceed-to-decision" onclick="goToDecision()" disabled>Fatta beslut →</button>
+    <div style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap">
+      <span id="room-summary" style="font-size:0.85rem;color:var(--text3)"></span>
+      <button class="btn btn-primary" id="proceed-to-decision" onclick="goToDecision()">Gå till beslutsrummet →</button>
+    </div>
   </div>
 </div>
 </div>
 
-<!-- ══ SCREEN: DECISION ═══════════════════════════════════════ -->
+<!-- ══ BESLUTSRUM ══════════════════════════════════════════════ -->
 <div id="screen-decision" class="screen">
 <div class="container">
-  <h2 style="margin-bottom:0.5rem">Fatta ditt beslut</h2>
-  <p style="margin-bottom:1.25rem">Baserat på dina analyser – vad rekommenderar du?</p>
+  <h2 style="margin-bottom:0.25rem">Beslutsrum</h2>
+  <p style="margin-bottom:1.25rem">Baserat på dina analyser – vad rekommenderar du att Nordia gör?</p>
 
   <div id="evidence-strip" class="evidence-strip"></div>
 
   <div id="decision-options" class="decision-options"></div>
 
   <div class="decision-actions">
-    <button class="btn btn-secondary" onclick="goToShop()">← Ändra analyser</button>
-    <button class="btn btn-primary" id="confirm-decision" onclick="submitDecision()" disabled>Bekräfta beslut →</button>
+    <button class="btn btn-secondary" onclick="goToShop()">← Tillbaka till analysrum</button>
+    <div style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap">
+      <span class="decision-cost-note" id="decision-cost-note"></span>
+      <button class="btn btn-primary" id="confirm-decision" onclick="submitDecision()" disabled>Bekräfta beslut →</button>
+    </div>
   </div>
 </div>
 </div>
 
-<!-- ══ SCREEN: RESULTS ════════════════════════════════════════ -->
+<!-- ══ FACIT ═══════════════════════════════════════════════════ -->
 <div id="screen-results" class="screen">
 <div class="container">
   <div class="results-header">
     <h1>Facit</h1>
     <p class="verdict" id="results-verdict"></p>
   </div>
+
+  <!-- Efficiency row -->
+  <div class="efficiency-row" id="efficiency-row"></div>
 
   <div class="result-grid">
     <div class="result-box">
@@ -571,18 +426,28 @@ svg text { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-seri
       <div id="best-decision-display"></div>
     </div>
     <div class="result-box">
-      <h3>Dina analyser – värde i efterhand</h3>
+      <h3>Dina analyser – beslutsvärde</h3>
       <div id="cards-value-display" class="cards-value-list"></div>
     </div>
     <div class="result-box">
-      <h3>Viktigaste analyser du inte köpte</h3>
+      <h3>Viktiga analyser du inte öppnade</h3>
       <div id="missed-cards-display" class="cards-value-list"></div>
     </div>
   </div>
 
+  <!-- Minimum sufficient path -->
+  <div class="min-path-box">
+    <h3>Minsta tillräckliga analysunderlag</h3>
+    <div class="min-path-chips">
+      <span class="min-path-chip">Kundgruppssegmentering · 3 kr</span>
+      <span class="min-path-chip">Efterperiodssignal – återköp · 3 kr</span>
+      <span class="min-path-chip">Segmenterad affärssignal · 4 kr</span>
+    </div>
+    <p style="font-size:0.82rem;margin:0">Dessa tre analyser (totalt 10 krediter) ger tillräckliga signaler för att motivera rätt beslut. Allt utöver det är ytterligare underlag – värdefullt, men inte avgörande.</p>
+  </div>
+
   <div class="facit-box">
     <h2>Vad hände egentligen?</h2>
-
     <div class="facit-section">
       <h3>Vad segmenten visade sig vara</h3>
       <div class="segment-key">
@@ -592,12 +457,10 @@ svg text { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-seri
         <div class="sk-item"><strong>Segment D</strong>Kampanjaktiverade – lockades av rabatten, låg återköpsfrekvens</div>
       </div>
     </div>
-
     <div class="facit-section">
       <h3>Kampanjens verkliga effekt</h3>
       <p>Omsättningen ökade med +18% jämfört med samma period föregående år, men en analys av underliggande faktorer tyder på att den verkliga inkrementella effekten var lägre. En del av uppgången beror sannolikt på att en stor konkurrent hade lagerproblem under perioden. En del tyder på framflyttad försäljning – kunder som ändå hade köpt, men valde att köpa under kampanjen.</p>
     </div>
-
     <div class="facit-section">
       <h3>Det som doldes av aggregatdata</h3>
       <div class="insight-items">
@@ -607,7 +470,6 @@ svg text { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-seri
         <div class="insight-item"><span class="ii-icon">🎯</span><span>Segment D (kampanjaktiverade) hade låg efteraktivitet. Segment C (vilande) visade svag men existerande återköpssignal – det enda segment där kampanjen sannolikt skapade nettovärde.</span></div>
       </div>
     </div>
-
     <div class="facit-section">
       <h3>Rätt beslut</h3>
       <p><strong>Kör kampanjen mot vilande kunder (Segment C)</strong> med en mer måttlig rabatt (10–15%). Dessa kunder svarar på prisstimulans och visar tecken på existerande köpintention. Exkludera Segment A som inte behöver rabatten, och Segment D som enbart lockas av hög rabatt utan att bli lojala. Designa med kontrollgrupp för att kunna mäta effekten nästa gång.</p>
@@ -615,8 +477,8 @@ svg text { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-seri
   </div>
 
   <div class="lesson-box">
-    <div class="lesson-quote">"Bra analys är inte mest analys. Bra analys är den minsta analys som räcker för att ändra, bekräfta eller förbättra ett viktigt beslut."</div>
-    <p>Det räckte med 3–4 rätt valda analyser för att se signalen. Nyckeln var att titta på <em>segment</em>, inte aggregat – och att inte förväxla positiv kundupplevelse med lönsam tillväxt.</p>
+    <div class="lesson-quote">"Bra analys är inte mest analys. Bra analys är tillräcklig analys."</div>
+    <p>Det viktiga är inte hur mycket du analyserade – utan om du minskade rätt osäkerhet vid rätt tidpunkt. Tre välvalda analyser räcker. Tio sämre valda gör inte beslutet bättre.</p>
   </div>
 
   <div class="restart-row">
@@ -630,7 +492,8 @@ svg text { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-seri
 // GAME DATA
 // ══════════════════════════════════════════════════════════════
 
-const BUDGET = 12;
+// Minimum cost for "best" decision path (segment 3 + retention 3 + clv 4)
+const MIN_SUFFICIENT = 10;
 
 const CARDS = [
   {
@@ -679,8 +542,8 @@ const CARDS = [
           `).join('')}
         </svg>
       </div>`,
-    signal: 'Tillväxten tyder på att den drevs framför allt av Segment C (+58%) och Segment D (+89%). Segment A och B visade begränsad förändring (+8–12%).',
-    limitation: 'Visar vilka segment som köpte mer under kampanjen jämfört med föregående år, men inte om dessa kunder är lönsamma, om de kommer tillbaka, eller om kampanjen faktiskt orsakade ökningen.'
+    signal: 'Tillväxten tyder på att den drevs framför allt av Segment C (+58%) och Segment D (+89%). Segment A och B visade begränsad förändring (+8–12%) jämfört med samma period föregående år.',
+    limitation: 'Visar vilka segment som köpte mer under kampanjen, men inte om dessa kunder är lönsamma, om de kommer tillbaka, eller om kampanjen faktiskt orsakade ökningen.'
   },
   {
     id: 'margin',
@@ -698,7 +561,7 @@ const CARDS = [
         <tr><td>Täckningsbidrag</td><td>3,3 Mkr</td><td>3,2 Mkr</td></tr>
         <tr><td>Antal köp</td><td>+31% vs föreg. år</td><td>–</td></tr>
       </table>`,
-    signal: 'Bruttomarginalen sjönk med 5 procentenheter jämfört med samma period föregående år. Täckningsbidraget ökade med knappt 100 Tkr trots +18% omsättning. Det tyder på att volymtillväxten till stor del åts upp av rabatten.',
+    signal: 'Bruttomarginalen sjönk med 5 procentenheter jämfört med samma period föregående år. Täckningsbidraget ökade med knappt 100 Tkr trots +18% omsättning – volymtillväxten åts till stor del upp av rabatten.',
     limitation: 'Visar bruttomarginal på totalnivå, men inte kampanjens totalkostnad inklusive marknadsföring, och ger ingen information om lönsamheten per kundsegment.'
   },
   {
@@ -716,23 +579,23 @@ const CARDS = [
           ${(()=>{
             const pts=[[0,1.0],[1,1.02],[2,1.05],[3,1.25],[4,1.40],[5,1.45],[6,1.42],[7,0.85],[8,0.90],[9,0.96],[10,1.01]];
             const labels=['V-2','V-1','V0','K1','K2','K3','K4','E1','E2','E3','E4'];
-            const xscale=25;const yscale=80;const xoff=15;const yoff=115;
-            const path=pts.map(([x,y],i)=>`${i===0?'M':'L'}${x*xscale+xoff},${yoff-y*yscale}`).join(' ');
-            const area=`M${pts[0][0]*xscale+xoff},${yoff} `+pts.map(([x,y])=>`L${x*xscale+xoff},${yoff-y*yscale}`).join(' ')+` L${pts[pts.length-1][0]*xscale+xoff},${yoff} Z`;
+            const xs=25,ys=80,xo=15,yo=115;
+            const path=pts.map(([x,y],i)=>`${i===0?'M':'L'}${x*xs+xo},${yo-y*ys}`).join(' ');
+            const area=`M${pts[0][0]*xs+xo},${yo} `+pts.map(([x,y])=>`L${x*xs+xo},${yo-y*ys}`).join(' ')+` L${pts[pts.length-1][0]*xs+xo},${yo} Z`;
             return `
               <defs><linearGradient id="lg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#3b82f6" stop-opacity="0.3"/><stop offset="100%" stop-color="#3b82f6" stop-opacity="0"/></linearGradient></defs>
               <path d="${area}" fill="url(#lg)"/>
               <path d="${path}" fill="none" stroke="#3b82f6" stroke-width="2"/>
-              <line x1="${3*xscale+xoff}" y1="${yoff-0.5*yscale}" x2="${3*xscale+xoff}" y2="${yoff}" stroke="#f59e0b" stroke-width="1" stroke-dasharray="3,3"/>
-              <line x1="${7*xscale+xoff}" y1="${yoff-0.5*yscale}" x2="${7*xscale+xoff}" y2="${yoff}" stroke="#f59e0b" stroke-width="1" stroke-dasharray="3,3"/>
-              <text x="${4.5*xscale+xoff}" y="${yoff-0.5*yscale-3}" text-anchor="middle" font-size="8" fill="#f59e0b">Kampanj</text>
-              ${labels.map((l,i)=>i%2===0?`<text x="${i*xscale+xoff}" y="${yoff+10}" text-anchor="middle" font-size="8" fill="#64748b">${l}</text>`:``).join('')}
+              <line x1="${3*xs+xo}" y1="${yo-0.5*ys}" x2="${3*xs+xo}" y2="${yo}" stroke="#f59e0b" stroke-width="1" stroke-dasharray="3,3"/>
+              <line x1="${7*xs+xo}" y1="${yo-0.5*ys}" x2="${7*xs+xo}" y2="${yo}" stroke="#f59e0b" stroke-width="1" stroke-dasharray="3,3"/>
+              <text x="${4.5*xs+xo}" y="${yo-0.5*ys-3}" text-anchor="middle" font-size="8" fill="#f59e0b">Kampanj</text>
+              ${labels.map((l,i)=>i%2===0?`<text x="${i*xs+xo}" y="${yo+10}" text-anchor="middle" font-size="8" fill="#64748b">${l}</text>`:``).join('')}
             `;
           })()}
         </svg>
       </div>`,
     signal: 'Tydlig ökning under kampanjperioden. Veckan direkt efter kampanjslutet visade omsättningen en dipp under normalnivå – en möjlig indikation på framflyttad försäljning snarare än nyskapad efterfrågan.',
-    limitation: 'Kan inte skilja säsongseffekter, väderpåverkan eller konkurrenthändelser från faktisk framflyttning. Utan kontrollgrupp är kausalanalys inte möjlig.'
+    limitation: 'Kan inte skilja säsongseffekter eller konkurrenthändelser från faktisk framflyttning. Utan kontrollgrupp är kausalanalys inte möjlig.'
   },
   {
     id: 'counterfactual',
@@ -769,9 +632,9 @@ const CARDS = [
         <tr><td>Segment B</td><td>Ja</td><td class="pos">61% aktiva</td></tr>
         <tr><td>Segment C</td><td>Ja</td><td class="neu">31% aktiva</td></tr>
         <tr><td>Segment D</td><td>Ja</td><td class="neg">11% aktiva</td></tr>
-        <tr><td>Segment A (ej kampanj)</td><td>Nej</td><td class="pos">69% aktiva</td></tr>
+        <tr><td>Segment A (öppnade ej kampanj)</td><td>Nej</td><td class="pos">69% aktiva</td></tr>
       </table>`,
-    signal: 'Segment A och B visar starkare efteraktivitet, medan Segment D visar svaga tecken på återköp. Segment C befinner sig i mitten. Noterbart: Segment A:s aktivitetsnivå skiljer sig knappt mot de som inte köpte under kampanjen.',
+    signal: 'Segment A och B visar starkare efteraktivitet, medan Segment D visar svaga tecken på återköp. Noterbart: Segment A:s aktivitetsnivå skiljer sig knappt mot de som inte öppnade kampanjen.',
     limitation: 'Efterperioden är 90 dagar – ett kort fönster. Signalen ska ses som en indikation, inte ett definitivt bevis på kundvärde. Aktivitet ≠ lönsamhet.'
   },
   {
@@ -793,8 +656,8 @@ const CARDS = [
           `).join('')}
         </svg>
       </div>
-      <div style="font-size:0.78rem;color:var(--text2);padding:0.25rem 0 0.5rem">NPS under kampanjperioden: <strong style="color:var(--green)">+48</strong> &nbsp;|&nbsp; Rekommendation: 82% "Ja"</div>`,
-    signal: 'Kampanjen mottogs mycket positivt av kunderna. Nöjdheten var hög under perioden, NPS ökade och majoriteten rekommenderade Nordia vidare. Stark upplevd kampanjeffekt.',
+      <div style="font-size:0.78rem;color:var(--text2);padding:0.25rem 0 0.5rem">NPS under kampanjperioden: <strong style="color:var(--green)">+48</strong> &nbsp;|&nbsp; Rekommenderar Nordia: 82%</div>`,
+    signal: 'Kampanjen mottogs mycket positivt. Nöjdheten var hög, NPS ökade och majoriteten rekommenderade Nordia vidare. Stark upplevd kampanjeffekt bland kunderna.',
     limitation: 'Att kunder uppskattar en rabatt bevisar inte att kampanjen skapade lönsam eller långsiktig tillväxt. Hög nöjdhet kan spegla att erbjudandet var attraktivt – inte att det var affärsmässigt hållbart.'
   },
   {
@@ -813,7 +676,7 @@ const CARDS = [
         <tr><td>Indikation: andel av tillväxt ej kampanjrelaterad</td><td class="neu">~5 av 18pp</td></tr>
         <tr><td>Konkurrenten normaliserad i aug</td><td class="neu">Tyder på tillfällig effekt</td></tr>
       </table>`,
-    signal: 'Indikationer tyder på att en del av Nordias tillväxt kom från att en stor konkurrent hade lagerproblem. Uppskattningsvis kan ~5 av de 18 procentenheterna vara tillfälligt tillgängliga marknadsandelar snarare än en effekt av kampanjen.',
+    signal: 'Indikationer tyder på att en del av Nordias tillväxt kom från att en stor konkurrent hade lagerproblem. Uppskattningsvis ~5 av de 18 procentenheterna kan vara tillfälligt tillgängliga marknadsandelar.',
     limitation: 'Svårt att exakt kvantifiera konkurrenteffekten. Uppskattningarna baseras på marknadsdata med osäkerhet. Effekten är troligen tillfällig.'
   },
   {
@@ -826,14 +689,14 @@ const CARDS = [
     value: 'high',
     viz: `
       <table class="mini-table">
-        <tr><th>Segment</th><th>Rabattuttag/kund</th><th>Snittköp 30 dagar efter</th><th>Marginal­signal</th></tr>
+        <tr><th>Segment</th><th>Rabattuttag/kund</th><th>Snittköp 30 dagar efter</th><th>Marginalsignal</th></tr>
         <tr><td>Segment A</td><td>280kr</td><td class="pos">390kr</td><td class="neu">Stabil</td></tr>
         <tr><td>Segment B</td><td>200kr</td><td class="neu">240kr</td><td class="neu">Svagt sjunkande</td></tr>
         <tr><td>Segment C</td><td>170kr</td><td class="neg">95kr</td><td class="neg">Oklar</td></tr>
         <tr><td>Segment D</td><td>210kr</td><td class="neg">30kr</td><td class="neg">Låg aktivitet</td></tr>
       </table>`,
     signal: 'Segmenten verkar skilja sig i affärsmässig hållbarhet. Segment A visar hög efteraktivitet trots högt rabattuttag. Segment C har lägre efteraktivitet men också lägre rabattuttag per kund. Segment D visar låg aktivitet efter kampanjen.',
-    limitation: 'Data är från 30 dagar efter kampanjen – ett kort fönster som kan spegla säsongseffekter eller framflyttning snarare än verkligt kundbeteende. Analysen visar signaler om värde, men är inte ett definitivt facit för långsiktig lönsamhet.'
+    limitation: 'Data är från 30 dagar efter kampanjen – ett kort fönster. Analysen visar signaler om värde, men är inte ett definitivt facit för långsiktig lönsamhet.'
   },
   {
     id: 'elasticity',
@@ -855,7 +718,7 @@ const CARDS = [
         </svg>
       </div>`,
     signal: 'Historisk data tyder på att Segment A och B har relativt hög köpfrekvens även utan rabatter – rabattbehovet verkar lägre. Segment C och D visar tydligare historisk respons på prissänkningar.',
-    limitation: 'Historisk priselasticitet är ett estimat och bevisar inte hur kunderna faktiskt påverkades i just denna kampanj. Elasticiteter kan förändras över tid och skilja sig mellan kanaler.'
+    limitation: 'Historisk priselasticitet är ett estimat och bevisar inte hur kunderna faktiskt påverkades i just denna kampanj. Elasticiteter kan förändras över tid.'
   },
   {
     id: 'nps',
@@ -873,7 +736,7 @@ const CARDS = [
         <tr><td>Upplevd kvalitet</td><td>71%</td><td>69%</td></tr>
       </table>`,
     signal: 'Inga statistiskt signifikanta förändringar i NPS eller varumärkesuppfattning. Kampanjen tyder inte på att ha skadat eller stärkt varumärket mätbart på aggregatnivå.',
-    limitation: 'NPS-förändringen på -2 är inom felmarginal. Mätningen fångar inte segmentskillnader. Stabilt NPS på totalnivå utesluter inte att kundmixens sammansättning förändrats.'
+    limitation: 'NPS-förändringen på -2 är inom felmarginal. Stabilt NPS på totalnivå utesluter inte att kundmixens sammansättning förändrats.'
   },
   {
     id: 'roi',
@@ -910,7 +773,7 @@ const DECISIONS = [
     label: 'Kör mot utvalda kunder',
     desc: 'Rikta kampanjen mot Segment C – tidigare aktiva kunder som inte handlat nyligen',
     quality: 'best',
-    explanation: 'Det bästa beslutet givet tillgängliga signaler. Segment C (vilande kunder) svarar på prisstimulans och visar existerande köpintention. Att exkludera Segment A minskar onödig rabattkostnad. Designa med kontrollgrupp för att mäta effekten.'
+    explanation: 'Det bästa beslutet givet tillgängliga signaler. Segment C svarar på prisstimulans och visar existerande köpintention. Att exkludera Segment A minskar onödig rabattkostnad markant. Designa med kontrollgrupp nästa gång.'
   },
   {
     id: 'mechanic',
@@ -918,7 +781,7 @@ const DECISIONS = [
     label: 'Ändra kampanjmekaniken',
     desc: 'Byt ut rabatten mot ett lojalitetsprogram eller bonusstruktur',
     quality: 'good',
-    explanation: 'Välmotiverat om data visar att rabatter lockar fel kunder. Lojalitetsprogram kan driva retention bättre än engångsrabatter. Kräver mer implementation men är strategiskt rimligt – särskilt om priskänslighetsdata finns som stöd.'
+    explanation: 'Välmotiverat om data visar att rabatter lockar fel kunder. Lojalitetsprogram kan driva retention bättre än engångsrabatter. Kräver mer implementation men är strategiskt rimligt.'
   },
   {
     id: 'stop',
@@ -934,23 +797,20 @@ const DECISIONS = [
     label: 'Designa ett kontrollerat test',
     desc: 'Kör A/B-test mot ett urval av kunder innan bredare beslut',
     quality: 'good',
-    explanation: 'Klokt om man saknar segmentdata eller vill ha kausalt stöd. Kontrollerat test eliminerar osäkerheten om kampanjens verkliga effekt. Något konservativt om man redan har tydliga segmentsignaler – men rätt metodmässigt.'
+    explanation: 'Klokt om man vill ha kausalt stöd. Kontrollerat test eliminerar osäkerheten om kampanjens verkliga effekt. Något konservativt om man redan har tydliga segmentsignaler – men rätt metodmässigt.'
   }
 ];
 
 // ══════════════════════════════════════════════════════════════
-// GAME STATE
+// STATE
 // ══════════════════════════════════════════════════════════════
 
 const state = {
-  budget: BUDGET,
   spent: 0,
-  purchased: new Set(),
+  opened: new Set(),
   decision: null,
   teamName: ''
 };
-
-function remaining() { return state.budget - state.spent; }
 
 // ══════════════════════════════════════════════════════════════
 // NAVIGATION
@@ -964,23 +824,23 @@ function showScreen(id) {
 
 function startGame() {
   state.teamName = document.getElementById('team-name-input').value.trim();
-  state.purchased.clear();
+  state.opened.clear();
   state.spent = 0;
   state.decision = null;
   renderShop();
   showScreen('shop');
-  document.getElementById('budget-bar').classList.add('visible');
-  updateBudgetBar();
+  document.getElementById('cost-bar').classList.add('visible');
+  updateCostTracker();
 }
 
 function goToIntro() {
-  document.getElementById('budget-bar').classList.remove('visible');
+  document.getElementById('cost-bar').classList.remove('visible');
   showScreen('intro');
 }
 
 function goToShop() {
   showScreen('shop');
-  document.getElementById('budget-bar').classList.add('visible');
+  document.getElementById('cost-bar').classList.add('visible');
 }
 
 function goToDecision() {
@@ -992,11 +852,11 @@ function submitDecision() {
   if (!state.decision) return;
   renderResults();
   showScreen('results');
-  document.getElementById('budget-bar').classList.remove('visible');
+  document.getElementById('cost-bar').classList.remove('visible');
 }
 
 function restartGame() {
-  state.purchased.clear();
+  state.opened.clear();
   state.spent = 0;
   state.decision = null;
   document.getElementById('team-name-input').value = state.teamName;
@@ -1004,40 +864,34 @@ function restartGame() {
 }
 
 // ══════════════════════════════════════════════════════════════
-// BUDGET BAR
+// COST TRACKER
 // ══════════════════════════════════════════════════════════════
 
-function updateBudgetBar() {
-  const rem = remaining();
-  const pct = (rem / BUDGET) * 100;
-  const fill = document.getElementById('budget-fill');
-  fill.style.width = pct + '%';
-  fill.className = 'budget-fill' + (pct < 20 ? ' danger' : pct < 40 ? ' warn' : '');
-  document.getElementById('budget-credits').textContent = rem + ' / ' + BUDGET + ' krediter';
+function updateCostTracker() {
+  document.getElementById('cost-amount').textContent = state.spent + ' krediter';
+  document.getElementById('analyses-count').textContent = state.opened.size;
 }
 
 // ══════════════════════════════════════════════════════════════
-// SHOP RENDER
+// ANALYSRUM
 // ══════════════════════════════════════════════════════════════
 
 function renderShop() {
-  const grid = document.getElementById('cards-grid');
-  grid.innerHTML = CARDS.map(card => renderCard(card)).join('');
-  updatePurchasedCount();
+  document.getElementById('cards-grid').innerHTML = CARDS.map(renderCard).join('');
+  updateRoomSummary();
 }
 
 function renderCard(card) {
-  const bought = state.purchased.has(card.id);
-  const canAfford = remaining() >= card.cost;
+  const isOpen = state.opened.has(card.id);
   return `
-    <div class="analysis-card ${bought ? 'purchased' : ''}" id="card-${card.id}">
+    <div class="analysis-card ${isOpen ? 'opened' : ''}" id="card-${card.id}">
       <div class="card-header">
         <div class="card-title">${card.name}</div>
-        <div class="card-cost"><span class="coin">●</span> ${card.cost}</div>
+        <div class="card-cost"><span>●</span> ${card.cost} kr</div>
       </div>
       <div class="card-category"><span class="badge ${card.categoryColor}">${card.category}</span></div>
       <div class="card-question">${card.question}</div>
-      ${bought ? `
+      ${isOpen ? `
         <div class="card-reveal">
           <div class="reveal-section">
             <div class="reveal-label">Resultat</div>
@@ -1052,57 +906,58 @@ function renderCard(card) {
             <div class="reveal-limit">${card.limitation}</div>
           </div>
         </div>
-        <div class="card-bought-label">✓ Köpt</div>
+        <div class="card-opened-label">✓ Öppnad</div>
       ` : `
-        <button class="card-buy-btn" onclick="buyCard('${card.id}')" ${canAfford ? '' : 'disabled'}>
-          ${canAfford ? `Köp för ${card.cost} krediter` : 'Inte råd'}
+        <button class="card-open-btn" onclick="openCard('${card.id}')">
+          Öppna analys · ${card.cost} krediter
         </button>
       `}
     </div>`;
 }
 
-function buyCard(id) {
+function openCard(id) {
   const card = CARDS.find(c => c.id === id);
-  if (!card || state.purchased.has(id)) return;
-  if (remaining() < card.cost) return;
-  state.purchased.add(id);
+  if (!card || state.opened.has(id)) return;
+  state.opened.add(id);
   state.spent += card.cost;
-  updateBudgetBar();
+  updateCostTracker();
   CARDS.forEach(c => {
     const el = document.getElementById('card-' + c.id);
     if (el) el.outerHTML = renderCard(c);
   });
-  updatePurchasedCount();
-  updateProceedButton();
+  updateRoomSummary();
 }
 
-function updatePurchasedCount() {
-  const n = state.purchased.size;
-  document.getElementById('purchased-count-label').textContent = n > 0 ? `${n} analys${n !== 1 ? 'er' : ''} köpt` : '';
-  updateProceedButton();
-}
-
-function updateProceedButton() {
-  document.getElementById('proceed-to-decision').disabled = state.purchased.size === 0;
+function updateRoomSummary() {
+  const n = state.opened.size;
+  const label = document.getElementById('opened-count-label');
+  label.innerHTML = n > 0
+    ? `<strong>${n}</strong> analys${n !== 1 ? 'er' : ''} öppnad${n !== 1 ? 'e' : ''} · <strong>${state.spent} krediter</strong>`
+    : '';
+  const summary = document.getElementById('room-summary');
+  summary.textContent = n === 0 ? 'Du har inte öppnat några analyser än.' : '';
 }
 
 // ══════════════════════════════════════════════════════════════
-// DECISION RENDER
+// BESLUTSRUM
 // ══════════════════════════════════════════════════════════════
 
 function renderDecision() {
   const strip = document.getElementById('evidence-strip');
-  const purchasedNames = CARDS.filter(c => state.purchased.has(c.id)).map(c => c.name);
-  strip.innerHTML = purchasedNames.map(n => `<span class="evidence-chip">✓ ${n}</span>`).join('');
+  const names = CARDS.filter(c => state.opened.has(c.id)).map(c => c.name);
+  strip.innerHTML = names.length > 0
+    ? names.map(n => `<span class="evidence-chip">✓ ${n}</span>`).join('')
+    : `<span class="evidence-empty">Inga analyser öppnade – du går in utan underlag</span>`;
 
-  const opts = document.getElementById('decision-options');
-  opts.innerHTML = DECISIONS.map(d => `
+  document.getElementById('decision-options').innerHTML = DECISIONS.map(d => `
     <div class="decision-option ${state.decision === d.id ? 'selected' : ''}" onclick="selectDecision('${d.id}')">
       <div class="do-icon">${d.icon}</div>
       <div class="do-label">${d.label}</div>
       <div class="do-desc">${d.desc}</div>
     </div>`).join('');
 
+  document.getElementById('decision-cost-note').textContent =
+    `Analyskostnad: ${state.spent} krediter`;
   document.getElementById('confirm-decision').disabled = !state.decision;
 }
 
@@ -1112,58 +967,91 @@ function selectDecision(id) {
 }
 
 // ══════════════════════════════════════════════════════════════
-// RESULTS RENDER
+// FACIT
 // ══════════════════════════════════════════════════════════════
 
 function renderResults() {
-  const chosenDecision = DECISIONS.find(d => d.id === state.decision);
-  const bestDecision = DECISIONS.find(d => d.quality === 'best');
-
-  const isBest = chosenDecision.quality === 'best';
-  const isGood = chosenDecision.quality === 'good';
+  const chosen = DECISIONS.find(d => d.id === state.decision);
+  const best   = DECISIONS.find(d => d.quality === 'best');
+  const isBest = chosen.quality === 'best';
+  const isGood = chosen.quality === 'good';
   const teamPart = state.teamName ? ` · ${state.teamName}` : '';
+
   document.getElementById('results-verdict').textContent =
     isBest ? '🎯 Rätt beslut – det stämmer med facit!' + teamPart :
     isGood ? '✅ Bra beslut – välmotiverat, nära facit.' + teamPart :
-    '⚠️ Suboptimalt beslut – se vad du missade.' + teamPart;
+             '⚠️ Suboptimalt beslut – se vad du missade.' + teamPart;
 
+  // Efficiency calculation
+  const efficiencyLabel = state.spent === 0 ? 'Ingen analys'
+    : state.spent <= MIN_SUFFICIENT ? 'Utmärkt'
+    : state.spent <= 16 ? 'Bra'
+    : state.spent <= 24 ? 'Kan förbättras'
+    : 'Onödigt kostsam';
+  const effColor = state.spent === 0 ? 'var(--red)'
+    : state.spent <= MIN_SUFFICIENT ? 'var(--green)'
+    : state.spent <= 16 ? 'var(--green)'
+    : state.spent <= 24 ? 'var(--yellow)'
+    : 'var(--red)';
+  const highValueOpened = CARDS.filter(c => state.opened.has(c.id) && c.value === 'high').length;
+  const totalHighValue  = CARDS.filter(c => c.value === 'high').length;
+
+  document.getElementById('efficiency-row').innerHTML = `
+    <div class="eff-box">
+      <div class="eff-num" style="color:${effColor}">${state.spent}</div>
+      <div class="eff-label">Analyskrediter spenderade</div>
+      <div class="eff-sub">Minimum tillräckligt: ${MIN_SUFFICIENT} krediter</div>
+    </div>
+    <div class="eff-box">
+      <div class="eff-num" style="color:${effColor}">${efficiencyLabel}</div>
+      <div class="eff-label">Analyseffektivitet</div>
+      <div class="eff-sub">${state.opened.size} av ${CARDS.length} analyser öppnade</div>
+    </div>
+    <div class="eff-box">
+      <div class="eff-num" style="color:${highValueOpened >= 3 ? 'var(--green)' : highValueOpened >= 2 ? 'var(--yellow)' : 'var(--red)'}">${highValueOpened}/${totalHighValue}</div>
+      <div class="eff-label">Nyckelanalyser öppnade</div>
+      <div class="eff-sub">Analyser med hög beslutskraft</div>
+    </div>`;
+
+  // Decisions
   document.getElementById('my-decision-display').innerHTML = `
     <div class="decision-verdict">
-      <span class="verdict-icon">${chosenDecision.icon}</span>
+      <span class="verdict-icon">${chosen.icon}</span>
       <div>
-        <div style="font-weight:600">${chosenDecision.label}</div>
-        <div style="font-size:0.82rem;color:var(--text2);margin-top:0.25rem">${chosenDecision.explanation}</div>
+        <div style="font-weight:600">${chosen.label}</div>
+        <div style="font-size:0.82rem;color:var(--text2);margin-top:0.25rem">${chosen.explanation}</div>
       </div>
     </div>`;
 
   document.getElementById('best-decision-display').innerHTML = `
     <div class="decision-verdict">
-      <span class="verdict-icon">${bestDecision.icon}</span>
+      <span class="verdict-icon">${best.icon}</span>
       <div>
-        <div style="font-weight:600">${bestDecision.label}</div>
-        <div style="font-size:0.82rem;color:var(--text2);margin-top:0.25rem">${bestDecision.explanation}</div>
+        <div style="font-weight:600">${best.label}</div>
+        <div style="font-size:0.82rem;color:var(--text2);margin-top:0.25rem">${best.explanation}</div>
       </div>
     </div>`;
 
-  const cardValueMap = { high: 'Hög beslutskraft', medium: 'Medelbeslutskraft', low: 'Låg beslutskraft' };
-  const cardDotMap = { high: 'high', medium: 'medium', low: 'low' };
-  const purchasedList = CARDS.filter(c => state.purchased.has(c.id));
-  document.getElementById('cards-value-display').innerHTML = purchasedList.length > 0
-    ? purchasedList.map(c => `
+  // Cards value
+  const valueMap = { high: 'Hög beslutskraft', medium: 'Medelbeslutskraft', low: 'Låg beslutskraft' };
+  const dotMap   = { high: 'high', medium: 'medium', low: 'low' };
+  const opened = CARDS.filter(c => state.opened.has(c.id));
+  document.getElementById('cards-value-display').innerHTML = opened.length > 0
+    ? opened.map(c => `
         <div class="cv-item">
-          <div class="cv-dot ${cardDotMap[c.value]}"></div>
-          <div><strong>${c.name}</strong> – ${cardValueMap[c.value]}</div>
+          <div class="cv-dot ${dotMap[c.value]}"></div>
+          <div><strong>${c.name}</strong> (${c.cost} kr) – ${valueMap[c.value]}</div>
         </div>`).join('')
-    : '<p style="font-size:0.85rem">Inga analyser köptes.</p>';
+    : '<p style="font-size:0.85rem">Inga analyser öppnades.</p>';
 
-  const missed = CARDS.filter(c => !state.purchased.has(c.id) && c.value === 'high');
+  const missed = CARDS.filter(c => !state.opened.has(c.id) && c.value === 'high');
   document.getElementById('missed-cards-display').innerHTML = missed.length > 0
     ? missed.map(c => `
         <div class="cv-item">
           <div class="cv-dot high"></div>
           <div><strong>${c.name}</strong> (${c.cost} kr) – ${c.question}</div>
         </div>`).join('')
-    : '<p style="font-size:0.85rem;color:var(--green)">Du köpte alla nyckelanalyser!</p>';
+    : '<p style="font-size:0.85rem;color:var(--green)">Du öppnade alla nyckelanalyser!</p>';
 }
 
 // ══════════════════════════════════════════════════════════════
