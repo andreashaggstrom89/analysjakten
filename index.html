@@ -104,28 +104,6 @@ svg text{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;}
 .step-header{margin-bottom:1.5rem;}
 .step-header h2{margin-bottom:.25rem;}
 
-/* Step 1 – rate cards */
-.rating-cards{display:flex;flex-direction:column;gap:1rem;}
-.rating-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1rem 1.25rem;}
-.rating-card-title{font-weight:600;margin-bottom:.75rem;display:flex;align-items:center;gap:.5rem;}
-.rating-row{display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;margin-bottom:.5rem;}
-.rating-row-label{font-size:.78rem;color:var(--text3);width:60px;flex-shrink:0;}
-.pill-group{display:flex;gap:.35rem;flex-wrap:wrap;}
-.pill-btn{padding:3px 10px;border-radius:99px;border:1px solid var(--border);background:transparent;color:var(--text2);font-size:.75rem;cursor:pointer;transition:all .15s;white-space:nowrap;}
-.pill-btn:hover{border-color:var(--accent);color:var(--accent);}
-.pill-btn.active-broad{background:rgba(239,68,68,.15);border-color:var(--red);color:var(--red);}
-.pill-btn.active-targeted{background:rgba(16,185,129,.15);border-color:var(--green);color:var(--green);}
-.pill-btn.active-stop{background:rgba(239,68,68,.1);border-color:#f97316;color:#f97316;}
-.pill-btn.active-test{background:rgba(59,130,246,.15);border-color:var(--accent);color:var(--accent);}
-.pill-btn.active-neutral{background:rgba(100,116,139,.2);border-color:var(--text3);color:var(--text2);}
-.pill-btn.active-low{background:rgba(100,116,139,.2);border-color:var(--text3);color:var(--text2);}
-.pill-btn.active-medium{background:rgba(245,158,11,.15);border-color:var(--yellow);color:var(--yellow);}
-.pill-btn.active-high{background:rgba(16,185,129,.15);border-color:var(--green);color:var(--green);}
-.why-high-field{margin-top:.5rem;}
-.why-high-field textarea{width:100%;padding:.5rem .75rem;background:var(--surface2);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:.82rem;resize:vertical;min-height:60px;}
-.why-high-field textarea:focus{outline:none;border-color:var(--accent);}
-.why-high-field textarea::placeholder{color:var(--text3);}
-
 /* Step 2 – top 3 */
 .top3-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:.75rem;margin-bottom:1rem;}
 .top3-card{background:var(--surface);border:2px solid var(--border);border-radius:var(--radius);padding:1rem;cursor:pointer;transition:all .15s;display:flex;justify-content:space-between;align-items:center;gap:.75rem;}
@@ -139,44 +117,20 @@ svg text{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;}
 .top3-counter{font-size:.85rem;color:var(--text2);margin-bottom:1rem;}
 .top3-counter strong{color:var(--text);}
 
-/* Step 3 – counterargument */
-.counter-options{display:flex;flex-direction:column;gap:.6rem;margin-bottom:1rem;}
-.counter-option{background:var(--surface);border:2px solid var(--border);border-radius:var(--radius);padding:.9rem 1rem;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:.75rem;}
-.counter-option:hover{border-color:var(--yellow);}
-.counter-option.selected{border-color:var(--yellow);background:rgba(245,158,11,.08);}
-.counter-radio{width:18px;height:18px;border-radius:50%;border:2px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:center;}
-.counter-option.selected .counter-radio{border-color:var(--yellow);}
-.counter-radio-dot{width:8px;height:8px;border-radius:50%;background:var(--yellow);display:none;}
-.counter-option.selected .counter-radio-dot{display:block;}
-.counter-text-field{margin-top:.75rem;}
-.counter-text-field label{font-size:.8rem;color:var(--text2);margin-bottom:.35rem;display:block;}
-.counter-text-field textarea{width:100%;padding:.5rem .75rem;background:var(--surface);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:.85rem;resize:vertical;min-height:70px;}
-.counter-text-field textarea:focus{outline:none;border-color:var(--yellow);}
-.counter-text-field textarea::placeholder{color:var(--text3);}
-
-/* Step 4 – segments */
+/* Segment decisions */
 .segment-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1rem;}
 .segment-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.1rem;}
 .segment-card-header{display:flex;align-items:center;gap:.5rem;margin-bottom:.5rem;}
 .segment-badge{background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:3px 10px;font-size:.8rem;font-weight:700;color:var(--accent);}
 .segment-desc{font-size:.78rem;color:var(--text3);margin-bottom:.85rem;}
-.seg-decision-row{display:flex;gap:.5rem;margin-bottom:.75rem;}
+.seg-decision-row{display:flex;gap:.5rem;}
 .seg-btn{flex:1;padding:.4rem .5rem;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--text2);font-size:.78rem;cursor:pointer;transition:all .15s;text-align:center;}
 .seg-btn:hover{border-color:var(--accent);}
 .seg-btn.active-include{background:rgba(16,185,129,.15);border-color:var(--green);color:var(--green);font-weight:600;}
 .seg-btn.active-exclude{background:rgba(239,68,68,.12);border-color:var(--red);color:var(--red);font-weight:600;}
 .seg-btn.active-test{background:rgba(59,130,246,.12);border-color:var(--accent);color:var(--accent);font-weight:600;}
-.seg-support{margin-bottom:.6rem;}
-.seg-support-label{font-size:.72rem;color:var(--text3);margin-bottom:.3rem;}
-.seg-checkboxes{display:flex;flex-wrap:wrap;gap:.3rem;}
-.seg-checkbox{padding:2px 8px;border-radius:99px;border:1px solid var(--border);font-size:.72rem;cursor:pointer;color:var(--text2);background:transparent;transition:all .12s;}
-.seg-checkbox:hover{border-color:var(--accent);}
-.seg-checkbox.checked{background:rgba(59,130,246,.15);border-color:var(--accent);color:var(--accent);}
-.seg-justify textarea{width:100%;padding:.4rem .6rem;background:var(--surface2);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:.75rem;resize:vertical;min-height:52px;}
-.seg-justify textarea:focus{outline:none;border-color:var(--accent);}
-.seg-justify textarea::placeholder{color:var(--text3);}
 
-/* Step 5 – main decision */
+/* Main decision */
 .decision-options-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1rem;}
 .decision-opt{background:var(--surface);border:2px solid var(--border);border-radius:var(--radius);padding:1.25rem;cursor:pointer;transition:all .15s;}
 .decision-opt:hover{border-color:var(--accent);}
@@ -185,7 +139,7 @@ svg text{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;}
 .do-label{font-weight:600;margin-bottom:.3rem;}
 .do-desc{font-size:.82rem;color:var(--text2);}
 
-/* Step 6 – recommendation */
+/* Step 3 – conclusion */
 .rec-form{display:flex;flex-direction:column;gap:1.25rem;}
 .rec-field label{font-size:.82rem;color:var(--text2);margin-bottom:.4rem;display:block;}
 .rec-field label strong{color:var(--text);}
@@ -205,12 +159,6 @@ svg text{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;}
 /* FACIT */
 .results-header{text-align:center;padding:2.5rem 1rem 1.5rem;border-bottom:1px solid var(--border);margin-bottom:2rem;}
 .results-header .verdict{font-size:1.1rem;color:var(--text2);margin-top:.5rem;}
-.score-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem;margin-bottom:2rem;}
-.score-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1rem;text-align:center;}
-.score-num{font-size:1.8rem;font-weight:700;margin-bottom:.2rem;}
-.score-label{font-size:.75rem;color:var(--text2);}
-.score-bar-wrap{height:4px;background:var(--surface2);border-radius:99px;margin-top:.5rem;overflow:hidden;}
-.score-bar-fill{height:100%;border-radius:99px;transition:width .5s;}
 .result-2col{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:1.5rem;}
 @media(max-width:680px){.result-2col{grid-template-columns:1fr;}}
 .result-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem;}
@@ -278,7 +226,7 @@ svg text{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;}
   <div class="intro-cards">
     <div class="intro-card"><div class="ic-icon">🔍</div><h3>Öppna analyser</h3><p>Öppna hur många analyser du vill. Varje analys kostar analyskrediter – ingen hård gräns.</p></div>
     <div class="intro-card"><div class="ic-icon">⚖️</div><h3>Avgör när du vet tillräckligt</h3><p>Mer analys ger mer underlag men kostar mer. Din uppgift är att avgöra när du har <em>tillräckligt</em>.</p></div>
-    <div class="intro-card"><div class="ic-icon">🎯</div><h3>Bygg ditt beslut</h3><p>Beslutsrummet är ett 6-stegs resonemang: värdera analyser, pröva motargument, ta segmentbeslut.</p></div>
+    <div class="intro-card"><div class="ic-icon">🎯</div><h3>Bygg ditt beslut</h3><p>Beslutsrummet leder er igenom tre enkla steg: välj beslut, prioritera analyser och formulera slutsatsen.</p></div>
     <div class="intro-card"><div class="ic-icon">📖</div><h3>Se facit</h3><p>Fick du rätt beslut? Var ditt resonemang välbalanserat? Var din analyskostnad rimlig?</p></div>
   </div>
   <div class="team-row">
@@ -323,25 +271,23 @@ svg text{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;}
     <h1>Facit</h1>
     <p class="verdict" id="results-verdict"></p>
   </div>
-  <div class="score-row" id="score-row"></div>
   <div class="result-2col">
-    <div class="result-box"><h3>Ditt huvudbeslut</h3><div id="my-decision-display"></div></div>
+    <div class="result-box"><h3>Ert beslut</h3><div id="my-decision-display"></div></div>
     <div class="result-box"><h3>Rekommenderat beslut</h3><div id="best-decision-display"></div></div>
-    <div class="result-box"><h3>Dina segmentbeslut</h3><div id="segment-display"></div></div>
+  </div>
+  <div id="segment-section" class="result-2col" style="display:none">
+    <div class="result-box"><h3>Era segmentbeslut</h3><div id="segment-display"></div></div>
     <div class="result-box"><h3>Rekommenderade segmentbeslut</h3><div id="best-segment-display"></div></div>
   </div>
   <div class="result-2col">
-    <div class="result-box"><h3>Analyser du öppnade & viktade</h3><div id="analysis-rating-display"></div></div>
-    <div class="result-box">
-      <h3>Topp 3 beslutsunderlag</h3><div id="top3-display"></div>
-      <h3 style="margin-top:1rem">Identifierat motargument</h3><div id="counter-display"></div>
-    </div>
+    <div class="result-box"><h3>Era topp 3 analyser</h3><div id="top3-display"></div></div>
+    <div class="result-box"><h3>Analyskostnad</h3><div id="cost-display"></div></div>
   </div>
   <div class="result-box" style="margin-bottom:1.5rem">
-    <h3>Din rekommendation</h3>
+    <h3>Er motivering &amp; osäkerhet</h3>
     <div id="rec-display"></div>
   </div>
-  <h3 style="margin-bottom:.75rem;color:var(--text2);font-size:.85rem;text-transform:uppercase;letter-spacing:.5px">Feedback på ditt resonemang</h3>
+  <h3 style="margin-bottom:.75rem;color:var(--text2);font-size:.85rem;text-transform:uppercase;letter-spacing:.5px">Feedback på ert resonemang</h3>
   <div id="feedback-items" class="feedback-items"></div>
   <div class="facit-box">
     <h2>Vad hände egentligen?</h2>
@@ -385,7 +331,7 @@ svg text{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;}
 // CONSTANTS
 // ═══════════════════════════════════════════════
 
-const STEP_LABELS = ['Värdera', 'Prioritera', 'Motargument', 'Segment', 'Beslut', 'Rekommendera'];
+const STEP_LABELS = ['Beslut', 'Underlag', 'Slutsats'];
 
 const SEGMENTS = [
   { id:'A', desc:'Historiskt hög köpfrekvens, regelbunden aktivitet' },
@@ -397,22 +343,11 @@ const SEGMENTS = [
 const UNCERTAINTY_OPTIONS = [
   { id:'counterfactual', label:'Vad som hade hänt utan kampanj' },
   { id:'profitability',  label:'Om effekten är lönsam' },
-  { id:'segments',       label:'Vilka segment som faktiskt påverkades' },
+  { id:'segments',       label:'Om effekten skiljer sig mellan segment' },
   { id:'pullforward',    label:'Om försäljningen bara flyttades fram' },
   { id:'retention',      label:'Om kunderna återkommer' },
-  { id:'brand',          label:'Om kampanjen påverkar varumärket' },
+  { id:'brand',          label:'Om kundupplevelsen väger tyngre än lönsamheten' },
   { id:'other',          label:'Annat' },
-];
-
-const NEXTSTEP_OPTIONS = [
-  { id:'ab_test',        label:'Designa ett A/B-test eller holdout' },
-  { id:'targeted',       label:'Köra riktad kampanj mot Segment C' },
-  { id:'milder',         label:'Testa mildare rabatt (10–15%)' },
-  { id:'mechanic',       label:'Testa annan kampanjmekanik (lojalitet)' },
-  { id:'exclude_segs',   label:'Exkludera Segment A och D' },
-  { id:'longer_follow',  label:'Följa upp kunderna längre period' },
-  { id:'more_feedback',  label:'Samla mer kundfeedback' },
-  { id:'stop',           label:'Stoppa kampanjen helt' },
 ];
 
 // Best segment decisions for scoring
@@ -606,14 +541,11 @@ const DECISIONS = [
 const state = {
   spent:0, opened:new Set(), teamName:'',
   decisionStep:1,
-  analysisRatings:{},  // cardId → { direction, weight, whyHigh }
   top3:new Set(),
-  counterargument:null,
-  counterargumentText:'',
-  segmentDecisions:{ A:{decision:null,support:new Set(),justification:''}, B:{decision:null,support:new Set(),justification:''}, C:{decision:null,support:new Set(),justification:''}, D:{decision:null,support:new Set(),justification:''} },
+  segmentDecisions:{ A:{decision:null}, B:{decision:null}, C:{decision:null}, D:{decision:null} },
   mainDecision:null,
-  recommendation:'', reasoning:'', counterargumentHandling:'',
-  uncertainties:new Set(), nextSteps:new Set(),
+  recommendation:'',
+  uncertainties:new Set(),
 };
 
 // ═══════════════════════════════════════════════
@@ -632,8 +564,6 @@ function startGame(){
 function goToIntro(){ document.getElementById('cost-bar').classList.remove('visible'); showScreen('intro'); }
 function goToShop(){ showScreen('shop'); document.getElementById('cost-bar').classList.add('visible'); }
 function goToDecision(){
-  // init ratings
-  CARDS.forEach(c=>{ if(state.opened.has(c.id) && !state.analysisRatings[c.id]) state.analysisRatings[c.id]={direction:null,weight:'medium',whyHigh:''}; });
   state.decisionStep=1;
   showScreen('decision');
   document.getElementById('cost-bar').classList.remove('visible');
@@ -641,7 +571,7 @@ function goToDecision(){
 }
 function submitDecision(){ renderResults(); showScreen('results'); }
 function restartGame(){
-  Object.assign(state,{ spent:0, opened:new Set(), teamName:state.teamName, decisionStep:1, analysisRatings:{}, top3:new Set(), counterargument:null, counterargumentText:'', segmentDecisions:{ A:{decision:null,support:new Set(),justification:''}, B:{decision:null,support:new Set(),justification:''}, C:{decision:null,support:new Set(),justification:''}, D:{decision:null,support:new Set(),justification:''} }, mainDecision:null, recommendation:'', reasoning:'', counterargumentHandling:'', uncertainties:new Set(), nextSteps:new Set() });
+  Object.assign(state,{ spent:0, opened:new Set(), teamName:state.teamName, decisionStep:1, top3:new Set(), segmentDecisions:{ A:{decision:null}, B:{decision:null}, C:{decision:null}, D:{decision:null} }, mainDecision:null, recommendation:'', uncertainties:new Set() });
   document.getElementById('team-name-input').value=state.teamName;
   showScreen('intro');
 }
@@ -708,12 +638,12 @@ function renderDecisionStep(){
     </div>${i<STEP_LABELS.length-1?`<div class="step-connector ${i+1<state.decisionStep?'done':''}"></div>`:''}
   `).join('')}</div>`;
 
-  const renders=[null,renderStep1,renderStep2,renderStep3,renderStep4,renderStep5,renderStep6];
+  const renders=[null,renderStep1,renderStep2,renderStep3];
   document.getElementById('step-content').innerHTML=renders[state.decisionStep]();
 
   const canNext=canProceed(state.decisionStep);
   const validMsg=validationMessage(state.decisionStep);
-  const isLast=state.decisionStep===6;
+  const isLast=state.decisionStep===3;
   document.getElementById('step-nav').innerHTML=`
     <button class="btn btn-secondary" onclick="${state.decisionStep===1?'goToShop()':'prevStep()'}">${state.decisionStep===1?'← Tillbaka till analysrum':'← Tillbaka'}</button>
     <div class="step-nav-right">
@@ -726,67 +656,74 @@ function prevStep(){ state.decisionStep--; renderDecisionStep(); window.scrollTo
 function nextStep(){ if(!canProceed(state.decisionStep)) return; state.decisionStep++; renderDecisionStep(); window.scrollTo(0,0); }
 
 function canProceed(step){
-  const openedList=CARDS.filter(c=>state.opened.has(c.id));
-  if(step===1) return openedList.length===0||openedList.every(c=>state.analysisRatings[c.id]?.direction);
-  if(step===2) return openedList.length===0||state.top3.size>=1;
-  if(step===3) return state.counterargument!==null;
-  if(step===4) return SEGMENTS.every(s=>state.segmentDecisions[s.id].decision!==null);
-  if(step===5) return state.mainDecision!==null;
-  if(step===6) return state.recommendation.trim().length>0;
+  if(step===1){
+    if(!state.mainDecision) return false;
+    if(state.mainDecision==='targeted') return SEGMENTS.every(s=>state.segmentDecisions[s.id].decision!==null);
+    return true;
+  }
+  if(step===2) return state.opened.size===0||state.top3.size>=1;
+  if(step===3) return state.recommendation.trim().length>5;
   return true;
 }
 
 function validationMessage(step){
-  if(step===1) return 'Ange riktning för alla analyser';
+  if(step===1){
+    if(!state.mainDecision) return 'Välj ett beslut';
+    if(state.mainDecision==='targeted') return 'Ta beslut för alla segment';
+    return '';
+  }
   if(step===2) return 'Välj minst 1 analys';
-  if(step===3) return 'Välj ett motargument';
-  if(step===4) return 'Ta beslut för alla segment';
-  if(step===5) return 'Välj ett huvudbeslut';
-  if(step===6) return 'Skriv din rekommendation';
+  if(step===3) return 'Skriv en motivering';
   return '';
 }
 
-// ── Step 1: Rate analyses ─────────────────────
+// ── Step 1: Main decision + conditional segments ──
 
 function renderStep1(){
-  const openedList=CARDS.filter(c=>state.opened.has(c.id));
-  if(openedList.length===0) return `<div class="step-header"><h2>Värdera analyser</h2><p>Du har inte öppnat några analyser. Du kan ändå gå vidare till beslutsrummet – men utan underlag.</p></div>`;
-  const dirOpts=[{v:'broad',l:'Kör brett'},{v:'targeted',l:'Kör riktat'},{v:'stop',l:'Stoppa'},{v:'test',l:'Testa mer'},{v:'neutral',l:'Neutral'}];
-  const wOpts=[{v:'low',l:'Låg'},{v:'medium',l:'Medel'},{v:'high',l:'Hög'}];
-  return `<div class="step-header"><h2>Värdera analyser</h2><p>Vad talar varje analys för – och hur tungt väger den i ert beslut?</p></div>
-  <div class="rating-cards">${openedList.map(card=>{
-    const r=state.analysisRatings[card.id]||{direction:null,weight:'medium',whyHigh:''};
-    return `<div class="rating-card">
-      <div class="rating-card-title"><span class="badge ${card.categoryColor}">${card.category}</span> ${card.name}</div>
-      <div class="rating-row">
-        <span class="rating-row-label">Riktning:</span>
-        <div class="pill-group">${dirOpts.map(o=>`<button class="pill-btn ${r.direction===o.v?'active-'+o.v:''}" onclick="setDirection('${card.id}','${o.v}')">${o.l}</button>`).join('')}</div>
-      </div>
-      <div class="rating-row">
-        <span class="rating-row-label">Vikt:</span>
-        <div class="pill-group">${wOpts.map(o=>`<button class="pill-btn ${(r.weight||'medium')===o.v?'active-'+o.v:''}" onclick="setWeight('${card.id}','${o.v}')">${o.l}</button>`).join('')}</div>
-      </div>
-      ${r.weight==='high'?`<div class="why-high-field"><textarea placeholder="Den här analysen väger tungt eftersom..." oninput="setWhyHigh('${card.id}',this.value)">${r.whyHigh||''}</textarea></div>`:''}
-    </div>`;
-  }).join('')}</div>`;
+  const decHtml=`<div class="decision-options-grid">${DECISIONS.map(d=>`
+    <div class="decision-opt ${state.mainDecision===d.id?'selected':''}" onclick="selectMain('${d.id}')">
+      <div class="do-icon">${d.icon}</div>
+      <div class="do-label">${d.label}</div>
+      <div class="do-desc">${d.desc}</div>
+    </div>`).join('')}</div>`;
+
+  const segHtml=state.mainDecision==='targeted'?`
+    <div style="margin-top:2rem">
+      <h3 style="margin-bottom:.35rem">Vilka segment inkluderas?</h3>
+      <p style="margin-bottom:1rem">Ta beslut för varje segment.</p>
+      <div class="segment-grid">${SEGMENTS.map(seg=>{
+        const sd=state.segmentDecisions[seg.id];
+        return `<div class="segment-card">
+          <div class="segment-card-header"><div class="segment-badge">Segment ${seg.id}</div></div>
+          <div class="segment-desc">${seg.desc}</div>
+          <div class="seg-decision-row">
+            <button class="seg-btn ${sd.decision==='include'?'active-include':''}" onclick="setSegDec('${seg.id}','include')">Inkludera</button>
+            <button class="seg-btn ${sd.decision==='exclude'?'active-exclude':''}" onclick="setSegDec('${seg.id}','exclude')">Exkludera</button>
+            <button class="seg-btn ${sd.decision==='test'?'active-test':''}" onclick="setSegDec('${seg.id}','test')">Osäker / testa</button>
+          </div>
+        </div>`;
+      }).join('')}</div>
+    </div>`:'';
+
+  return `<div class="step-header"><h2>Vad rekommenderar ni?</h2><p>Välj det beslut ni rekommenderar baserat på de analyser ni öppnat.</p></div>
+    ${decHtml}${segHtml}`;
 }
 
-function setDirection(id,dir){ if(!state.analysisRatings[id]) state.analysisRatings[id]={direction:null,weight:'medium',whyHigh:''}; state.analysisRatings[id].direction=dir; renderDecisionStep(); }
-function setWeight(id,w){ if(!state.analysisRatings[id]) state.analysisRatings[id]={direction:null,weight:'medium',whyHigh:''}; state.analysisRatings[id].weight=w; renderDecisionStep(); }
-function setWhyHigh(id,val){ if(state.analysisRatings[id]) state.analysisRatings[id].whyHigh=val; }
+function selectMain(id){ state.mainDecision=id; renderDecisionStep(); }
+function setSegDec(segId,dec){ state.segmentDecisions[segId].decision=dec; renderDecisionStep(); }
 
 // ── Step 2: Top 3 ─────────────────────────────
 
 function renderStep2(){
   const openedList=CARDS.filter(c=>state.opened.has(c.id));
-  if(openedList.length===0) return `<div class="step-header"><h2>Prioritera beslutsunderlag</h2><p>Inga analyser öppnade.</p></div>`;
-  return `<div class="step-header"><h2>Prioritera beslutsunderlag</h2><p>Välj de <strong>max 3 analyser</strong> som ert beslut främst bygger på.</p></div>
+  if(openedList.length===0) return `<div class="step-header"><h2>Vilka analyser väger tyngst?</h2><p>Ni har inte öppnat några analyser. Ni kan ändå gå vidare.</p></div>`;
+  return `<div class="step-header"><h2>Vilka analyser väger tyngst?</h2><p>Välj de <strong>max 3 analyser</strong> som ert beslut främst bygger på.</p></div>
   <div class="top3-counter">Valda: <strong>${state.top3.size}/3</strong></div>
   <div class="top3-grid">${openedList.map(card=>{
     const sel=state.top3.has(card.id);
     const disabled=!sel&&state.top3.size>=3;
     return `<div class="top3-card ${sel?'selected':''} ${disabled?'disabled':''}" onclick="toggleTop3('${card.id}')">
-      <div><div class="top3-card-name">${card.name}</div><div class="top3-card-cost">${card.cost} kr</div></div>
+      <div><div class="top3-card-name">${card.name}</div><div class="top3-card-cost">${card.cost} kr · ${card.category}</div></div>
       <div class="top3-check">${sel?'✓':''}</div>
     </div>`;
   }).join('')}</div>`;
@@ -797,87 +734,23 @@ function toggleTop3(id){
   renderDecisionStep();
 }
 
-// ── Step 3: Counterargument ───────────────────
+// ── Step 3: Motivation + uncertainty ──────────
 
 function renderStep3(){
-  const openedList=CARDS.filter(c=>state.opened.has(c.id));
-  const opts=[...openedList.map(c=>({id:c.id,label:c.name})),{id:'none',label:'Ingen tydlig motanalys'}];
-  return `<div class="step-header"><h2>Pröva motargumentet</h2><p>Vilken analys eller signal talar <strong>mest emot</strong> ert beslut? Välj ett alternativ.</p></div>
-  <div class="counter-options">${opts.map(o=>{
-    const sel=state.counterargument===o.id;
-    return `<div class="counter-option ${sel?'selected':''}" onclick="selectCounter('${o.id}')">
-      <div class="counter-radio"><div class="counter-radio-dot"></div></div>
-      <span>${o.label}</span>
-    </div>`;
-  }).join('')}</div>
-  ${state.counterargument&&state.counterargument!=='none'?`
-    <div class="counter-text-field">
-      <label>Varför är detta ett motargument?</label>
-      <textarea placeholder="Det starkaste motargumentet är..." oninput="state.counterargumentText=this.value">${state.counterargumentText}</textarea>
-    </div>`:''}`;
-}
-
-function selectCounter(id){ state.counterargument=id; renderDecisionStep(); }
-
-// ── Step 4: Segment decisions ─────────────────
-
-function renderStep4(){
-  const openedList=CARDS.filter(c=>state.opened.has(c.id));
-  return `<div class="step-header"><h2>Segmentbeslut</h2><p>Ta beslut för varje segment: inkludera, exkludera eller testa vidare?</p></div>
-  <div class="segment-grid">${SEGMENTS.map(seg=>{
-    const sd=state.segmentDecisions[seg.id];
-    return `<div class="segment-card">
-      <div class="segment-card-header"><div class="segment-badge">Segment ${seg.id}</div></div>
-      <div class="segment-desc">${seg.desc}</div>
-      <div class="seg-decision-row">
-        <button class="seg-btn ${sd.decision==='include'?'active-include':''}" onclick="setSegDec('${seg.id}','include')">Inkludera</button>
-        <button class="seg-btn ${sd.decision==='exclude'?'active-exclude':''}" onclick="setSegDec('${seg.id}','exclude')">Exkludera</button>
-        <button class="seg-btn ${sd.decision==='test'?'active-test':''}" onclick="setSegDec('${seg.id}','test')">Testa vidare</button>
-      </div>
-      ${openedList.length>0?`<div class="seg-support"><div class="seg-support-label">Stöds av:</div><div class="seg-checkboxes">${openedList.map(c=>`<span class="seg-checkbox ${sd.support.has(c.id)?'checked':''}" onclick="toggleSegSupport('${seg.id}','${c.id}')">${c.name.split(' ')[0]}</span>`).join('')}</div></div>`:''}
-      <div class="seg-justify"><textarea placeholder="Motivering: Vi väljer att... eftersom..." oninput="setSegJustify('${seg.id}',this.value)">${sd.justification}</textarea></div>
-    </div>`;
-  }).join('')}</div>`;
-}
-
-function setSegDec(segId,dec){ state.segmentDecisions[segId].decision=dec; renderDecisionStep(); }
-function toggleSegSupport(segId,cardId){ const s=state.segmentDecisions[segId].support; s.has(cardId)?s.delete(cardId):s.add(cardId); renderDecisionStep(); }
-function setSegJustify(segId,val){ state.segmentDecisions[segId].justification=val; }
-
-// ── Step 5: Main decision ─────────────────────
-
-function renderStep5(){
-  return `<div class="step-header"><h2>Välj huvudbeslut</h2><p>Baserat på era analyser och segmentbeslut – vad rekommenderar ni?</p></div>
-  <div class="decision-options-grid">${DECISIONS.map(d=>`
-    <div class="decision-opt ${state.mainDecision===d.id?'selected':''}" onclick="selectMain('${d.id}')">
-      <div class="do-icon">${d.icon}</div>
-      <div class="do-label">${d.label}</div>
-      <div class="do-desc">${d.desc}</div>
-    </div>`).join('')}</div>`;
-}
-
-function selectMain(id){ state.mainDecision=id; renderDecisionStep(); }
-
-// ── Step 6: Recommendation ────────────────────
-
-function renderStep6(){
-  return `<div class="step-header"><h2>Formulera rekommendationen</h2><p>Skriv er rekommendation som till en marknadschef. Ange även kvarvarande osäkerhet och nästa steg.</p></div>
+  return `<div class="step-header"><h2>Formulera slutsatsen</h2><p>Beskriv ert beslut kort och ange vad ni är mest osäkra på.</p></div>
   <div class="rec-form">
-    <div class="rec-field"><label><strong>Vad rekommenderar ni?</strong></label>
-      <textarea placeholder="Vi rekommenderar att..." oninput="state.recommendation=this.value">${state.recommendation}</textarea></div>
-    <div class="rec-field"><label><strong>Varför?</strong> Den viktigaste signalen är...</label>
-      <textarea placeholder="Den viktigaste signalen är..." oninput="state.reasoning=this.value">${state.reasoning}</textarea></div>
-    <div class="rec-field"><label><strong>Hur hanterar ni motargumentet?</strong></label>
-      <textarea placeholder="Det starkaste motargumentet är... men vi bedömer ändå att..." oninput="state.counterargumentHandling=this.value">${state.counterargumentHandling}</textarea></div>
-    <div class="rec-field"><label><strong>Vad är ni fortfarande mest osäkra på?</strong> (välj flera)</label>
-      <div class="checkbox-group">${UNCERTAINTY_OPTIONS.map(o=>`<span class="checkbox-chip ${state.uncertainties.has(o.id)?'checked':''}" onclick="toggleUncertainty('${o.id}')">${o.label}</span>`).join('')}</div></div>
-    <div class="rec-field"><label><strong>Vad bör göras nästa gång?</strong> (välj flera)</label>
-      <div class="checkbox-group">${NEXTSTEP_OPTIONS.map(o=>`<span class="checkbox-chip ${state.nextSteps.has(o.id)?'checked':''}" onclick="toggleNextStep('${o.id}')">${o.label}</span>`).join('')}</div></div>
+    <div class="rec-field">
+      <label><strong>Motivera ert beslut med 2–3 meningar.</strong></label>
+      <textarea placeholder="Vi rekommenderar att… eftersom… Den största osäkerheten är…" oninput="state.recommendation=this.value" style="min-height:90px">${state.recommendation}</textarea>
+    </div>
+    <div class="rec-field">
+      <label><strong>Vad är ni fortfarande mest osäkra på?</strong> (välj en eller flera)</label>
+      <div class="checkbox-group">${UNCERTAINTY_OPTIONS.map(o=>`<span class="checkbox-chip ${state.uncertainties.has(o.id)?'checked':''}" onclick="toggleUncertainty('${o.id}')">${o.label}</span>`).join('')}</div>
+    </div>
   </div>`;
 }
 
 function toggleUncertainty(id){ state.uncertainties.has(id)?state.uncertainties.delete(id):state.uncertainties.add(id); renderDecisionStep(); }
-function toggleNextStep(id){ state.nextSteps.has(id)?state.nextSteps.delete(id):state.nextSteps.add(id); renderDecisionStep(); }
 
 // ═══════════════════════════════════════════════
 // FACIT
@@ -889,157 +762,90 @@ function renderResults(){
   const isBest=chosen.quality==='best', isGood=chosen.quality==='good';
   const teamPart=state.teamName?` · ${state.teamName}`:'';
   document.getElementById('results-verdict').textContent=
-    isBest?'🎯 Rätt beslut – det stämmer med facit!'+teamPart:
-    isGood?'✅ Bra beslut – välmotiverat, nära facit.'+teamPart:'⚠️ Suboptimalt beslut – se vad du missade.'+teamPart;
-
-  // Scores
-  const scores=calcScores();
-  const scoreDefs=[
-    {key:'beslut',    label:'Beslutskvalitet',      max:5},
-    {key:'analys',    label:'Analysanvändning',      max:3},
-    {key:'viktning',  label:'Bevisviktning',         max:3},
-    {key:'kritisk',   label:'Kritiskt tänkande',     max:3},
-    {key:'disciplin', label:'Informationsdisciplin', max:2},
-  ];
-  document.getElementById('score-row').innerHTML=scoreDefs.map(s=>{
-    const v=scores[s.key], pct=Math.round(v/s.max*100);
-    const col=pct>=75?'var(--green)':pct>=50?'var(--yellow)':'var(--red)';
-    return `<div class="score-box">
-      <div class="score-num" style="color:${col}">${v}<span style="font-size:1rem;color:var(--text3)">/${s.max}</span></div>
-      <div class="score-label">${s.label}</div>
-      <div class="score-bar-wrap"><div class="score-bar-fill" style="width:${pct}%;background:${col}"></div></div>
-    </div>`;
-  }).join('');
+    isBest?'Rätt beslut – det stämmer med facit!'+teamPart:
+    isGood?'Bra beslut – välmotiverat, nära facit.'+teamPart:'Suboptimalt beslut – se vad du missade.'+teamPart;
 
   // Decisions
   document.getElementById('my-decision-display').innerHTML=`<div style="display:flex;gap:.75rem;align-items:flex-start"><span style="font-size:1.4rem">${chosen.icon}</span><div><div style="font-weight:600">${chosen.label}</div><div style="font-size:.82rem;color:var(--text2);margin-top:.25rem">${chosen.explanation}</div></div></div>`;
   document.getElementById('best-decision-display').innerHTML=`<div style="display:flex;gap:.75rem;align-items:flex-start"><span style="font-size:1.4rem">${best.icon}</span><div><div style="font-weight:600">${best.label}</div><div style="font-size:.82rem;color:var(--text2);margin-top:.25rem">${best.explanation}</div></div></div>`;
 
-  // Segment decisions
-  const segLabels={include:'Inkludera',exclude:'Exkludera',test:'Testa vidare'};
-  document.getElementById('segment-display').innerHTML=`<div class="seg-result-row">${SEGMENTS.map(s=>{
-    const dec=state.segmentDecisions[s.id].decision;
-    return `<div class="seg-result-item"><strong>Segment ${s.id}:</strong><span class="seg-tag ${dec||'test'}">${segLabels[dec]||'–'}</span>${state.segmentDecisions[s.id].justification?`<span style="font-size:.78rem;color:var(--text3);margin-left:.25rem">${state.segmentDecisions[s.id].justification.slice(0,40)}…</span>`:''}</div>`;
-  }).join('')}</div>`;
-  document.getElementById('best-segment-display').innerHTML=`<div class="seg-result-row">${SEGMENTS.map(s=>{
-    const b=BEST_SEGS[s.id];
-    return `<div class="seg-result-item"><strong>Segment ${s.id}:</strong><span class="seg-tag ${b}">${segLabels[b]}</span></div>`;
-  }).join('')}</div>`;
-
-  // Analysis ratings
-  const openedList=CARDS.filter(c=>state.opened.has(c.id));
-  const dirLabel={broad:'Kör brett',targeted:'Kör riktat',stop:'Stoppa',test:'Testa',neutral:'Neutral'};
-  const wLabel={low:'Låg',medium:'Medel',high:'Hög'};
-  document.getElementById('analysis-rating-display').innerHTML=openedList.length>0
-    ?openedList.map(c=>{const r=state.analysisRatings[c.id]||{};return `<div class="recap-item"><div class="recap-dot ${c.value==='high'?'green':c.value==='medium'?'yellow':'red'}"></div><div><strong>${c.name}</strong><br><span style="font-size:.78rem;color:var(--text3)">${r.direction?dirLabel[r.direction]:'–'} · Vikt: ${wLabel[r.weight||'medium']}</span></div></div>`;}).join('')
-    :'<p style="font-size:.85rem">Inga analyser öppnades.</p>';
+  // Segment section (only if targeted)
+  const segSection=document.getElementById('segment-section');
+  if(state.mainDecision==='targeted'){
+    segSection.style.display='';
+    const segLabels={include:'Inkludera',exclude:'Exkludera',test:'Osäker / testa'};
+    document.getElementById('segment-display').innerHTML=`<div class="seg-result-row">${SEGMENTS.map(s=>{
+      const dec=state.segmentDecisions[s.id].decision;
+      return `<div class="seg-result-item"><strong>Segment ${s.id}:</strong><span class="seg-tag ${dec||'test'}">${segLabels[dec]||'–'}</span></div>`;
+    }).join('')}</div>`;
+    document.getElementById('best-segment-display').innerHTML=`<div class="seg-result-row">${SEGMENTS.map(s=>{
+      const b=BEST_SEGS[s.id];
+      return `<div class="seg-result-item"><strong>Segment ${s.id}:</strong><span class="seg-tag ${b}">${segLabels[b]}</span></div>`;
+    }).join('')}</div>`;
+  } else {
+    segSection.style.display='none';
+  }
 
   // Top 3
   const top3Cards=CARDS.filter(c=>state.top3.has(c.id));
   document.getElementById('top3-display').innerHTML=top3Cards.length>0
-    ?top3Cards.map(c=>`<div class="recap-item"><div class="recap-dot ${c.value==='high'?'green':c.value==='medium'?'yellow':'red'}"></div><div><strong>${c.name}</strong></div></div>`).join('')
+    ?top3Cards.map(c=>`<div class="recap-item"><div class="recap-dot ${c.value==='high'?'green':c.value==='medium'?'yellow':'red'}"></div><div><strong>${c.name}</strong><br><span style="font-size:.78rem;color:var(--text3)">${c.category}</span></div></div>`).join('')
     :'<p style="font-size:.85rem;color:var(--text3)">Inga valda.</p>';
 
-  // Counterargument
-  const ca=state.counterargument;
-  const caCard=ca&&ca!=='none'?CARDS.find(c=>c.id===ca):null;
-  document.getElementById('counter-display').innerHTML=ca==='none'
-    ?'<p style="font-size:.85rem;color:var(--yellow)">Ingen tydlig motanalys identifierades.</p>'
-    :ca?`<div class="recap-item"><div class="recap-dot green"></div><div><strong>${caCard?caCard.name:ca}</strong>${state.counterargumentText?`<br><span style="font-size:.78rem;color:var(--text3)">${state.counterargumentText}</span>`:''}</div></div>`
-    :'<p style="font-size:.85rem;color:var(--text3)">–</p>';
+  // Cost
+  const costColor=state.spent<=15?'var(--green)':state.spent<=25?'var(--yellow)':'var(--red)';
+  document.getElementById('cost-display').innerHTML=`
+    <div style="font-size:2rem;font-weight:700;color:${costColor};margin-bottom:.25rem">${state.spent} kr</div>
+    <div style="font-size:.82rem;color:var(--text2)">${state.opened.size} analys${state.opened.size!==1?'er':''} öppnad${state.opened.size!==1?'e':''}</div>
+    <div style="font-size:.78rem;color:var(--text3);margin-top:.35rem">${state.spent<=15?'Effektivt analysunderlag.':'Hög analyskostnad – var allt nödvändigt?'}</div>`;
 
-  // Recommendation
+  // Recommendation + uncertainty
   document.getElementById('rec-display').innerHTML=`
-    ${state.recommendation?`<div style="margin-bottom:.75rem"><div style="font-size:.72rem;text-transform:uppercase;letter-spacing:.5px;color:var(--text3);margin-bottom:.25rem">Rekommendation</div><div class="rec-display">${state.recommendation}</div></div>`:''}
-    ${state.reasoning?`<div style="margin-bottom:.75rem"><div style="font-size:.72rem;text-transform:uppercase;letter-spacing:.5px;color:var(--text3);margin-bottom:.25rem">Motivering</div><div class="rec-display">${state.reasoning}</div></div>`:''}
-    ${state.counterargumentHandling?`<div style="margin-bottom:.75rem"><div style="font-size:.72rem;text-transform:uppercase;letter-spacing:.5px;color:var(--text3);margin-bottom:.25rem">Hantering av motargument</div><div class="rec-display">${state.counterargumentHandling}</div></div>`:''}
-    ${state.uncertainties.size>0?`<div style="margin-bottom:.5rem"><div style="font-size:.72rem;text-transform:uppercase;letter-spacing:.5px;color:var(--text3);margin-bottom:.25rem">Kvarvarande osäkerhet</div><div style="display:flex;flex-wrap:wrap;gap:.3rem">${[...state.uncertainties].map(u=>{const o=UNCERTAINTY_OPTIONS.find(x=>x.id===u);return o?`<span class="badge badge-blue">${o.label}</span>`:''}).join('')}</div></div>`:''}
-    ${state.nextSteps.size>0?`<div><div style="font-size:.72rem;text-transform:uppercase;letter-spacing:.5px;color:var(--text3);margin-bottom:.25rem">Nästa steg</div><div style="display:flex;flex-wrap:wrap;gap:.3rem">${[...state.nextSteps].map(n=>{const o=NEXTSTEP_OPTIONS.find(x=>x.id===n);return o?`<span class="badge badge-yellow">${o.label}</span>`:''}).join('')}</div></div>`:''}`;
+    ${state.recommendation?`<div class="rec-display">${state.recommendation}</div>`:'<p style="font-size:.85rem;color:var(--text3)">Ingen motivering angiven.</p>'}
+    ${state.uncertainties.size>0?`<div style="margin-top:.75rem"><div style="font-size:.72rem;text-transform:uppercase;letter-spacing:.5px;color:var(--text3);margin-bottom:.25rem">Kvarvarande osäkerhet</div><div style="display:flex;flex-wrap:wrap;gap:.3rem">${[...state.uncertainties].map(u=>{const o=UNCERTAINTY_OPTIONS.find(x=>x.id===u);return o?`<span class="badge badge-blue">${o.label}</span>`:''}).join('')}</div></div>`:''}`;
 
-  // Dynamic feedback
+  // Feedback
   document.getElementById('feedback-items').innerHTML=generateFeedback().map(f=>`
     <div class="feedback-item"><span class="fi-icon">${f.icon}</span><span class="fi-text">${f.text}</span></div>`).join('');
-}
-
-function calcScores(){
-  const openedList=CARDS.filter(c=>state.opened.has(c.id));
-  const highValueIds=['segment','margin','retention','clv','elasticity'];
-
-  // Beslutskvalitet (0-5)
-  let beslut=0;
-  if(state.mainDecision==='targeted') beslut=3;
-  else if(state.mainDecision==='test') beslut=2;
-  else if(state.mainDecision==='stop') beslut=1;
-  // segment bonus: A exclude=+0.5, C include=+0.5, D exclude=+0.5, B test=+0.25
-  const segBonus={'A':{exclude:.5,test:.2,include:0},'B':{test:.5,include:.25,exclude:.1},'C':{include:.5,test:.2,exclude:0},'D':{exclude:.5,test:.2,include:0}};
-  SEGMENTS.forEach(s=>{ const d=state.segmentDecisions[s.id].decision; if(d) beslut+=segBonus[s.id][d]||0; });
-  beslut=Math.min(5,Math.round(beslut));
-
-  // Analysanvändning (0-3): high-value in top3
-  const analys=Math.min(3,[...state.top3].filter(id=>highValueIds.includes(id)).length);
-
-  // Bevisviktning (0-3)
-  let viktning=1;
-  Object.entries(state.analysisRatings).forEach(([id,r])=>{
-    const card=CARDS.find(c=>c.id===id); if(!card) return;
-    if(card.value==='high'&&r.weight==='high') viktning++;
-    if(card.value==='low'&&r.weight==='high') viktning--;
-    if(card.value==='high'&&r.weight==='low') viktning-=.5;
-  });
-  viktning=Math.max(0,Math.min(3,Math.round(viktning)));
-
-  // Kritiskt tänkande (0-3): counterargument (0-2) + uncertainty (0-1)
-  let kritisk=0;
-  if(state.counterargument&&state.counterargument!=='none'){ kritisk+=1; if(state.counterargumentText.trim().length>20) kritisk+=1; }
-  const keyU=['counterfactual','profitability','segments','pullforward'];
-  if([...state.uncertainties].filter(u=>keyU.includes(u)).length>=2) kritisk+=1;
-  kritisk=Math.min(3,kritisk);
-
-  // Informationsdisciplin (0-2)
-  let disciplin=0;
-  if(state.mainDecision==='targeted'||state.mainDecision==='test'){
-    if(state.spent<=15) disciplin=2; else if(state.spent<=25) disciplin=1;
-  } else {
-    if(state.spent<=10) disciplin=1; // bad decision, max 1
-  }
-
-  return {beslut,analys,viktning,kritisk,disciplin};
 }
 
 function generateFeedback(){
   const items=[];
   const openedList=CARDS.filter(c=>state.opened.has(c.id));
   const highValueIds=['segment','margin','retention','clv','elasticity'];
+  const highInTop3=[...state.top3].filter(id=>highValueIds.includes(id)).length;
 
   // Decision quality
   if(state.mainDecision==='targeted') items.push({icon:'✅',text:'Ni valde ett riktat beslut – det är i linje med vad signalerna pekar mot. Kampanjen tyder på att ha värde för specifika segment, inte för hela kundbasen.'});
-  if(state.mainDecision==='broad') items.push({icon:'⚠️',text:'Ni valde att köra brett igen, men flera analyser pekade på segmentvariation och tveksam lönsamhet. Total försäljning kan överskugga mer relevanta beslutssignaler.'});
-  if(state.mainDecision==='stop') items.push({icon:'⚠️',text:'Ni valde att stoppa kampanjen helt, men signalerna tyder på att den kan ha värde för vissa segment. Aggregatdata kan maskera lönsamma delsegment.'});
+  if(state.mainDecision==='broad') items.push({icon:'⚠️',text:'Ni valde att köra brett igen. Flera analyser pekade på segmentvariation och tveksam lönsamhet. Total försäljning överskuggar mer relevanta beslutssignaler.'});
+  if(state.mainDecision==='stop') items.push({icon:'⚠️',text:'Ni valde att stoppa kampanjen helt. Signalerna tyder på att den kan ha värde för Segment C. Aggregatdata kan maskera lönsamma delsegment.'});
   if(state.mainDecision==='test') items.push({icon:'✅',text:'Att designa ett kontrollerat test är metodmässigt korrekt – ni erkänner att observationsdata inte ger kausalt stöd. Något konservativt om ni redan har tydliga segmentsignaler.'});
 
-  // Counterargument
-  if(state.counterargument&&state.counterargument!=='none') items.push({icon:'✅',text:'Bra: ni identifierade information som talar emot er rekommendation. Det gör beslutet mer robust och visar att ni inte bara söker bekräftelse.'});
-  else items.push({icon:'💡',text:'Ni hittade inget tydligt motargument. Fundera på om ni har letat efter bekräftelse snarare än att pröva beslutet kritiskt.'});
+  // Scenario: ytliga analyser i topp 3
+  if(openedList.length>=2&&highInTop3===0)
+    items.push({icon:'💡',text:'Era topp-analyser är ytliga – de visar vad som hände, men inte varför eller om det var lönsamt. Analyser som Marginalsanalys, Segmenterad affärssignal och Efterperiodssignal ger starkare beslutsstöd.'});
+
+  // Scenario: relevanta analyser valda
+  if(highInTop3>=2)
+    items.push({icon:'✅',text:'Ni prioriterade analyser med hög beslutskraft. De minskade de viktigaste osäkerheterna: om tillväxten var lönsam och vilka segment som skapade värde.'});
+
+  // Scenario: många analyser öppnade
+  if(state.spent>=25)
+    items.push({icon:'💡',text:`Ni öppnade analyser för ${state.spent} kr. Fundera på om alla analyser faktiskt ändrade ert beslut – eller om en del bara gav extra trygghet utan ny information.`});
+
+  // Scenario: få analyser + svagt beslut
+  if(state.spent<=8&&(state.mainDecision==='broad'||state.mainDecision==='stop'))
+    items.push({icon:'⚠️',text:'Låg analyskostnad i kombination med ett svagt beslut är dyrt: ni undvek analyskostnader men riskerar att upprepa en kampanj med negativ ROI. Rätt analys vid rätt tidpunkt lönar sig.'});
+
+  // Segment-specifik feedback
+  if(state.mainDecision==='targeted'&&state.segmentDecisions['C'].decision==='include')
+    items.push({icon:'✅',text:'Rätt segmentbeslut för Segment C: detta segment visar existerande köpintention med lägre rabattuttag – störst potential för inkrementellt värde.'});
+  if(state.mainDecision==='targeted'&&state.segmentDecisions['A'].decision==='exclude')
+    items.push({icon:'✅',text:'Rätt segmentbeslut för Segment A: dessa kunder köper troligen ändå. Exklusion sparar rabattkostnad utan att tappa affär.'});
 
   // Survey trap
-  if(state.top3.has('survey')||((state.analysisRatings['survey']||{}).weight==='high'))
-    items.push({icon:'⚠️',text:'Ni gav stor vikt åt kundupplevelse – det är relevant, men kundernas nöjdhet med en rabatt säger inte om kampanjen skapade lönsam eller inkrementell tillväxt.'});
-
-  // Good analysis use
-  const highInTop3=[...state.top3].filter(id=>highValueIds.includes(id)).length;
-  if(highInTop3>=2) items.push({icon:'✅',text:'Ni prioriterade analyser med hög beslutskraft i ert underlag. Rätt – dessa analyser ger signaler som är mer direktrelevanta för beslutet.'});
-  else if(openedList.length>=3&&highInTop3===0) items.push({icon:'💡',text:'Ni samlade information, men ert beslutsunderlag lutar på enklare signaler. Fundera på vilka analyser som faktiskt borde väga tyngst i ett segmenterat kampanjbeslut.'});
-
-  // Counterfactual
-  if(state.analysisRatings['counterfactual']?.weight==='high') items.push({icon:'✅',text:'Ni försökte minska den centrala kausala osäkerheten: hur mycket av ökningen hade hänt även utan kampanj? Det är rätt att prioritera den frågan.'});
-
-  // Cost efficiency
-  if(state.spent<=10&&(state.mainDecision==='targeted'||state.mainDecision==='test')) items.push({icon:'🎯',text:`Utmärkt informationsdisciplin: ni nådde ett välmotiverat beslut för bara ${state.spent} krediter. Det är i nivå med det minsta tillräckliga analysunderlaget.`});
-  else if(state.spent>=25) items.push({icon:'💡',text:`Ni öppnade analyser för ${state.spent} krediter. Fundera på om alla analyser faktiskt ändrade eller förbättrade ert beslut – eller om ni samlat mer trygghet än decision-relevant information.`});
-
-  // Segment C
-  if(state.segmentDecisions['C'].decision==='include') items.push({icon:'✅',text:'Rätt segmentbeslut för Segment C: detta är det segment med störst potential för riktad kampanj, med lägre rabattuttag och existerande köpintention.'});
-  if(state.segmentDecisions['A'].decision==='exclude') items.push({icon:'✅',text:'Rätt segmentbeslut för Segment A: historisk data tyder på att dessa kunder köper ändå. Att exkludera dem sparar rabattkostnad utan att tappa affär.'});
+  if(state.top3.has('survey'))
+    items.push({icon:'⚠️',text:'Ni lyfte kundupplevelse som ett av era viktigaste underlag. Det är relevant, men nöjdhet med en rabatt säger inte om kampanjen skapade lönsam eller inkrementell tillväxt.'});
 
   return items;
 }
