@@ -1,0 +1,1651 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Make the Call — AI delivers the insights. You make the decisions.</title>
+<style>
+:root{
+  --plane:#f3efe6; --surface:#ffffff; --surface2:#f7f3ea; --surface3:#ece6d9;
+  --border:rgba(35,30,20,.11); --border2:rgba(35,30,20,.20);
+  --ink:#241f17; --ink2:#5f594d; --muted:#938c7d;
+  --accent:#6d5df0; --accent2:#2a78d6; --accentDim:rgba(109,93,240,.10);
+  --good:#0a9d34; --warn:#c2830a; --serious:#d9743c; --crit:#cf3b3b; --aqua:#12a06f;
+  --grid:#ebe5d9; --base:#d9d3c5; --radius:18px;
+  --shadow:0 4px 16px -6px rgba(45,38,22,.16); --shadow-lg:0 16px 40px -14px rgba(60,48,26,.24);
+  --font:system-ui,-apple-system,'Segoe UI',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:var(--font);background:var(--plane);color:var(--ink);min-height:100vh;line-height:1.6;
+  background-image:radial-gradient(760px 420px at 6% -60px,rgba(109,93,240,.11),transparent 64%),radial-gradient(720px 400px at 98% 2%,rgba(42,120,214,.10),transparent 60%),radial-gradient(680px 460px at 50% 112%,rgba(18,160,111,.09),transparent 58%);
+  background-attachment:fixed;}
+.card-shadow,.acard,.dec-opt,.scenario,.rbox,.facit-box,.score-cell,.fb-item,.stat-pill,.top3-card,.seg-card,.decision-preview,.verdict-banner,.how-card{box-shadow:var(--shadow);}
+.screen{display:none;} .screen.active{display:block;animation:fade .35s ease;}
+@keyframes fade{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
+.container{max-width:1120px;margin:0 auto;padding:2rem 1.5rem;}
+h1{font-size:2.1rem;font-weight:800;letter-spacing:-1px;line-height:1.1;}
+h2{font-size:1.45rem;font-weight:700;letter-spacing:-.4px;}
+h3{font-size:1.05rem;font-weight:650;}
+p{color:var(--ink2);margin-bottom:.7rem;} p:last-child{margin-bottom:0;}
+strong{color:var(--ink);font-weight:650;}
+em{color:var(--ink2);font-style:italic;}
+.brand{font-weight:800;letter-spacing:-.5px;background:linear-gradient(92deg,#6d5df0,#2a78d6 52%,#12a08a);-webkit-background-clip:text;background-clip:text;color:transparent;}
+.ai-chip{display:inline-flex;align-items:center;gap:6px;font-size:.7rem;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--accent);background:var(--accentDim);border:1px solid rgba(109,93,240,.28);padding:5px 12px;border-radius:99px;}
+.ai-chip .dot{width:7px;height:7px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 0 rgba(109,93,240,.6);animation:pulse 2s infinite;}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(109,93,240,.45);}70%{box-shadow:0 0 0 7px rgba(109,93,240,0);}100%{box-shadow:0 0 0 0 rgba(109,93,240,0);}}
+
+/* buttons */
+.btn{display:inline-flex;align-items:center;gap:.5rem;padding:.8rem 1.6rem;border-radius:10px;border:none;cursor:pointer;font-size:1rem;font-weight:650;font-family:var(--font);transition:transform .12s,box-shadow .2s,background .2s,border-color .2s;}
+.btn-primary{background:linear-gradient(92deg,#8b7ef0,#5b8def);color:#fff;box-shadow:0 6px 22px -8px rgba(120,120,240,.7);}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 10px 28px -8px rgba(120,120,240,.8);}
+.btn-primary:disabled{background:var(--surface3);color:var(--muted);cursor:not-allowed;transform:none;box-shadow:none;}
+.btn-ghost{background:var(--surface2);color:var(--ink);border:1px solid var(--border);}
+.btn-ghost:hover{border-color:var(--border2);background:var(--surface3);}
+.btn-sm{padding:.5rem 1rem;font-size:.85rem;}
+
+.badge{display:inline-block;padding:2px 10px;border-radius:99px;font-size:.68rem;font-weight:700;letter-spacing:.5px;text-transform:uppercase;border:1px solid;}
+.badge-blue{background:#e8f1fc;color:#1f5fae;border-color:#cfe0f6;}
+.badge-violet{background:#eeeafe;color:#5646c9;border-color:#ddd6fb;}
+.badge-amber{background:#fbf1d8;color:#946608;border-color:#f2e3ba;}
+.badge-aqua{background:#dff5ec;color:#0c7c54;border-color:#c2ead9;}
+/* icons */
+.ic{width:1em;height:1em;display:inline-block;vertical-align:-.14em;flex-shrink:0;}
+.badge{display:inline-flex;align-items:center;gap:5px;}
+.badge .ic{width:.9em;height:.9em;vertical-align:-.05em;}
+.icon-chip{display:flex;align-items:center;justify-content:center;border-radius:12px;background:var(--accentDim);color:var(--accent);flex-shrink:0;}
+.gauge-num{font-size:36px;font-weight:800;font-family:var(--font);}
+.gauge-sub{font-size:9px;fill:var(--muted);letter-spacing:.6px;text-transform:uppercase;font-family:var(--font);}
+.gauge{animation:gpop .5s ease both;}
+.gauge-arc{transition:stroke-dashoffset 1.15s cubic-bezier(.25,.8,.3,1);}
+@keyframes gpop{from{opacity:0;transform:scale(.9);}to{opacity:1;transform:scale(1);}}
+.verdict-label{animation:vfade .5s ease .5s both;}
+.verdict-sub{animation:vfade .55s ease .8s both;}
+@keyframes vfade{from{opacity:0;transform:translateY(7px);}to{opacity:1;transform:none;}}
+.rescall-chip{width:38px;height:38px;border-radius:11px;}
+.rescall-chip .ic{width:20px;height:20px;}
+.ins-ic{color:var(--accent);width:15px;height:15px;margin-top:3px;flex-shrink:0;}
+.fb-ic .ic{width:14px;height:14px;}
+.cost-hint .ic{width:14px;height:14px;vertical-align:-.15em;margin-right:2px;}
+.step-num .ic{width:15px;height:15px;}
+.t3-check .ic{width:13px;height:13px;}
+
+/* cost bar */
+#cost-bar{position:sticky;top:0;z-index:100;background:rgba(255,253,248,.86);backdrop-filter:blur(10px);border-bottom:1px solid var(--border);padding:.6rem 1.5rem;display:none;}
+#cost-bar.visible{display:block;}
+.cost-inner{max-width:1120px;margin:0 auto;display:flex;align-items:center;gap:1rem;flex-wrap:wrap;}
+.cost-pill{display:flex;align-items:center;gap:.5rem;background:var(--surface);border:1px solid var(--border);border-radius:99px;padding:4px 14px;}
+.cost-pill .cp-label{font-size:.78rem;color:var(--muted);}
+.cost-pill .cp-val{font-size:.95rem;font-weight:750;font-variant-numeric:tabular-nums;}
+.cost-hint{font-size:.76rem;color:var(--muted);flex:1;text-align:right;min-width:140px;}
+.cost-hint.penalty{color:var(--crit);font-weight:650;}
+.cp-ic{font-size:.95rem;}
+.budget-meter{width:64px;height:7px;border-radius:4px;background:var(--surface3);overflow:hidden;}
+.budget-fill{height:100%;width:0;border-radius:4px;background:var(--aqua);transition:width .3s ease,background .3s ease;}
+.budget-pill .cp-val{font-size:.82rem;}
+.timer-pill{gap:.4rem;}
+.timer-pill .cp-val{font-variant-numeric:tabular-nums;font-size:1rem;}
+.timer-pill.warn{border-color:var(--warn);background:rgba(250,178,25,.12);} .timer-pill.warn .cp-val{color:var(--warn);}
+.timer-pill.danger{border-color:var(--crit);background:rgba(208,59,59,.12);animation:tpulse 1s infinite;} .timer-pill.danger .cp-val{color:var(--crit);}
+@keyframes tpulse{0%,100%{box-shadow:0 0 0 0 rgba(208,59,59,.4);}50%{box-shadow:0 0 0 5px rgba(208,59,59,0);}}
+/* landing timer picker */
+.timer-select{display:flex;flex-direction:column;align-items:center;gap:.5rem;margin-top:1.4rem;}
+.ts-label{font-size:.72rem;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--muted);}
+.ts-opts{display:inline-flex;background:var(--surface);border:1px solid var(--border);border-radius:99px;padding:3px;gap:2px;box-shadow:var(--shadow);}
+.ts-opts button{border:none;background:transparent;color:var(--ink2);font-family:var(--font);font-size:.85rem;font-weight:600;padding:.4rem .95rem;border-radius:99px;cursor:pointer;transition:all .15s;}
+.ts-opts button:hover{color:var(--ink);}
+.ts-opts button.on{background:var(--accent);color:#fff;}
+
+/* landing */
+.landing{text-align:center;padding:3.5rem 1rem 1rem;}
+.landing .eyebrow{font-size:.8rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:1.2rem;}
+.landing h1{font-size:3.2rem;margin-bottom:.6rem;}
+.landing .tag{font-size:1.2rem;color:var(--ink2);max-width:560px;margin:0 auto 1.1rem;}
+.landing-blurb{font-size:.98rem;color:var(--ink2);max-width:540px;margin:0 auto 1.5rem;line-height:1.6;}
+.how-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:1rem;margin:2.5rem 0;}
+.how-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem;text-align:left;}
+.how-card .n{width:26px;height:26px;border-radius:8px;background:var(--accentDim);border:1px solid rgba(144,133,233,.3);color:var(--accent);font-weight:750;font-size:.85rem;display:flex;align-items:center;justify-content:center;margin-bottom:.65rem;}
+.how-card h3{margin-bottom:.3rem;font-size:.98rem;}
+.how-card p{font-size:.85rem;margin:0;}
+.start-row{display:flex;gap:.75rem;align-items:center;justify-content:center;flex-wrap:wrap;margin-top:1rem;}
+.start-row input{padding:.8rem 1rem;background:var(--surface);border:1px solid var(--border);border-radius:10px;color:var(--ink);font-size:1rem;width:260px;font-family:var(--font);}
+.start-row input:focus{outline:none;border-color:var(--accent);}
+
+/* AI dealer overlay */
+#dealer{position:fixed;inset:0;z-index:300;background:rgba(243,239,230,.94);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;}
+#dealer.show{display:flex;}
+.dealer-box{text-align:center;max-width:460px;padding:2rem;}
+.dealer-box .ai-chip{margin-bottom:1.5rem;}
+.dealer-box h2{margin-bottom:1.4rem;font-weight:750;}
+.scan{width:280px;max-width:80vw;margin:0 auto 1.4rem;}
+.scanline{height:10px;border-radius:6px;background:linear-gradient(90deg,#efeafe,var(--accent),#e6f0fb);background-size:200% 100%;margin-bottom:10px;animation:sweep 1.1s ease-in-out infinite;opacity:.8;}
+.scanline:nth-child(2){width:82%;animation-delay:.12s;} .scanline:nth-child(3){width:64%;animation-delay:.24s;}
+@keyframes sweep{0%{background-position:180% 0;}100%{background-position:-80% 0;}}
+.dealer-status{font-size:.9rem;color:var(--muted);min-height:1.4em;}
+
+/* brief */
+.brief-head{display:flex;align-items:center;gap:.8rem;flex-wrap:wrap;margin-bottom:.4rem;}
+.case-name{font-size:.82rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--accent);}
+.scenario{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.6rem;margin:1.2rem 0;position:relative;overflow:hidden;}
+.scenario::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:linear-gradient(180deg,var(--accent),var(--accent2));}
+.stat-row{display:flex;gap:.8rem;flex-wrap:wrap;margin:1.3rem 0;}
+.stat-pill{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:.7rem 1.1rem;min-width:120px;}
+.stat-pill .sp-num{font-size:1.5rem;font-weight:800;color:var(--ink);letter-spacing:-.5px;}
+.stat-pill .sp-label{font-size:.74rem;color:var(--muted);line-height:1.3;}
+.decision-callout{background:var(--accentDim);border:1px solid rgba(144,133,233,.28);border-radius:12px;padding:1rem 1.25rem;margin-top:1.2rem;}
+.decision-callout strong{color:var(--accent);}
+
+/* analysis room */
+.room-header{display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:1rem;margin-bottom:1rem;}
+.room-header p{margin:0;}
+.decision-preview{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--warn);border-radius:12px;padding:.9rem 1.2rem;margin-bottom:1.4rem;font-size:.88rem;color:var(--ink2);}
+.decision-preview strong{color:var(--ink);}
+.cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:1rem;margin-bottom:1.5rem;}
+.acard{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;transition:border-color .2s,box-shadow .2s,transform .15s;}
+.acard:not(.opened):hover{border-color:var(--accent);box-shadow:0 0 0 1px rgba(144,133,233,.25);cursor:pointer;transform:translateY(-2px);}
+.acard.opened{border-color:rgba(25,158,112,.4);}
+.acard-head{display:flex;justify-content:space-between;align-items:flex-start;padding:1rem 1rem .55rem;gap:.5rem;}
+.acard-title{font-weight:650;font-size:.96rem;flex:1;line-height:1.3;}
+.acard-cost{display:flex;align-items:center;gap:5px;font-weight:750;font-size:.9rem;color:var(--warn);white-space:nowrap;font-variant-numeric:tabular-nums;}
+.acard-cost .cr{width:7px;height:7px;border-radius:50%;background:var(--warn);}
+.acard-q{padding:0 1rem .7rem;font-size:.8rem;color:var(--muted);}
+.acard-cat{padding:0 1rem .75rem;}
+.open-btn{margin:0 1rem 1rem;width:calc(100% - 2rem);padding:.6rem;border-radius:10px;border:1px solid rgba(109,93,240,.32);background:#f1effe;color:#5646c9;cursor:pointer;font-size:.85rem;font-weight:650;font-family:var(--font);transition:all .15s;}
+.open-btn:hover{background:var(--accent);color:#fff;border-color:var(--accent);}
+.reveal{padding:0 1rem;display:none;}
+.acard.opened .reveal{display:block;}
+.rev-sec{margin-bottom:.8rem;}
+.rev-label{font-size:.66rem;font-weight:750;letter-spacing:.8px;text-transform:uppercase;color:var(--muted);margin-bottom:.35rem;display:flex;align-items:center;gap:5px;}
+.rev-label.sig{color:var(--accent);}
+.rev-signal{background:#f2f0fd;border-left:3px solid var(--accent);padding:.6rem .75rem;border-radius:0 8px 8px 0;font-size:.83rem;color:var(--ink);}
+.rev-limit{background:#fbf4e4;border-left:3px solid var(--warn);padding:.6rem .75rem;border-radius:0 8px 8px 0;font-size:.82rem;color:var(--ink2);margin-bottom:1rem;}
+.opened-tag{margin:0 1rem 1rem;display:flex;align-items:center;gap:6px;font-size:.82rem;color:var(--aqua);font-weight:650;}
+.opened-tag.closed{color:var(--muted);}
+
+/* charts */
+.chart-wrap{padding:.35rem 0;}
+svg text{font-family:var(--font);}
+svg .cx-t{font-size:9px;fill:var(--muted);}
+svg .cx-l{font-size:9px;fill:var(--ink2);}
+svg .cx-v{font-size:9px;fill:var(--ink);font-weight:600;}
+svg .cx-v.tab{font-variant-numeric:tabular-nums;}
+.mini-table{width:100%;border-collapse:collapse;font-size:.78rem;margin:.15rem 0 .5rem;}
+.mini-table th{background:var(--surface2);color:var(--ink2);font-weight:650;padding:5px 8px;text-align:left;font-size:.72rem;}
+.mini-table td{padding:5px 8px;border-top:1px solid var(--border);font-variant-numeric:tabular-nums;}
+.mini-table td:first-child{font-variant-numeric:normal;}
+.pos{color:#0a8a3f;font-weight:650;} .neg{color:#c23636;font-weight:650;} .neu{color:var(--ink2);}
+
+.room-actions{display:flex;justify-content:space-between;align-items:center;padding:1rem 0 2rem;border-top:1px solid var(--border);flex-wrap:wrap;gap:1rem;}
+.opened-summary{font-size:.88rem;color:var(--ink2);}
+.opened-summary strong{color:var(--ink);}
+
+/* step indicator */
+.step-ind{display:flex;align-items:center;margin-bottom:2rem;overflow-x:auto;padding-bottom:.25rem;}
+.step-item{display:flex;flex-direction:column;align-items:center;gap:5px;flex-shrink:0;}
+.step-num{width:30px;height:30px;border-radius:50%;background:var(--surface2);color:var(--muted);font-size:.82rem;font-weight:750;display:flex;align-items:center;justify-content:center;border:1px solid var(--border);transition:all .2s;}
+.step-label{font-size:.68rem;color:var(--muted);white-space:nowrap;}
+.step-item.active .step-num{background:var(--accent);color:#fff;border-color:var(--accent);}
+.step-item.active .step-label{color:var(--ink);}
+.step-item.done .step-num{background:var(--aqua);color:#fff;border-color:var(--aqua);}
+.step-item.done .step-label{color:var(--aqua);}
+.step-conn{width:38px;height:2px;background:var(--border);flex-shrink:0;margin-bottom:17px;}
+.step-conn.done{background:var(--aqua);}
+.step-header{margin-bottom:1.5rem;}
+.step-header h2{margin-bottom:.25rem;}
+
+/* decision options */
+.dec-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:1rem;}
+.dec-opt{background:var(--surface);border:2px solid var(--border);border-radius:var(--radius);padding:1.25rem;cursor:pointer;transition:all .15s;}
+.dec-opt:hover{border-color:var(--accent);transform:translateY(-2px);}
+.dec-opt.selected{border-color:var(--accent);background:var(--accentDim);}
+.do-icon{font-size:1.5rem;margin-bottom:.4rem;}
+.do-chip{width:42px;height:42px;margin-bottom:.75rem;}
+.do-chip .ic{width:22px;height:22px;}
+.do-label{font-weight:700;margin-bottom:.3rem;}
+.do-desc{font-size:.82rem;color:var(--ink2);}
+
+/* segments */
+.seg-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:1rem;}
+.seg-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.1rem;}
+.seg-head{display:flex;align-items:center;gap:.5rem;margin-bottom:.4rem;}
+.seg-badge{background:var(--surface2);border:1px solid var(--border);border-radius:7px;padding:3px 10px;font-size:.8rem;font-weight:750;color:var(--accent);}
+.seg-name{font-weight:650;font-size:.9rem;}
+.seg-desc{font-size:.78rem;color:var(--muted);margin-bottom:.85rem;}
+.seg-row{display:flex;gap:.4rem;}
+.seg-btn{flex:1;padding:.42rem .4rem;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--ink2);font-size:.76rem;cursor:pointer;font-family:var(--font);transition:all .15s;text-align:center;}
+.seg-btn:hover{border-color:var(--accent);}
+.seg-btn.on-inc{background:#dff5ec;border-color:var(--aqua);color:#0c7c54;font-weight:650;}
+.seg-btn.on-exc{background:#fbe4e4;border-color:var(--crit);color:#b83636;font-weight:650;}
+.seg-btn.on-tst{background:#e8f1fc;border-color:var(--accent2);color:#1f5fae;font-weight:650;}
+
+/* top3 */
+.top3-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:.75rem;}
+.top3-card{background:var(--surface);border:2px solid var(--border);border-radius:12px;padding:1rem;cursor:pointer;transition:all .15s;display:flex;justify-content:space-between;align-items:center;gap:.75rem;}
+.top3-card:hover{border-color:var(--accent);}
+.top3-card.selected{border-color:var(--accent);background:var(--accentDim);}
+.top3-card.disabled{opacity:.4;cursor:not-allowed;}
+.t3-name{font-weight:650;font-size:.88rem;}
+.t3-cat{font-size:.76rem;color:var(--muted);}
+.t3-check{width:22px;height:22px;border-radius:50%;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:.72rem;flex-shrink:0;}
+.top3-card.selected .t3-check{background:var(--accent);border-color:var(--accent);color:#fff;}
+.t3-counter{font-size:.85rem;color:var(--ink2);margin-bottom:1rem;}
+.t3-counter strong{color:var(--ink);}
+
+/* rec form */
+.rec-form{display:flex;flex-direction:column;gap:1.25rem;}
+.rec-field label{font-size:.85rem;color:var(--ink2);margin-bottom:.45rem;display:block;}
+.rec-field textarea{width:100%;padding:.7rem .9rem;background:var(--surface);border:1px solid var(--border);border-radius:10px;color:var(--ink);font-size:.92rem;resize:vertical;min-height:85px;font-family:var(--font);}
+.rec-field textarea:focus{outline:none;border-color:var(--accent);}
+.rec-field textarea::placeholder{color:var(--muted);}
+.chip-group{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:.4rem;}
+.chip{padding:5px 13px;border-radius:99px;border:1px solid var(--border);font-size:.78rem;cursor:pointer;color:var(--ink2);background:transparent;transition:all .12s;}
+.chip:hover{border-color:var(--accent);}
+.chip.checked{background:#f1effe;border-color:var(--accent);color:#5646c9;}
+
+.step-nav{display:flex;justify-content:space-between;align-items:center;padding:1.5rem 0 2rem;border-top:1px solid var(--border);margin-top:1.5rem;flex-wrap:wrap;gap:1rem;}
+.step-nav-right{display:flex;align-items:center;gap:1rem;}
+.valid-msg{font-size:.82rem;color:var(--warn);}
+
+/* results */
+.results-head{text-align:center;padding:2rem 1rem 1.5rem;}
+.verdict-banner{display:inline-flex;flex-direction:column;align-items:center;gap:.35rem;padding:1.4rem 2.2rem;border-radius:18px;border:1px solid var(--border);background:var(--surface);margin-bottom:.4rem;}
+.verdict-score{font-size:3rem;font-weight:800;letter-spacing:-1.5px;line-height:1;}
+.verdict-label{font-size:1rem;font-weight:700;letter-spacing:.5px;text-transform:uppercase;}
+.verdict-sub{font-size:.9rem;color:var(--ink2);margin-top:.4rem;max-width:520px;}
+
+/* score breakdown */
+.score-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;margin-bottom:1.5rem;}
+.score-cell{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1rem 1.1rem;}
+.sc-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:.5rem;}
+.sc-name{font-size:.82rem;color:var(--ink2);font-weight:650;}
+.sc-val{font-size:.85rem;font-weight:750;color:var(--ink);font-variant-numeric:tabular-nums;}
+.sc-bar{height:7px;background:var(--surface3);border-radius:4px;overflow:hidden;}
+.sc-fill{height:100%;border-radius:4px;transition:width .6s ease;}
+.sc-desc{font-size:.74rem;color:var(--muted);margin-top:.5rem;}
+
+.penalty-note{background:#fbe4e4;border:1px solid #f2caca;color:#8f3030;border-radius:12px;padding:.8rem 1.1rem;font-size:.85rem;margin-bottom:1.25rem;display:flex;align-items:flex-start;gap:.55rem;}
+.penalty-note .ic{width:18px;height:18px;flex-shrink:0;margin-top:1px;}
+.penalty-note strong{color:#7a2020;}
+.result-2col{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;margin-bottom:1.25rem;}
+@media(max-width:700px){.result-2col{grid-template-columns:1fr;}}
+.rbox{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.2rem;}
+.rbox h3{margin-bottom:.7rem;color:var(--muted);font-size:.74rem;text-transform:uppercase;letter-spacing:.6px;}
+.recap-item{display:flex;gap:.55rem;font-size:.85rem;margin-bottom:.4rem;}
+.recap-dot{width:8px;height:8px;border-radius:50%;margin-top:6px;flex-shrink:0;}
+.recap-dot.green{background:var(--good);} .recap-dot.amber{background:var(--warn);} .recap-dot.red{background:var(--crit);}
+.feedback-items{display:flex;flex-direction:column;gap:.7rem;margin-bottom:1.5rem;}
+.fb-item{display:flex;gap:.75rem;align-items:flex-start;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:.9rem 1rem;}
+.fb-ic{width:22px;height:22px;border-radius:6px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:800;margin-top:1px;}
+.fb-ic.good{background:#dff5ec;color:#0a8a3f;} .fb-ic.warn{background:#fbf1d8;color:#946608;} .fb-ic.crit{background:#fbe4e4;color:#b83636;}
+.fb-text{font-size:.87rem;color:var(--ink2);}
+.seg-result-row{display:flex;flex-direction:column;gap:.4rem;}
+.srow{display:flex;align-items:center;gap:.5rem;font-size:.85rem;}
+.stag{padding:2px 9px;border-radius:99px;font-size:.72rem;font-weight:650;}
+.stag.include{background:#dff5ec;color:#0c7c54;} .stag.exclude{background:#fbe4e4;color:#b83636;} .stag.test{background:#e8f1fc;color:#1f5fae;}
+.rec-display{background:var(--surface2);border-radius:10px;padding:.75rem 1rem;font-size:.85rem;color:var(--ink2);font-style:italic;}
+
+.facit-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.6rem;margin-bottom:1.5rem;position:relative;overflow:hidden;}
+.facit-box::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:linear-gradient(180deg,var(--accent2),var(--aqua));}
+.facit-box h2{margin-bottom:1rem;}
+.facit-sec{margin-bottom:1.25rem;}
+.facit-sec:last-child{margin-bottom:0;}
+.facit-sec h3{color:var(--muted);font-size:.74rem;text-transform:uppercase;letter-spacing:.6px;margin-bottom:.5rem;}
+.seg-key{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-top:.5rem;}
+@media(max-width:600px){.seg-key{grid-template-columns:1fr;}}
+.sk-item{background:var(--surface2);border-radius:8px;padding:.6rem .8rem;font-size:.82rem;color:var(--ink2);}
+.sk-item strong{display:block;color:var(--accent);margin-bottom:.15rem;}
+.ins-items{display:flex;flex-direction:column;gap:.55rem;}
+.ins-item{display:flex;gap:.6rem;align-items:flex-start;font-size:.87rem;color:var(--ink2);}
+.ins-item .ic{flex-shrink:0;margin-top:1px;}
+.lesson{background:linear-gradient(120deg,rgba(144,133,233,.1),rgba(57,135,229,.07));border:1px solid rgba(144,133,233,.28);border-radius:var(--radius);padding:1.6rem;margin-bottom:2rem;text-align:center;}
+.lesson-q{font-size:1.2rem;font-weight:700;color:var(--ink);font-style:italic;margin-bottom:.5rem;letter-spacing:-.3px;}
+.lesson p{font-size:.9rem;margin:0;}
+.restart-row{display:flex;gap:.75rem;justify-content:center;padding:1rem 0 3rem;flex-wrap:wrap;}
+
+/* coach marks */
+#coach{position:fixed;inset:0;z-index:400;background:rgba(45,38,22,.34);backdrop-filter:blur(2px);display:none;align-items:center;justify-content:center;padding:1.5rem;}
+#coach.show{display:flex;animation:fade .22s ease;}
+.coach-card{background:var(--surface);border:1px solid var(--border);border-radius:22px;box-shadow:var(--shadow-lg);padding:1.9rem 1.8rem;max-width:430px;text-align:center;animation:pop .32s cubic-bezier(.2,.9,.3,1.25);}
+@keyframes pop{from{transform:scale(.9);opacity:0;}to{transform:scale(1);opacity:1;}}
+.coach-emoji{margin-bottom:.7rem;line-height:1;}
+.coach-chip{width:58px;height:58px;margin:0 auto;border-radius:16px;}
+.coach-chip .ic{width:28px;height:28px;}
+.coach-step{font-size:.72rem;font-weight:750;letter-spacing:.9px;text-transform:uppercase;color:var(--accent);margin-bottom:.4rem;}
+.coach-card h3{font-size:1.3rem;margin-bottom:.55rem;letter-spacing:-.3px;}
+.coach-card p{font-size:.95rem;color:var(--ink2);margin-bottom:1.4rem;line-height:1.55;}
+#help-fab{position:fixed;right:18px;bottom:18px;z-index:350;width:46px;height:46px;border-radius:50%;border:1px solid var(--border);background:var(--surface);box-shadow:var(--shadow-lg);color:var(--accent);font-size:1.25rem;font-weight:800;cursor:pointer;display:none;align-items:center;justify-content:center;font-family:var(--font);}
+#help-fab.show{display:flex;}
+#help-fab:hover{background:var(--accentDim);transform:translateY(-1px);}
+</style>
+</head>
+<body>
+
+<!-- AI DEALER OVERLAY -->
+<div id="dealer">
+  <div class="dealer-box">
+    <span class="ai-chip"><span class="dot"></span> Preparing case file</span>
+    <h2>Dealing your case…</h2>
+    <div class="scan"><div class="scanline"></div><div class="scanline"></div><div class="scanline"></div></div>
+    <div class="dealer-status" id="dealer-status">Scanning Nordia data lake…</div>
+  </div>
+</div>
+
+<!-- COACH MARKS -->
+<div id="coach" onclick="if(event.target===this)dismissCoach()">
+  <div class="coach-card">
+    <div class="coach-emoji" id="coach-emoji"></div>
+    <div class="coach-step" id="coach-step"></div>
+    <h3 id="coach-title"></h3>
+    <p id="coach-body"></p>
+    <button class="btn btn-primary btn-sm" onclick="dismissCoach()">Got it →</button>
+  </div>
+</div>
+<button id="help-fab" onclick="openHelp()" title="How to play">?</button>
+
+<!-- COST BAR -->
+<div id="cost-bar">
+  <div class="cost-inner">
+    <div class="cost-pill timer-pill" id="timer-pill" style="display:none"><span class="cp-ic"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"/><path d="M12 7.5V12l3.2 2"/></svg></span><span class="cp-val" id="timer-txt">20:00</span></div>
+    <div class="cost-pill budget-pill" id="budget-pill">
+      <span class="cp-label">Analysis budget</span>
+      <div class="budget-meter"><div class="budget-fill" id="budget-fill"></div></div>
+      <span class="cp-val" id="budget-txt">0/20</span>
+    </div>
+    <span class="cost-hint" id="cost-hint">Open what you need — head to the decision room when you know enough.</span>
+  </div>
+</div>
+
+<!-- LANDING -->
+<div id="screen-landing" class="screen active">
+<div class="container">
+  <div class="landing">
+    <div class="eyebrow">Nordia · The human in the AI loop</div>
+    <h1 class="brand">MAKE THE CALL</h1>
+    <p class="tag">AI delivers the insights. <strong>You</strong> make the decisions.</p>
+    <p class="landing-blurb">You lead a product decision at <strong>Nordia</strong>, a Nordic pharmacy retailer with online and a big store network. Each round hands your table a real case and the analysis behind it — you decide what's worth knowing, and what to do about it. We'll guide you at each step.</p>
+    <span class="ai-chip"><span class="dot"></span> A new case each round</span>
+    <div class="timer-select">
+      <span class="ts-label">Analysis timer</span>
+      <div class="ts-opts" id="ts-opts">
+        <button data-min="0" onclick="setTimer(0,this)">Off</button>
+        <button data-min="10" onclick="setTimer(10,this)">10 min</button>
+        <button data-min="15" onclick="setTimer(15,this)">15 min</button>
+        <button data-min="20" class="on" onclick="setTimer(20,this)">20 min</button>
+      </div>
+    </div>
+    <div class="start-row">
+      <input type="text" id="team-name-input" placeholder="Table name (optional)" maxlength="40" />
+      <button class="btn btn-primary" onclick="dealCase()">Deal my case →</button>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- BRIEF -->
+<div id="screen-brief" class="screen">
+<div class="container" id="brief-content"></div>
+</div>
+
+<!-- ANALYSIS ROOM -->
+<div id="screen-shop" class="screen">
+<div class="container">
+  <div class="room-header">
+    <div><h2>Analysis room</h2><p>Open the insights you want. Go to the decision room when you know enough.</p></div>
+    <div id="opened-count-label" class="opened-summary"></div>
+  </div>
+  <div class="decision-preview" id="decision-preview"></div>
+  <div id="cards-grid" class="cards-grid"></div>
+  <div class="room-actions">
+    <button class="btn btn-ghost" onclick="goToBrief()">← Back to briefing</button>
+    <button class="btn btn-primary" onclick="goToDecision()">Go to the decision room →</button>
+  </div>
+</div>
+</div>
+
+<!-- DECISION ROOM -->
+<div id="screen-decision" class="screen">
+<div class="container">
+  <div id="step-indicator"></div>
+  <div id="step-content"></div>
+  <div id="step-nav" class="step-nav"></div>
+</div>
+</div>
+
+<!-- RESULTS -->
+<div id="screen-results" class="screen">
+<div class="container" id="results-content"></div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════
+// PALETTE (from validated dataviz dark ramp)
+// ═══════════════════════════════════════════════════════════════
+const C={blue:'#2a78d6',ref:'#c8c2b4',refDim:'#d8d2c5',good:'#0a9d34',warn:'#e0940a',
+  serious:'#e0743a',crit:'#cf3b3b',aqua:'#12a06f',violet:'#5646c9',orange:'#eb6834',yellow:'#c8860a',
+  pos:'#0a8a3f',neg:'#c23636'};
+
+// ═══════════════════════════════════════════════════════════════
+// VIZ HELPERS  (compact, consistent SVG/table builders)
+// ═══════════════════════════════════════════════════════════════
+
+// Horizontal bars. rows:[{label,val,color,tag}]  opts:{max,labelW,unit}
+function barsH(title,rows,opts){
+  opts=opts||{}; const w=290,rowH=22,top=20,labelW=opts.labelW||96,barX=labelW,barMax=w-barX-42;
+  const max=opts.max||Math.max(...rows.map(r=>Math.abs(r.val)))||1;
+  const h=top+rows.length*rowH+4;
+  let s=`<div class="chart-wrap"><svg width="100%" viewBox="0 0 ${w} ${h}" role="img" aria-label="${title}">`;
+  s+=`<text x="0" y="11" class="cx-t">${title}</text>`;
+  rows.forEach((r,i)=>{const y=top+i*rowH;const bw=Math.max(2,Math.abs(r.val)/max*barMax);
+    s+=`<text x="0" y="${y+13}" class="cx-l">${r.label}</text>`;
+    s+=`<rect x="${barX}" y="${y+3}" width="${bw}" height="12" rx="3" fill="${r.color||C.blue}"/>`;
+    s+=`<text x="${barX+bw+5}" y="${y+13}" class="cx-v tab">${r.tag}</text>`;});
+  return s+`</svg></div>`;
+}
+
+// Grouped vertical bars over categories (2 series). a/b:{label,color,vals[]}
+function groupedBars(title,cats,a,b,unit){
+  const w=290,h=132,top=18,base=h-22,plotH=base-top;
+  const max=Math.max(...a.vals,...b.vals)*1.12;
+  const gw=(w-10)/cats.length, bw=Math.min(20,gw/2-4);
+  let s=`<div class="chart-wrap"><svg width="100%" viewBox="0 0 ${w} ${h}" role="img" aria-label="${title}">`;
+  s+=`<text x="0" y="10" class="cx-t">${title}</text>`;
+  cats.forEach((cat,i)=>{const gx=6+i*gw;
+    const ah=a.vals[i]/max*plotH, bh=b.vals[i]/max*plotH;
+    s+=`<rect x="${gx+gw/2-bw-2}" y="${base-ah}" width="${bw}" height="${ah}" rx="3" fill="${a.color}"/>`;
+    s+=`<rect x="${gx+gw/2+2}" y="${base-bh}" width="${bw}" height="${bh}" rx="3" fill="${b.color}"/>`;
+    s+=`<text x="${gx+gw/2}" y="${base+11}" text-anchor="middle" class="cx-l">${cat}</text>`;
+    s+=`<text x="${gx+gw/2-bw/2-2}" y="${base-ah-3}" text-anchor="middle" class="cx-v tab" font-size="7.5">${a.vals[i]}${unit||''}</text>`;});
+  // legend
+  s+=`<rect x="0" y="${h-9}" width="9" height="7" rx="1.5" fill="${a.color}"/><text x="12" y="${h-3}" class="cx-l">${a.label}</text>`;
+  s+=`<rect x="${a.label.length*5.4+22}" y="${h-9}" width="9" height="7" rx="1.5" fill="${b.color}"/><text x="${a.label.length*5.4+34}" y="${h-3}" class="cx-l">${b.label}</text>`;
+  return s+`</svg></div>`;
+}
+
+// Indexed line with a highlighted period band. pts:[y..] labels:[..] band:[startIdx,endIdx,label]
+function lineIdx(title,pts,labels,band,dipNote){
+  const w=290,h=138,xo=16,yo=112,xs=(w-xo-14)/(pts.length-1),ys=58;
+  const y=v=>yo-(v-0.6)*ys;
+  const path=pts.map((v,i)=>`${i?'L':'M'}${xo+i*xs},${y(v)}`).join(' ');
+  const area=`M${xo},${yo} `+pts.map((v,i)=>`L${xo+i*xs},${y(v)}`).join(' ')+` L${xo+(pts.length-1)*xs},${yo} Z`;
+  let s=`<div class="chart-wrap"><svg width="100%" viewBox="0 0 ${w} ${h}" role="img" aria-label="${title}">`;
+  s+=`<defs><linearGradient id="lg-${title.length}" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="${C.blue}" stop-opacity=".28"/><stop offset="100%" stop-color="${C.blue}" stop-opacity="0"/></linearGradient></defs>`;
+  s+=`<text x="0" y="10" class="cx-t">${title}</text>`;
+  if(band){const x1=xo+band[0]*xs,x2=xo+band[1]*xs;
+    s+=`<rect x="${x1}" y="20" width="${x2-x1}" height="${yo-20}" fill="${C.violet}" opacity=".08"/>`;
+    s+=`<text x="${(x1+x2)/2}" y="28" text-anchor="middle" class="cx-l" fill="${C.violet}">${band[2]}</text>`;}
+  s+=`<path d="${area}" fill="url(#lg-${title.length})"/><path d="${path}" fill="none" stroke="${C.blue}" stroke-width="2"/>`;
+  labels.forEach((l,i)=>{if(l)s+=`<text x="${xo+i*xs}" y="${yo+11}" text-anchor="middle" class="cx-l" font-size="7.5">${l}</text>`;});
+  if(dipNote){const di=dipNote[0];s+=`<circle cx="${xo+di*xs}" cy="${y(pts[di])}" r="3" fill="${C.warn}"/><text x="${xo+di*xs}" y="${y(pts[di])+14}" text-anchor="middle" class="cx-v" fill="${C.warn}" font-size="7.5">${dipNote[1]}</text>`;}
+  return s+`</svg></div>`;
+}
+
+// Table. headers:[..]  rows:[[cell..]]  cell = string | {t,c}
+function tbl(headers,rows){
+  let s=`<table class="mini-table"><tr>${headers.map(h=>`<th>${h}</th>`).join('')}</tr>`;
+  rows.forEach(r=>{s+=`<tr>${r.map(c=>{const t=typeof c==='object'?c.t:c;const cl=typeof c==='object'?c.c:'';return `<td class="${cl||''}">${t}</td>`;}).join('')}</tr>`;});
+  return s+`</table>`;
+}
+
+// ═══════════════════════════════════════════════════════════════
+// ICON SYSTEM  (clean line icons, no emoji)
+// ═══════════════════════════════════════════════════════════════
+const ICONS={
+  target:'<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3.4"/>',
+  globe:'<circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17"/><path d="M12 3.5c2.6 2.6 2.6 14.4 0 17c-2.6-2.6-2.6-14.4 0-17z"/>',
+  ban:'<circle cx="12" cy="12" r="8.5"/><path d="M6.2 6.2l11.6 11.6"/>',
+  flask:'<path d="M9.5 3.5h5"/><path d="M10.5 3.5v6l-5 8.1A1.8 1.8 0 0 0 7 20.5h10a1.8 1.8 0 0 0 1.5-2.9L13.5 9.5v-6"/><path d="M8 14.5h8"/>',
+  folder:'<path d="M3.5 6.5A1.5 1.5 0 0 1 5 5h3.8a1.5 1.5 0 0 1 1.2.6L11 7h8a1.5 1.5 0 0 1 1.5 1.5v9A1.5 1.5 0 0 1 19 19H5a1.5 1.5 0 0 1-1.5-1.5z"/>',
+  search:'<circle cx="11" cy="11" r="6.3"/><path d="M20 20l-4.4-4.4"/>',
+  star:'<path d="M12 3.6l2.5 5.2 5.7.8-4.1 4 1 5.7-5.1-2.7-5.1 2.7 1-5.7-4.1-4 5.7-.8z"/>',
+  edit:'<path d="M4 20h4L18.6 9.4a2 2 0 0 0-2.8-2.8L5 17z"/><path d="M14 6.5l3.5 3.5"/>',
+  chart:'<path d="M4 4v16h16"/><path d="M8 16v-4"/><path d="M12.5 16V8"/><path d="M17 16v-6"/>',
+  check:'<path d="M5 12.5l4.4 4.4L19 7.2"/>',
+  alert:'<path d="M12 4.5L3.5 19h17z"/><path d="M12 10.5v4"/><path d="M12 16.8h.01"/>',
+  info:'<circle cx="12" cy="12" r="8.5"/><path d="M12 11v5"/><path d="M12 8h.01"/>',
+  minus:'<circle cx="12" cy="12" r="8.5"/><path d="M8 12h8"/>',
+  clock:'<circle cx="12" cy="12" r="8"/><path d="M12 7.5V12l3.2 2"/>',
+  signal:'<path d="M4.5 13.5a10 10 0 0 1 15 0"/><path d="M7.8 16.5a5.5 5.5 0 0 1 8.4 0"/><circle cx="12" cy="19" r="1.1" fill="currentColor" stroke="none"/>',
+  plus:'<path d="M12 5.5v13"/><path d="M5.5 12h13"/>',
+  trending:'<path d="M4 15l5-5 3 3 7-7"/><path d="M15.5 6H20v4.5"/>',
+  repeat:'<path d="M17 3.5l3 3-3 3"/><path d="M20 6.5H8.5A4.5 4.5 0 0 0 4 11"/><path d="M7 20.5l-3-3 3-3"/><path d="M4 17.5h11.5A4.5 4.5 0 0 0 20 13"/>',
+  shield:'<path d="M12 3.5l7 2.8v4.7c0 4.3-3 7.2-7 8.5c-4-1.3-7-4.2-7-8.5V6.3z"/>',
+  box:'<path d="M4 8l8-4 8 4-8 4z"/><path d="M4 8v8l8 4 8-4V8"/><path d="M12 12v8"/>',
+  bulb:'<path d="M9.5 17.5h5"/><path d="M10.5 20.5h3"/><path d="M12 3.5a6 6 0 0 0-3.8 10.6c.7.6 1.3 1.4 1.3 2.4h5c0-1 .6-1.8 1.3-2.4A6 6 0 0 0 12 3.5z"/>',
+  activity:'<path d="M3 12h3.5l2.5 7 4-14 2.5 7H21"/>',
+  cloud:'<path d="M7.5 18a4 4 0 0 1-.5-8 5 5 0 0 1 9.6-1.2A3.5 3.5 0 0 1 16.5 18z"/>',
+  pie:'<path d="M12 3.5v8.5h8.5"/><circle cx="12" cy="12" r="8.5"/>',
+  gitbranch:'<circle cx="6.5" cy="6" r="2.3"/><circle cx="6.5" cy="18" r="2.3"/><circle cx="17.5" cy="8" r="2.3"/><path d="M6.5 8.3v7.4"/><path d="M17.5 10.3c0 4.2-6 1.3-6 5.5"/>',
+  message:'<path d="M20 14.5a2 2 0 0 1-2 2H9l-4 3.2V6a2 2 0 0 1 2-2h11a2 2 0 0 1 2 2z"/>',
+  lock:'<rect x="5.5" y="10.5" width="13" height="9" rx="1.7"/><path d="M8.5 10.5V8a3.5 3.5 0 0 1 7 0v2.5"/>',
+  dot:'<circle cx="12" cy="12" r="3.4" fill="currentColor" stroke="none"/>'
+};
+function icon(name,cls){return `<svg class="ic ${cls||''}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[name]||ICONS.dot}</svg>`;}
+const DEC_ICON={broad:'globe',targeted:'target',stop:'ban',test:'flask'};
+function catIcon(cat){const s=cat.toLowerCase();
+  if(s.includes('happen'))return 'activity';
+  if(s.includes('which')||s.includes('segment'))return 'pie';
+  if(s.includes('profit'))return 'trending';
+  if(s.includes('causal'))return 'gitbranch';
+  if(s.includes('retention'))return 'repeat';
+  if(s.includes('experience'))return 'message';
+  if(s.includes('trust')||s.includes('ethic'))return 'shield';
+  if(s.includes('external'))return 'cloud';
+  if(s.includes('operation'))return 'box';
+  if(s.includes('insight')||s.includes('customer'))return 'bulb';
+  return 'dot';}
+function scoreGauge(total,color){const r=52,c=2*Math.PI*r;
+  return `<svg width="150" height="150" viewBox="0 0 150 150" class="gauge" data-total="${total}">
+    <circle cx="75" cy="75" r="${r}" fill="none" stroke="var(--surface3)" stroke-width="9"/>
+    <circle id="gauge-arc" cx="75" cy="75" r="${r}" fill="none" stroke="${color}" stroke-width="9" stroke-linecap="round" stroke-dasharray="${c.toFixed(1)}" stroke-dashoffset="${c.toFixed(1)}" transform="rotate(-90 75 75)" class="gauge-arc"/>
+    <text id="gauge-num-text" x="75" y="79" text-anchor="middle" class="gauge-num" fill="${color}">0</text>
+    <text x="75" y="98" text-anchor="middle" class="gauge-sub">out of 100</text></svg>`;}
+function animateGauge(){
+  const svg=document.querySelector('.gauge'); if(!svg) return;
+  const total=+svg.dataset.total, arc=document.getElementById('gauge-arc'), num=document.getElementById('gauge-num-text');
+  const r=52,c=2*Math.PI*r, target=c*(1-total/100);
+  // fill the ring (double rAF so the screen is visible and the transition plays)
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{ if(arc) arc.style.strokeDashoffset=target.toFixed(1); }));
+  // count the number up, eased, in sync with the ring
+  const dur=1150; let t0=null;
+  function tick(now){ if(t0===null)t0=now; const p=Math.min(1,(now-t0)/dur), e=1-Math.pow(1-p,3);
+    if(num) num.textContent=Math.round(e*total); if(p<1) requestAnimationFrame(tick); }
+  requestAnimationFrame(tick);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// CASES
+// ═══════════════════════════════════════════════════════════════
+
+const CASES=[
+
+// ───────────────────────────────────────────────────────────────
+// CASE 1 · AI RECOMMENDATION ENGINE
+// ───────────────────────────────────────────────────────────────
+{
+  id:'reco',
+  name:'AI Recommendation Engine',
+  scanNotes:['Loading app checkout logs…','Segmenting basket data…','Compiling insight deck…'],
+  move:`Nordia ran a 6-week pilot of an <strong>AI "You might also need…" engine</strong> in its app and online checkout. It suggests extra health & self-care products at the basket. On the surface it looks like a hit — average basket size is up and more customers are adding a second item.`,
+  question:`Should Nordia roll out the AI recommender across the whole business — and if so, how?`,
+  stats:[
+    {num:'+14%',label:'Avg basket size vs control'},
+    {num:'31%',label:'Attach rate (was 22%)'},
+    {num:'6 wk',label:'Pilot length'},
+    {num:'1.9M',label:'App sessions in pilot'},
+  ],
+  segments:[
+    {id:'A',name:'Prescription regulars',desc:'Chronic-care patients — buy their meds regardless'},
+    {id:'B',name:'Self-care regulars',desc:'Frequent health & self-care buyers, real cross-sell potential'},
+    {id:'C',name:'Occasional shoppers',desc:'Buy now and then — discover relevant products via recs'},
+    {id:'D',name:'Deal-driven new users',desc:'Joined for an offer — impulse buys, high returns'},
+  ],
+  bestSegs:{A:'exclude',B:'test',C:'include',D:'exclude'},
+  decisions:[
+    {id:'broad',icon:'🚀',label:'Roll out to everyone, everywhere',desc:'Same engine, all users, all product categories',quality:'poor',
+      explanation:'Repeats the pilot pattern at scale: mostly low-margin impulse attach, modest true lift, and trust risk in sensitive health categories. Aggregate basket growth hides thin incremental value.'},
+    {id:'targeted',icon:'🎯',label:'Roll out for responsive segments, with guardrails',desc:'Enable for discover-driven customers; suppress sensitive-category recs',quality:'best',
+      explanation:'The strongest call. The engine creates real incremental value for occasional shoppers, while suppressing recs for prescription regulars removes the trust risk and the wasted, non-incremental nudges.'},
+    {id:'stop',icon:'🛑',label:'Switch the engine off',desc:'Drop AI recommendations entirely',quality:'poor',
+      explanation:'An over-correction. There is genuine incremental value for occasional shoppers. Killing the engine on an aggregate-margin worry throws away a working tool for the segment it actually helps.'},
+    {id:'test',icon:'🧪',label:'Run a proper holdout test first',desc:'Randomised holdout before any rollout decision',quality:'good',
+      explanation:'Methodologically right — you would measure true incrementality cleanly. Slightly conservative here, since the segment and margin signals already point clearly to a targeted rollout.'},
+  ],
+  uncertainties:[
+    {id:'incremental',label:'Whether the lift was truly incremental'},
+    {id:'margin',label:'Whether the extra sales were profitable'},
+    {id:'segments',label:'Whether it works differently by segment'},
+    {id:'trust',label:'Whether it eroded customer trust'},
+    {id:'retention',label:'Whether the extra items were kept, not returned'},
+    {id:'other',label:'Something else'},
+  ],
+  cards:[
+    {id:'attach_overview',name:'Basket & attach overview',cat:'What happened',tone:'badge-blue',cost:2,value:'low',
+      q:'How did basket size and attach rate move during the pilot?',
+      viz:()=>tbl(['Metric','Pilot','Control'],[
+        ['Avg basket',{t:'+14%',c:'pos'},'—'],
+        ['Attach rate',{t:'31%',c:'pos'},'22%'],
+        ['Revenue / session',{t:'+9%',c:'pos'},'—'],
+        ['2nd-item rate',{t:'+41%',c:'pos'},'—']]),
+      signal:'On aggregate the engine clearly lifted basket size, attach rate and revenue per session during the pilot.',
+      limit:`It shows that baskets grew — not whether those extra sales were profitable, whether they'd have happened anyway, or which customers drove them.`},
+
+    {id:'segment_lift',name:'Incremental lift by segment',cat:'Which segments',tone:'badge-violet',cost:3,value:'high',
+      q:'Where did the extra spend actually come from — which customer segments responded?',
+      viz:()=>barsH('Basket lift vs control, by segment',[
+        {label:'Segment A',val:2,color:C.refDim,tag:'+2%'},
+        {label:'Segment B',val:9,color:C.blue,tag:'+9%'},
+        {label:'Segment C',val:19,color:C.blue,tag:'+19%'},
+        {label:'Segment D',val:26,color:C.refDim,tag:'+26%'}],{max:28}),
+      signal:'The lift is concentrated in occasional shoppers (C, +19%) and deal-driven new users (D, +26%). Prescription regulars (A) barely moved.',
+      limit:`It shows who added more to the basket — not whether those items were profitable, whether they were kept, or whether the engine caused the change.`},
+
+    {id:'margin_mix',name:'Margin mix of recommended items',cat:'Profitability',tone:'badge-amber',cost:3,value:'high',
+      q:'What kind of products did the engine push — and what did it do to margin?',
+      viz:()=>tbl(['','Pilot','Control'],[
+        ['Revenue','+9%','—'],
+        ['Gross margin %',{t:'35%',c:'neg'},{t:'38%',c:'pos'}],
+        ['Contribution',{t:'≈ flat',c:'neu'},'—'],
+        ['Attach = impulse/low-margin',{t:'63%',c:'neg'},'—']]),
+      signal:'Revenue rose 9% but gross margin fell 3pp — the engine mostly attached low-margin impulse and seasonal items, so the extra revenue barely lifted contribution.',
+      limit:`It's an aggregate view. It doesn't separate segments, and excludes the compute and licensing cost of running the engine at scale.`},
+
+    {id:'incrementality',name:'Incrementality holdout',cat:'Causality',tone:'badge-violet',cost:5,value:'high',
+      q:'Would customers have bought these items anyway, without the AI nudge?',
+      viz:()=>tbl(['Component','Estimate','CI'],[
+        ['Observed attach lift','+14%',{t:'—',c:'neu'}],
+        ['Would-buy-anyway (baseline)',{t:'~8pp',c:'neg'},'±3pp'],
+        ['True incremental lift',{t:'~5–6%',c:'pos'},'±3pp'],
+        ['Concentrated in','Seg C','—']]),
+      signal:'A small randomised holdout suggests only ~5–6 of the 14 points are truly incremental — much of the attach would have happened without the AI.',
+      limit:`The holdout was small, so the confidence interval is wide. It estimates the average effect, not the per-item or per-category detail.`},
+
+    {id:'returns_repeat',name:'Returns & repeat signal',cat:'Retention',tone:'badge-blue',cost:3,value:'high',
+      q:'Were the recommended items kept and repurchased — or returned?',
+      viz:()=>tbl(['Segment','Return rate','Repeat in 60d'],[
+        ['Segment A',{t:'4%',c:'pos'},{t:'high',c:'pos'}],
+        ['Segment B',{t:'6%',c:'pos'},{t:'good',c:'pos'}],
+        ['Segment C',{t:'8%',c:'neu'},{t:'moderate',c:'neu'}],
+        ['Segment D',{t:'18%',c:'neg'},{t:'low',c:'neg'}]]),
+      signal:'Deal-driven users (D) returned recommended items three times as often and rarely repurchased. Occasional shoppers (C) kept and re-bought at a healthy rate.',
+      limit:`A 60-day window is short. Returns and repeat are signals of value, not a full profitability verdict.`},
+
+    {id:'csat',name:'Customer helpfulness rating',cat:'Experience',tone:'badge-blue',cost:2,value:'low',
+      q:'How did customers rate the AI suggestions?',
+      viz:()=>barsH('“Were the suggestions helpful?” (n=1,240)',[
+        {label:'Very helpful',val:52,color:C.aqua,tag:'52%'},
+        {label:'Helpful',val:31,color:C.blue,tag:'31%'},
+        {label:'Neutral',val:12,color:C.ref,tag:'12%'},
+        {label:'Not helpful',val:5,color:C.crit,tag:'5%'}],{max:60,labelW:78}),
+      signal:'Customers rated the engine highly — 4.6/5 average, 83% found the suggestions helpful.',
+      limit:`Liking a suggestion is not the same as it creating value. A high rating can reflect convenience, not incremental or profitable sales — and satisfied customers can still be unprofitable ones.`},
+
+    {id:'trust_audit',name:'Recommendation trust audit',cat:'Trust & ethics',tone:'badge-violet',cost:3,value:'medium',
+      q:'Did the engine recommend anything customers found intrusive?',
+      viz:()=>tbl(['Signal','Reading'],[
+        ['Recs into sensitive health categories',{t:'flagged',c:'neg'}],
+        ['Opt-out rate — Segment A',{t:'11%',c:'neg'}],
+        ['“Felt pushy/intrusive” complaints',{t:'2.3%',c:'neu'}],
+        ['Opt-out rate — Segment C',{t:'1%',c:'pos'}]]),
+      signal:'Prescription regulars (A) opted out most and drove most complaints — the engine kept suggesting products tied to their conditions, which felt intrusive.',
+      limit:`These are qualitative and low-count signals. They flag a real trust risk but can't quantify its long-term revenue impact.`},
+
+    {id:'category_deep',name:'What got recommended',cat:'What happened',tone:'badge-blue',cost:2,value:'medium',
+      q:'Which product categories did the attached items come from?',
+      viz:()=>barsH('Share of attached revenue, by category',[
+        {label:'Confectionery',val:29,color:C.yellow,tag:'29%'},
+        {label:'Seasonal/OTC',val:26,color:C.blue,tag:'26%'},
+        {label:'Self-care',val:24,color:C.aqua,tag:'24%'},
+        {label:'Vitamins',val:21,color:C.blue,tag:'21%'}],{max:32,labelW:82}),
+      signal:'Over half the attached revenue came from confectionery and seasonal OTC — the lowest-margin corners of the range.',
+      limit:`Descriptive only. It shows what was recommended, not what customers would have bought regardless.`},
+
+    {id:'seasonality',name:'External timing check',cat:'External factors',tone:'badge-amber',cost:2,value:'medium',
+      q:'Did anything outside the engine inflate the pilot numbers?',
+      viz:()=>lineIdx('Category demand index (all channels)',[0.95,1.0,1.05,1.28,1.34,1.30,1.12,1.0],
+        ['','','Pilot start','','','','Pilot end',''],[2,6,'Cold & flu peak']),
+      signal:'The pilot overlapped the seasonal cold & flu peak, when attach rates rise anyway. Some of the observed lift is seasonal, not the engine.',
+      limit:`Hard to separate the seasonal wave from the engine effect precisely without the holdout running across seasons.`},
+
+    {id:'roi_scenarios',name:'Rollout ROI scenarios',cat:'Profitability',tone:'badge-amber',cost:3,value:'medium',
+      q:'Is a full rollout net-positive once compute and margin are counted?',
+      viz:()=>tbl(['Scenario','Assumption','Net / year'],[
+        ['Optimistic','High incrementality, low returns',{t:'+2.1M',c:'pos'}],
+        ['Base','Mid incrementality, some returns',{t:'−0.3M',c:'neg'}],
+        ['Conservative','Low incrementality, high returns',{t:'−1.4M',c:'neg'}]]),
+      signal:'A broad rollout is net-thin to negative in the base and conservative cases. The value is real but concentrated — it survives only where incrementality is high.',
+      limit:`Built on assumptions and cost allocations. It can't tell you on its own which segments carry the positive cases.`},
+  ],
+  facit:{
+    segReveal:[
+      ['Segment A','Prescription regulars — buy their meds regardless; recs were non-incremental and felt intrusive.'],
+      ['Segment B','Self-care regulars — modest, genuine cross-sell; a promising but unproven fit.'],
+      ['Segment C','Occasional shoppers — discovered relevant products; the engine created real incremental value here.'],
+      ['Segment D','Deal-driven new users — big impulse baskets, high returns, little repeat; flattering but unprofitable.'],
+    ],
+    trueEffect:`Baskets grew +14%, but a holdout suggests only ~5–6 points were truly incremental. The rest was would-buy-anyway attach, inflated by the cold & flu season. Gross margin fell ~3pp because the engine leaned on low-margin impulse items, so contribution barely moved.`,
+    hidden:[
+      ['💸',`Margin, not revenue, is the story. +9% revenue barely lifted contribution at all once the thin margins of the impulse attach are counted.`],
+      ['🔁',`Deal-driven users (D) looked best on basket size but returned items three times as often and rarely came back — flattering, not valuable.`],
+      ['🛡️',`Recommending condition-related products to prescription regulars (A) drove opt-outs and complaints — a trust cost the basket number never shows.`],
+      ['🎯',`Occasional shoppers (C) were the real win: relevant discovery, items kept and repurchased, low opt-out. That's where the engine earns its keep.`],
+    ],
+    right:`<strong>Roll out targeted, with guardrails.</strong> Enable the engine for occasional and self-care shoppers (C, and test B), suppress recommendations for prescription regulars (A) and in sensitive health categories, and don't chase the impulse baskets of deal-driven users (D). Keep a permanent holdout so you keep measuring true incremental value.`,
+  },
+  feedback:{
+    highValueIds:['segment_lift','margin_mix','incrementality','returns_repeat'],
+    trapId:'csat',
+    onBest:`You chose a targeted rollout with guardrails — exactly where the signals point. The engine has real value for the right customers, and holding it back elsewhere removes the margin drag and the trust risk.`,
+    onGood:`Running a clean holdout test is methodologically sound — you're refusing to over-read observational data. It's slightly cautious here, since the segment and margin signals already make a targeted rollout defensible.`,
+    onBroad:`You rolled it out broadly. Several insights warned that the lift was mostly non-incremental, low-margin, and concentrated — a full rollout scales the margin drag and the trust risk along with the wins.`,
+    onStop:`You switched the engine off. That throws away genuine incremental value for occasional shoppers. Aggregate margin worry shouldn't kill a tool that works for a specific segment.`,
+    shallowMsg:`Your top insights describe what happened, but not why or whether it paid off. Incrementality, margin mix and returns are what actually move this decision.`,
+    strongEvidenceMsg:`You leaned on the high-leverage insights — incrementality, margin and retention. Those are what separate a real win from a flattering basket number.`,
+    trapMsg:`You ranked the helpfulness rating among your key evidence. Customers loved the suggestions — but liking a nudge isn't the same as it being incremental or profitable. This is the trap card.`,
+    overspendMsg:`You opened a lot of insights. Ask whether each one actually changed your call — or just added comfort. Good analysis is the smallest set that's enough to decide.`,
+    underPoorMsg:`You committed to a weak call on very little evidence. The cheapest analysis is worthless if it lets you repeat a margin-losing rollout.`,
+    segPraise:{
+      C:{dec:'include',msg:`Right call on Segment C: relevant discovery, items kept and repurchased — the clearest source of incremental value.`},
+      A:{dec:'exclude',msg:`Right call on Segment A: these customers buy anyway, and the recs eroded trust. Excluding them cuts cost and risk with no lost sales.`},
+    },
+  },
+  disc:{lo:10,budget:20,red:24},
+},
+
+// ───────────────────────────────────────────────────────────────
+// CASE 2 · OWN-BRAND LINE  (segments = product categories)
+// ───────────────────────────────────────────────────────────────
+{
+  id:'ownbrand',
+  name:'Own-Brand Line',
+  scanNotes:['Loading POS & range data…','Comparing to national brands…','Compiling insight deck…'],
+  move:`Nordia launched a private-label range, <strong>"Nordia Basics"</strong>, across its stores and app over 8 weeks — vitamins, pain relief, skincare and everyday basics at a lower price than the national brands. Own-brand units sold strongly and total category revenue rose.`,
+  question:`Should Nordia expand the own-brand range — and across which product categories?`,
+  stats:[
+    {num:'11%',label:'Own-brand share of units'},
+    {num:'+6%',label:'Category revenue'},
+    {num:'8 wk',label:'Launch window'},
+    {num:'4',label:'Categories in launch'},
+  ],
+  segments:[
+    {id:'A',name:'Vitamins & supplements',desc:'Price-driven, low brand loyalty — a natural own-brand fit'},
+    {id:'B',name:'Pain relief & OTC meds',desc:'Trust-sensitive — customers lean on familiar national brands'},
+    {id:'C',name:'Skincare & derma',desc:'Mixed loyalty, decent margins — an open question'},
+    {id:'D',name:'Everyday hygiene basics',desc:'High volume, rock-bottom margins'},
+  ],
+  bestSegs:{A:'include',B:'exclude',C:'test',D:'exclude'},
+  decisions:[
+    {id:'broad',icon:'🚀',label:'Expand own-brand across all categories',desc:'Push Nordia Basics into every category, everywhere',quality:'poor',
+      explanation:'Scales the margin loss. Own-brand mostly switches buyers off higher-margin national brands, and customers distrust own-brand medicines — a blanket push destroys value in exactly the categories that looked like volume wins.'},
+    {id:'targeted',icon:'🎯',label:'Expand where it is accretive, hold back elsewhere',desc:'Grow own-brand in trusting, price-driven categories only',quality:'best',
+      explanation:'The strongest call. Own-brand creates value only when it beats the margin of what it displaces and customers trust it — true for vitamins, false for trust-sensitive meds and margin-thin basics.'},
+    {id:'stop',icon:'🛑',label:'Discontinue the own-brand line',desc:'Pull Nordia Basics from the range',quality:'poor',
+      explanation:'An over-correction. Vitamins & supplements are a genuine margin win. Killing the whole line on aggregate caution throws away the category where private label clearly works.'},
+    {id:'test',icon:'🧪',label:'Run a controlled category test first',desc:'Test cannibalisation properly before expanding',quality:'good',
+      explanation:'Methodologically sound — you refuse to read cannibalisation as growth. A little cautious, since vitamins already look like a clear, accretive win.'},
+  ],
+  uncertainties:[
+    {id:'incremental',label:'Whether own-brand grew the category or just switched buyers'},
+    {id:'margin',label:'Whether it improved or eroded margin'},
+    {id:'segments',label:'Whether it works differently by category'},
+    {id:'trust',label:'Whether customers trust own-brand everywhere'},
+    {id:'retention',label:'Whether own-brand buyers repurchase'},
+    {id:'other',label:'Something else'},
+  ],
+  cards:[
+    {id:'sales_overview',name:'Launch sales overview',cat:'What happened',tone:'badge-blue',cost:2,value:'low',
+      q:'How did own-brand units and category revenue move at launch?',
+      viz:()=>tbl(['Metric','Launch period'],[
+        ['Own-brand share of units',{t:'11%',c:'pos'}],
+        ['Category revenue',{t:'+6%',c:'pos'}],
+        ['Own-brand units','+14% MoM'],
+        ['Stores & app carrying line','all']]),
+      signal:'Own-brand took 11% of units in eight weeks and category revenue rose 6% — a strong-looking launch on the surface.',
+      limit:`It shows own-brand sold — not whether those sales grew the category or simply switched buyers off national brands, and not what that did to margin.`},
+
+    {id:'category_lift',name:'Own-brand share by category',cat:'Which categories',tone:'badge-violet',cost:3,value:'high',
+      q:'Where did own-brand win share — and where did customers resist?',
+      viz:()=>barsH('Own-brand share of units, by category',[
+        {label:'Vitamins',val:24,color:C.blue,tag:'24%'},
+        {label:'Pain relief',val:6,color:C.refDim,tag:'6%'},
+        {label:'Skincare',val:15,color:C.blue,tag:'15%'},
+        {label:'Hygiene',val:28,color:C.blue,tag:'28%'}],{max:32,labelW:78}),
+      signal:'Own-brand won big in vitamins (24%) and hygiene basics (28%), moderately in skincare, and was rejected in pain relief (6%).',
+      limit:`Share won is not value created. It doesn't show the margin of those categories, whether the sales were incremental, or whether buyers stick.`},
+
+    {id:'cannibalization',name:'Cannibalisation analysis',cat:'Causality',tone:'badge-violet',cost:4,value:'high',
+      q:'Did own-brand grow the category — or just take sales from national brands?',
+      viz:()=>tbl(['Category','Switched from nat-brand','Net category margin'],[
+        ['Vitamins',{t:'low',c:'pos'},{t:'up',c:'pos'}],
+        ['Pain relief',{t:'high',c:'neg'},{t:'down',c:'neg'}],
+        ['Skincare',{t:'mid',c:'neu'},{t:'flat',c:'neu'}],
+        ['Hygiene',{t:'high',c:'neg'},{t:'down',c:'neg'}]]),
+      signal:'In pain relief and hygiene, own-brand mostly cannibalised higher-margin national brands, dragging category margin down. In vitamins it grew share without much cannibalisation.',
+      limit:`It maps where value moved, not the precise margin figures or how loyal the new own-brand buyers will be.`},
+
+    {id:'margin_by_cat',name:'Margin by category',cat:'Profitability',tone:'badge-amber',cost:3,value:'high',
+      q:'Is own-brand margin actually better than the national brand it displaces?',
+      viz:()=>tbl(['Category','Own-brand margin','vs national'],[
+        ['Vitamins',{t:'42%',c:'pos'},{t:'+7pp',c:'pos'}],
+        ['Pain relief',{t:'26%',c:'neg'},{t:'−9pp',c:'neg'}],
+        ['Skincare',{t:'38%',c:'neu'},{t:'+2pp',c:'neu'}],
+        ['Hygiene',{t:'19%',c:'neg'},{t:'−4pp',c:'neg'}]]),
+      signal:'Own-brand only beats the national brand on margin in vitamins (and marginally skincare). In pain relief and hygiene it had to be discounted so hard that margin fell below what it replaced.',
+      limit:`Category-level margin, before shelf and marketing cost. It doesn't tell you how trust or repeat differ underneath.`},
+
+    {id:'repeat',name:'Repeat & reversion',cat:'Retention',tone:'badge-blue',cost:3,value:'high',
+      q:'Did own-brand buyers come back — or revert to the national brand?',
+      viz:()=>tbl(['Category','Own-brand repeat','Reverted to nat-brand'],[
+        ['Vitamins',{t:'high',c:'pos'},{t:'9%',c:'pos'}],
+        ['Pain relief',{t:'low',c:'neg'},{t:'41%',c:'neg'}],
+        ['Skincare',{t:'moderate',c:'neu'},{t:'22%',c:'neu'}],
+        ['Hygiene',{t:'high',c:'pos'},{t:'12%',c:'pos'}]]),
+      signal:'Vitamins buyers stuck with own-brand; pain-relief buyers reverted in droves (41%) after trying it once. Hygiene repeats well but on wafer-thin margin.',
+      limit:`A repeat rate is a value signal, not a full P&L. High repeat on a low-margin line can still be a poor use of shelf.`},
+
+    {id:'trust_survey',name:'“Value for money” survey',cat:'Experience',tone:'badge-blue',cost:2,value:'low',
+      q:'What did customers think of the own-brand range?',
+      viz:()=>barsH('“Nordia Basics is good value” (n=980)',[
+        {label:'Strongly agree',val:48,color:C.aqua,tag:'48%'},
+        {label:'Agree',val:34,color:C.blue,tag:'34%'},
+        {label:'Neutral',val:13,color:C.ref,tag:'13%'},
+        {label:'Disagree',val:5,color:C.crit,tag:'5%'}],{max:56,labelW:84}),
+      signal:'Customers rated Nordia Basics highly on value — 4.5/5, and 82% agreed it was good value for money.',
+      limit:`Loving the price is not the same as the line being profitable. Customers praised the value in every category — including the ones losing money on margin.`},
+
+    {id:'brand_trust',name:'Own-brand trust by category',cat:'Trust & ethics',tone:'badge-violet',cost:3,value:'medium',
+      q:'Would customers trust an own-brand product in each category?',
+      viz:()=>tbl(['Category','Would buy own-brand','Trust vs national'],[
+        ['Vitamins',{t:'82%',c:'pos'},'equal'],
+        ['Pain relief',{t:'44%',c:'neg'},{t:'lower',c:'neg'}],
+        ['Skincare',{t:'63%',c:'neu'},'slightly lower'],
+        ['Hygiene',{t:'88%',c:'pos'},'equal']]),
+      signal:'Trust in own-brand collapses for medicines: fewer than half would buy an own-brand painkiller, versus 80%+ for vitamins and hygiene.',
+      limit:`Stated willingness, not observed behaviour. It flags where trust is a barrier but not exactly how much revenue it costs.`},
+
+    {id:'incrementality',name:'Incrementality estimate',cat:'Causality',tone:'badge-violet',cost:5,value:'medium',
+      q:'How much of own-brand revenue was genuinely new to Nordia?',
+      viz:()=>tbl(['Component','Estimate','CI'],[
+        ['Own-brand share gained','11%',{t:'—',c:'neu'}],
+        ['Switched from national brand',{t:'~8pp',c:'neg'},'±2pp'],
+        ['Truly incremental sales',{t:'~3%',c:'neu'},'±2pp']]),
+      signal:'Only ~3 of the 11 points are new business — most own-brand sales are national-brand buyers switching. So the line only helps where own-brand margin beats what it displaced.',
+      limit:`A modelled estimate with real uncertainty. It gives the average picture, not a category-by-category incrementality figure.`},
+
+    {id:'elasticity',name:'Price sensitivity by category',cat:'Customer insight',tone:'badge-blue',cost:3,value:'medium',
+      q:'How price-driven are shoppers in each category?',
+      viz:()=>barsH('Price sensitivity (index, higher = more price-driven)',[
+        {label:'Vitamins',val:8,color:C.blue,tag:'8'},
+        {label:'Pain relief',val:3,color:C.refDim,tag:'3'},
+        {label:'Skincare',val:5,color:C.blue,tag:'5'},
+        {label:'Hygiene',val:9,color:C.blue,tag:'9'}],{max:11,labelW:78}),
+      signal:'Vitamins and hygiene shoppers are highly price-driven (own-brand fits); pain-relief buyers are not — they pay up for the brand they trust.',
+      limit:`Price sensitivity explains fit, not profitability. Hygiene is price-driven yet too thin-margin to be worth the shelf.`},
+
+    {id:'roi_scenarios',name:'Expansion ROI scenarios',cat:'Profitability',tone:'badge-amber',cost:3,value:'medium',
+      q:'Is a full-range expansion net-positive on margin?',
+      viz:()=>tbl(['Scenario','Assumption','Net margin / year'],[
+        ['Optimistic','Low cannibalisation, high trust',{t:'+1.6M',c:'pos'}],
+        ['Base','Mixed by category',{t:'−0.2M',c:'neg'}],
+        ['Conservative','High cannibalisation in meds',{t:'−1.1M',c:'neg'}]]),
+      signal:'A blanket expansion is net-negative in the base and conservative cases — the vitamins win is outweighed by margin loss in meds and basics.',
+      limit:`Assumption-driven. It can't tell you on its own which categories carry the positive cases — that's the segment insights' job.`},
+  ],
+  facit:{
+    segReveal:[
+      ['Vitamins & supplements','Price-driven, trust-neutral shoppers — own-brand won share AND improved margin. The real win.'],
+      ['Pain relief & OTC meds','Trust-sensitive — 41% reverted to national brands and own-brand only sold when discounted. Value-destroying.'],
+      ['Skincare & derma','Mixed: promising margin, uncertain trust. Worth a controlled test, not a full commitment.'],
+      ['Everyday hygiene basics','High share but 19% margin and heavy cannibalisation. Volume without value.'],
+    ],
+    trueEffect:`Category revenue rose 6% and own-brand took 11% of units — but only ~3 points were truly incremental. Most own-brand sales simply switched buyers off higher-margin national brands, so the category's blended margin fell everywhere except vitamins.`,
+    hidden:[
+      ['💊',`In pain relief, customers trust the national brand: 41% reverted, and own-brand only moved when discounted — margin fell 9pp.`],
+      ['🧴',`Hygiene basics looked like a share winner but sit at 19% margin with heavy cannibalisation — volume, not value.`],
+      ['💚',`Vitamins were the exception: price-driven shoppers, equal trust, and own-brand margin 7pp above the national brand it displaced.`],
+      ['🗣️',`High "value for money" scores came from every category — including the ones losing money. Liking the price isn't the same as it being profitable.`],
+    ],
+    right:`<strong>Expand where it is accretive.</strong> Grow own-brand in vitamins & supplements (include) and test skincare, where customers trust it and the margin beats what it displaces. Hold it back from trust-sensitive pain relief (exclude) and margin-thin hygiene basics (exclude). Private label creates value when it beats the margin of what it replaces — not just when it sells.`,
+  },
+  feedback:{
+    highValueIds:['category_lift','cannibalization','margin_by_cat','repeat'],
+    trapId:'trust_survey',
+    onBest:`You expanded own-brand only where it's accretive and trusted, and held back where it destroys margin. That's the whole game with private label — it has to beat what it displaces.`,
+    onGood:`A controlled category test is sound — you refuse to read cannibalisation as growth. A little cautious, since vitamins already look like a clear, accretive win.`,
+    onBroad:`You expanded across all categories. The insights warned that own-brand mostly switches buyers off higher-margin national brands and that customers distrust own-brand medicines — a blanket push scales the margin loss.`,
+    onStop:`You discontinued the line. That throws away a genuine margin win in vitamins & supplements. Aggregate caution shouldn't kill the one category where private label clearly works.`,
+    shallowMsg:`Your top insights show own-brand sold — not whether it was incremental, profitable, or trusted. Cannibalisation, margin and repeat are what actually decide this.`,
+    strongEvidenceMsg:`You leaned on cannibalisation, margin and repeat — the insights that separate real private-label value from sales that just moved off the national brand.`,
+    trapMsg:`You ranked the "value for money" survey among your key evidence. Customers praised the price in every category — including the loss-making ones. That's the trap card.`,
+    overspendMsg:`You opened a lot of insights. Ask whether each one actually changed your call — or just added comfort. Good analysis is the smallest set that's enough to decide.`,
+    underPoorMsg:`You committed to a weak call on very little evidence. The cheapest analysis is worthless if it lets you scale a margin-losing range.`,
+    segPraise:{
+      A:{dec:'include',msg:`Right call on vitamins & supplements: price-driven, trusted, and own-brand margin beats the national brand it displaced — the clearest accretive win.`},
+      B:{dec:'exclude',msg:`Right call on pain relief: customers trust national brands and revert, forcing discounts that erase margin. Holding back protects the category's economics.`},
+    },
+  },
+  disc:{lo:10,budget:20,red:24},
+},
+
+// ───────────────────────────────────────────────────────────────
+// CASE 3 · AUTO-REFILL SUBSCRIPTION  (segments = customers)
+// ───────────────────────────────────────────────────────────────
+{
+  id:'refill',
+  name:'Auto-Refill Subscription',
+  scanNotes:['Loading subscription ledger…','Modelling churn & incrementality…','Compiling insight deck…'],
+  move:`Nordia piloted an <strong>auto-refill subscription</strong> for 3 months — repeat prescriptions and recurring self-care items delivered automatically, with a 30% launch discount and free delivery. 12,400 customers signed up and subscriber revenue jumped.`,
+  question:`Should Nordia roll out auto-refill — to whom, and on what terms?`,
+  stats:[
+    {num:'12.4k',label:'Sign-ups'},
+    {num:'+18%',label:'Subscriber revenue'},
+    {num:'84%',label:'90-day retention'},
+    {num:'3 mo',label:'Pilot length'},
+  ],
+  segments:[
+    {id:'A',name:'Chronic-care patients',desc:'Regular prescriptions — refill on a fixed cycle regardless'},
+    {id:'B',name:'Self-care regulars',desc:'Supplements & self-care — prone to lapsing between purchases'},
+    {id:'C',name:'Occasional buyers',desc:'Irregular needs — no natural refill cycle'},
+    {id:'D',name:'Deal-driven sign-ups',desc:'Joined for the 30% launch discount'},
+  ],
+  bestSegs:{A:'test',B:'include',C:'exclude',D:'exclude'},
+  decisions:[
+    {id:'broad',icon:'🚀',label:'Roll out to everyone with the launch discount',desc:'Same offer, all customers, keep the 30% hook',quality:'poor',
+      explanation:'Scales the cost, not the value. Most subscriber revenue isn\'t incremental, and the discount pulls in deal-seekers who churn the moment it ends. A broad, discounted rollout loses money at scale.'},
+    {id:'targeted',icon:'🎯',label:'Roll out where it is incremental & sticky, drop the discount',desc:'Target lapsing self-care buyers; retention play for chronic care',quality:'best',
+      explanation:'The strongest call. The subscription genuinely lifts and retains lapsing self-care buyers, and locks in chronic-care patients — but only pays if you stop bribing deal-seekers to churn.'},
+    {id:'stop',icon:'🛑',label:'Shut the subscription down',desc:'Drop auto-refill entirely',quality:'poor',
+      explanation:'An over-correction. There\'s a real incremental win in self-care regulars and a quiet retention win in chronic care. Aggregate skepticism shouldn\'t kill the parts that work.'},
+    {id:'test',icon:'🧪',label:'Test pricing & incrementality first',desc:'Controlled test before any rollout decision',quality:'good',
+      explanation:'Methodologically right — you refuse to read sign-ups as profit. Slightly cautious, since the segment signals already point to a targeted rollout.'},
+  ],
+  uncertainties:[
+    {id:'incremental',label:'Whether the revenue was new or just shifted onto a plan'},
+    {id:'profitability',label:'Whether it is profitable after service cost'},
+    {id:'segments',label:'Whether it fits every customer type'},
+    {id:'churn',label:'Whether subscribers stay once the discount ends'},
+    {id:'retention',label:'Whether it locks in valuable customers'},
+    {id:'other',label:'Something else'},
+  ],
+  cards:[
+    {id:'adoption_overview',name:'Adoption overview',cat:'What happened',tone:'badge-blue',cost:2,value:'low',
+      q:'How did sign-ups, subscriber revenue and retention look?',
+      viz:()=>tbl(['Metric','Pilot'],[
+        ['Sign-ups',{t:'12,400',c:'pos'}],
+        ['Subscriber revenue',{t:'+18%',c:'pos'}],
+        ['90-day retention',{t:'84%',c:'pos'}],
+        ['Orders / subscriber','+1.3']]),
+      signal:'Adoption looked strong — 12.4k sign-ups, subscriber revenue up 18%, and most subscribers still active at 90 days.',
+      limit:`It shows people subscribed — not whether that revenue was new to Nordia, whether it's profitable after service cost, or who stays once the discount ends.`},
+
+    {id:'incrementality',name:'Incrementality holdout',cat:'Causality',tone:'badge-violet',cost:5,value:'high',
+      q:'Would subscribers have bought these items anyway?',
+      viz:()=>tbl(['Component','Estimate','CI'],[
+        ['Subscriber revenue lift','+18%',{t:'—',c:'neu'}],
+        ['Would-buy-anyway (baseline)',{t:'~13pp',c:'neg'},'±3pp'],
+        ['Truly incremental',{t:'~5%',c:'neu'},'±3pp'],
+        ['Concentrated in','Seg B','—']]),
+      signal:'Only ~5 of the 18 points are truly new. Chronic-care patients would have refilled anyway — the subscription mostly relabels existing purchases as recurring ones.',
+      limit:`A modelled estimate with a wide interval. It gives the average incrementality, not a clean per-segment number.`},
+
+    {id:'segment_value',name:'Incremental revenue by segment',cat:'Which segments',tone:'badge-violet',cost:3,value:'high',
+      q:'Which customers actually spent more because of the subscription?',
+      viz:()=>barsH('Incremental revenue vs baseline, by segment',[
+        {label:'Segment A',val:1,color:C.refDim,tag:'+1%'},
+        {label:'Segment B',val:14,color:C.blue,tag:'+14%'},
+        {label:'Segment C',val:2,color:C.refDim,tag:'+2%'},
+        {label:'Segment D',val:4,color:C.crit,tag:'−4%'}],{max:16}),
+      signal:'Self-care regulars (B) genuinely spent more (+14%). Chronic-care patients (A) and occasional buyers (C) barely changed, and deal-driven sign-ups (D) were net-negative once the discount is counted.',
+      limit:`It shows incremental revenue, not the service cost to deliver it or how long each segment stays.`},
+
+    {id:'service_cost',name:'Cost-to-serve a subscriber',cat:'Profitability',tone:'badge-amber',cost:3,value:'high',
+      q:'What does running a subscription cost per customer?',
+      viz:()=>tbl(['Cost line','Impact on margin'],[
+        ['Free delivery on refills',{t:'−3pp',c:'neg'}],
+        ['Launch discount (30%)',{t:'−6pp',c:'neg'}],
+        ['Reminders & support',{t:'−1pp',c:'neg'}],
+        ['Higher order frequency',{t:'+5pp',c:'pos'}],
+        ['Net vs one-off purchase',{t:'−5pp',c:'neg'}]]),
+      signal:'A subscriber earns Nordia ~5pp less margin than the same customer buying one-off — the launch discount and free delivery outweigh the margin from more frequent orders.',
+      limit:`Average cost-to-serve. It doesn't capture the defensive value of locking in a high-value customer for years.`},
+
+    {id:'churn',name:'Churn by segment',cat:'Retention',tone:'badge-blue',cost:3,value:'high',
+      q:'Who stays subscribed — and who leaves when the discount ends?',
+      viz:()=>tbl(['Segment','90-day churn','After discount ends'],[
+        ['Segment A',{t:'6%',c:'pos'},{t:'stays',c:'pos'}],
+        ['Segment B',{t:'9%',c:'pos'},{t:'stays',c:'pos'}],
+        ['Segment C',{t:'22%',c:'neu'},{t:'drifts',c:'neu'}],
+        ['Segment D',{t:'54%',c:'neg'},{t:'churns',c:'neg'}]]),
+      signal:'Deal-driven sign-ups (D) churned at 54% the moment the discount ended. Chronic-care (A) and self-care regulars (B) stayed sticky.',
+      limit:`A 90-day window is short. It shows early churn, not lifetime value.`},
+
+    {id:'csat',name:'Subscriber satisfaction',cat:'Experience',tone:'badge-blue',cost:2,value:'low',
+      q:'How did subscribers rate the experience?',
+      viz:()=>barsH('“How satisfied are you?” (n=1,510)',[
+        {label:'Very satisfied',val:55,color:C.aqua,tag:'55%'},
+        {label:'Satisfied',val:30,color:C.blue,tag:'30%'},
+        {label:'Neutral',val:11,color:C.ref,tag:'11%'},
+        {label:'Unsatisfied',val:4,color:C.crit,tag:'4%'}],{max:62,labelW:82}),
+      signal:'Subscribers loved the convenience — 4.7/5 satisfaction and a subscriber NPS well above the store average.',
+      limit:`A happy subscriber can still be an unprofitable, non-incremental one. Convenience satisfaction says nothing about whether the revenue is new or the margin holds.`},
+
+    {id:'adherence',name:'Adherence & lock-in',cat:'Retention',tone:'badge-violet',cost:3,value:'medium',
+      q:'Did the subscription change customer behaviour beyond revenue?',
+      viz:()=>tbl(['Segment','Adherence change','Share-of-wallet'],[
+        ['Segment A',{t:'+9pp',c:'pos'},{t:'locks in',c:'pos'}],
+        ['Segment B',{t:'+4pp',c:'pos'},{t:'up',c:'pos'}],
+        ['Segment C','≈','≈'],
+        ['Segment D','≈',{t:'down',c:'neg'}]]),
+      signal:'For chronic-care patients (A), auto-refill improved medication adherence and share-of-wallet — a real defensive, lock-in value even though it added little new revenue.',
+      limit:`Lock-in value is real but hard to price. It argues for keeping A on a plan — not for discounting them.`},
+
+    {id:'discount_mix',name:'Who the discount attracted',cat:'External factors',tone:'badge-amber',cost:2,value:'medium',
+      q:'Who did the 30% launch discount actually bring in?',
+      viz:()=>barsH('Share of sign-ups by segment',[
+        {label:'Segment A',val:22,color:C.blue,tag:'22%'},
+        {label:'Segment B',val:28,color:C.blue,tag:'28%'},
+        {label:'Segment C',val:21,color:C.blue,tag:'21%'},
+        {label:'Segment D',val:29,color:C.refDim,tag:'29%'}],{max:34}),
+      signal:'The single biggest group of sign-ups (29%) were deal-driven — attracted by the discount, and the group that churned hardest when it ended.',
+      limit:`Sign-up mix, not lifetime value. It flags that the headline sign-up number is inflated by unprofitable acquisitions.`},
+
+    {id:'base_retention',name:'Counterfactual retention',cat:'Causality',tone:'badge-blue',cost:3,value:'medium',
+      q:'Would these customers have stayed with Nordia anyway?',
+      viz:()=>tbl(['Segment','Baseline retention','With subscription'],[
+        ['Segment A',{t:'88%',c:'neu'},{t:'94%',c:'pos'}],
+        ['Segment B',{t:'61%',c:'neu'},{t:'82%',c:'pos'}],
+        ['Segment C',{t:'55%',c:'neu'},{t:'57%',c:'neu'}],
+        ['Segment D',{t:'40%',c:'neu'},{t:'44%',c:'neg'}]]),
+      signal:'The subscription lifts retention most where it was leakiest — self-care regulars (B) jump from 61% to 82%. Chronic-care were already loyal.',
+      limit:`Retention isn't profit. A retained but discounted, costly-to-serve customer can still lose money.`},
+
+    {id:'roi_scenarios',name:'Rollout ROI scenarios',cat:'Profitability',tone:'badge-amber',cost:3,value:'medium',
+      q:'Is a full rollout net-positive after discount and service cost?',
+      viz:()=>tbl(['Scenario','Assumption','Net / year'],[
+        ['Optimistic','High incrementality, no discount',{t:'+1.4M',c:'pos'}],
+        ['Base','Mixed, partial discount',{t:'−0.4M',c:'neg'}],
+        ['Conservative','Low incrementality, full discount',{t:'−1.6M',c:'neg'}]]),
+      signal:'A broad discounted rollout is net-negative. It only turns positive when the discount is dropped and the offer is aimed at incremental, sticky segments.',
+      limit:`Assumption-driven. It shows the shape of the answer, not which segments to include — that's the segment insights' job.`},
+  ],
+  facit:{
+    segReveal:[
+      ['Chronic-care patients','Would refill anyway, so little new revenue — but adherence rose and they locked in. Your most valuable customers, worth keeping on a plan.'],
+      ['Self-care regulars','Prone to lapsing — the subscription genuinely made them buy more and stay. The incremental win.'],
+      ['Occasional buyers','No natural refill cycle; they subscribed loosely and drifted off. A poor fit.'],
+      ['Deal-driven sign-ups','Joined for the 30% discount and churned at 54% once it ended. Costly to acquire, gone fast.'],
+    ],
+    trueEffect:`Sign-ups and subscriber revenue looked great (+18%), but only ~5 points were truly incremental — chronic-care patients would have refilled anyway. Meanwhile free delivery, the launch discount and support cost ~5pp of margin per subscriber, so much of the "growth" was existing spend, relabelled and made more expensive to serve.`,
+    hidden:[
+      ['🔁',`Most subscriber revenue simply shifted existing purchases onto a plan — convenient, but not growth, and now carrying extra service cost.`],
+      ['🎁',`The 30% launch discount pulled in deal-seekers (D) who churned at 54% once it ended. The acquisition cost never earned back.`],
+      ['💊',`The quiet win: chronic-care patients (A) didn't spend more, but adherence rose and they locked in — defensive value worth keeping, without a deep discount.`],
+      ['📈',`Self-care regulars (B) were the one segment that genuinely bought more and stayed. That's where the subscription creates value.`],
+    ],
+    right:`<strong>Roll out targeted, and drop the blanket discount.</strong> Promote auto-refill to self-care regulars (include), where it's genuinely incremental and sticky. Offer it to chronic-care patients as a retention & adherence play — but test the terms without a deep discount. Don't chase occasional buyers (exclude) or bribe deal-seekers (exclude). Adoption is a means, not the goal.`,
+  },
+  feedback:{
+    highValueIds:['incrementality','segment_value','service_cost','churn'],
+    trapId:'csat',
+    onBest:`You aimed the subscription at the segment where it's genuinely incremental and dropped the discount that manufactured churn. That's reading adoption as a means, not a goal.`,
+    onGood:`Testing pricing and incrementality first is sound — you refuse to read sign-ups as profit. Slightly cautious, since the segment signals already point to a targeted rollout.`,
+    onBroad:`You rolled out to everyone with the launch discount. The insights warned that most revenue isn't incremental and that the discount pulls in deal-seekers who churn — a broad, discounted rollout scales the cost, not the value.`,
+    onStop:`You shut it down. That throws away a real incremental win in self-care regulars and a quiet retention win in chronic care. Aggregate skepticism shouldn't kill the parts that work.`,
+    shallowMsg:`Your top insights show people signed up — not whether the revenue was incremental, profitable, or sticky. Incrementality, service cost and churn are what decide this.`,
+    strongEvidenceMsg:`You leaned on incrementality, cost-to-serve and churn — the insights that tell you whether a subscription creates value or just relabels existing sales.`,
+    trapMsg:`You ranked subscriber satisfaction among your key evidence. Subscribers love the convenience — but a happy subscriber can still be an unprofitable, non-incremental one. That's the trap card.`,
+    overspendMsg:`You opened a lot of insights. Ask whether each one actually changed your call — or just added comfort. Good analysis is the smallest set that's enough to decide.`,
+    underPoorMsg:`You committed to a weak call on very little evidence. The cheapest analysis is worthless if it lets you scale a discounted, loss-making subscription.`,
+    segPraise:{
+      B:{dec:'include',msg:`Right call on self-care regulars: prone to lapsing, they genuinely bought more and stayed — the clearest incremental value.`},
+      D:{dec:'exclude',msg:`Right call on deal-driven sign-ups: they joined for the discount and churned at 54%. Excluding them cuts an acquisition cost that never pays back.`},
+    },
+  },
+  disc:{lo:11,budget:21,red:25},
+},
+
+// ───────────────────────────────────────────────────────────────
+// CASE 4 · NEW IN-STORE CATEGORY  (segments = store/channel types)
+// ───────────────────────────────────────────────────────────────
+{
+  id:'category',
+  name:'New Wellness Category',
+  scanNotes:['Loading store-level POS…','Modelling footfall & space…','Compiling insight deck…'],
+  move:`Nordia trialed a new in-store <strong>"Wellness" category</strong> — sports nutrition, supplements and wellness devices — across 40 of its 210 stores plus the app, for 10 weeks. Category sales looked promising and footfall rose in trial stores.`,
+  question:`Should Nordia roll out the wellness category — and to which store types?`,
+  stats:[
+    {num:'+9%',label:'Category sales (trial)'},
+    {num:'+4%',label:'Footfall in trial stores'},
+    {num:'40/210',label:'Stores in trial'},
+    {num:'10 wk',label:'Trial length'},
+  ],
+  segments:[
+    {id:'A',name:'Urban flagship stores',desc:'Young, affluent catchment — high wellness demand'},
+    {id:'B',name:'Suburban stores',desc:'Mixed catchment — an open question'},
+    {id:'C',name:'Small-town stores',desc:'Older, value-led catchment — limited wellness demand'},
+    {id:'D',name:'Online / app',desc:'No shelf or staffing constraint'},
+  ],
+  bestSegs:{A:'include',B:'test',C:'exclude',D:'include'},
+  decisions:[
+    {id:'broad',icon:'🚀',label:'Roll out to all stores',desc:'Put the wellness category in every Nordia store',quality:'poor',
+      explanation:'Drags the winners down with the losers. Demand is demographic — small-town stores end up with dead stock and cannibalised aisles, while the shelf and staffing cost applies everywhere.'},
+    {id:'targeted',icon:'🎯',label:'Roll out to the store types that fit, plus online',desc:'Urban & online where demand and economics work',quality:'best',
+      explanation:'The strongest call. Demand and margin are real in urban stores and online, where costs are low; small-town stores only tie up space and staff for stock that won\'t sell.'},
+    {id:'stop',icon:'🛑',label:'Drop the category',desc:'Abandon the wellness range',quality:'poor',
+      explanation:'An over-correction. There\'s a genuine win in urban stores and online. Killing the category over the stores where it doesn\'t fit wastes real demand where it does.'},
+    {id:'test',icon:'🧪',label:'Extend the trial with better controls',desc:'Keep piloting before a rollout decision',quality:'good',
+      explanation:'Methodologically sound — you refuse to read browsing footfall as growth. A little cautious, since urban and online already look like clear wins.'},
+  ],
+  uncertainties:[
+    {id:'incremental',label:'Whether the footfall was new or existing customers'},
+    {id:'profitability',label:'Whether it is profitable after space & staffing'},
+    {id:'segments',label:'Whether it fits every store type'},
+    {id:'cannibalization',label:'Whether it just shifted spend between categories'},
+    {id:'inventory',label:'Whether stock sells through everywhere'},
+    {id:'other',label:'Something else'},
+  ],
+  cards:[
+    {id:'sales_overview',name:'Trial sales overview',cat:'What happened',tone:'badge-blue',cost:2,value:'low',
+      q:'How did category sales and footfall move in trial stores?',
+      viz:()=>tbl(['Metric','Trial stores'],[
+        ['Wellness category sales',{t:'+9%',c:'pos'}],
+        ['Footfall',{t:'+4%',c:'pos'}],
+        ['Basket incl. wellness','+7%'],
+        ['Stores in trial','40 of 210']]),
+      signal:'The trial looked promising on aggregate — category sales up 9%, footfall up 4%, and bigger baskets where wellness was added.',
+      limit:`It shows the category sold — not whether the footfall was new, whether it cannibalised other aisles, or which store types can actually carry it.`},
+
+    {id:'store_lift',name:'Lift by store type',cat:'Which store types',tone:'badge-violet',cost:3,value:'high',
+      q:'Where did the category sell — and where did it stall?',
+      viz:()=>barsH('Incremental wellness sales, by store type',[
+        {label:'Urban',val:22,color:C.blue,tag:'+22%'},
+        {label:'Suburban',val:10,color:C.blue,tag:'+10%'},
+        {label:'Small-town',val:2,color:C.refDim,tag:'+2%'},
+        {label:'Online',val:18,color:C.blue,tag:'+18%'}],{max:26,labelW:74}),
+      signal:'The category flew in urban stores (+22%) and online (+18%), was moderate in suburban, and barely moved in small-town stores (+2%).',
+      limit:`Sales lift isn't net value. It doesn't show what the category cannibalised or the space and staffing it consumed.`},
+
+    {id:'cannibalization',name:'Cannibalisation & space cost',cat:'Profitability',tone:'badge-amber',cost:4,value:'high',
+      q:'Did the category grow the store — or just move spend around it?',
+      viz:()=>tbl(['','Effect'],[
+        ['Wellness gross sales',{t:'+9%',c:'pos'}],
+        ['Cannibalised adjacent aisles',{t:'−4pp',c:'neg'}],
+        ['Shelf & staffing cost',{t:'−3pp',c:'neg'}],
+        ['Net contribution',{t:'+2%',c:'neu'}]]),
+      signal:'Once you subtract the adjacent categories it cannibalised and the shelf and staff it consumed, the +9% sales becomes just +2% net contribution — thin, and unevenly spread.',
+      limit:`A blended figure. It doesn't show which store types carry the positive contribution and which sink it.`},
+
+    {id:'inventory',name:'Sell-through & dead stock',cat:'Operations',tone:'badge-blue',cost:3,value:'high',
+      q:'Does the stock actually sell through in every store type?',
+      viz:()=>tbl(['Store type','Sell-through','Dead stock / returns'],[
+        ['Urban',{t:'high',c:'pos'},{t:'low',c:'pos'}],
+        ['Suburban',{t:'ok',c:'neu'},{t:'some',c:'neu'}],
+        ['Small-town',{t:'low',c:'neg'},{t:'high',c:'neg'}],
+        ['Online',{t:'high',c:'pos'},{t:'device returns',c:'neu'}]]),
+      signal:'Small-town stores sat on dead stock; urban and online sold through cleanly. Wellness devices carry elevated returns everywhere.',
+      limit:`Ten weeks is a short window for sell-through. It signals fit, not a full inventory economics verdict.`},
+
+    {id:'footfall_incrementality',name:'Footfall incrementality',cat:'Causality',tone:'badge-violet',cost:5,value:'high',
+      q:'Was the footfall lift new visitors — or existing customers browsing?',
+      viz:()=>tbl(['Component','Estimate','CI'],[
+        ['Footfall lift','+4%',{t:'—',c:'neu'}],
+        ['Existing customers browsing',{t:'~3pp',c:'neg'},'±1pp'],
+        ['New / incremental visits',{t:'~1%',c:'neu'},'±1pp']]),
+      signal:'Most of the footfall "lift" was existing customers browsing the new aisle, not new visits — spend shifted around the store rather than growing, except in urban and online.',
+      limit:`A modelled estimate with a narrow but real interval. It can't attribute the incremental visits to store type precisely.`},
+
+    {id:'survey',name:'Customer range survey',cat:'Experience',tone:'badge-blue',cost:2,value:'low',
+      q:'What did customers think of the new range?',
+      viz:()=>barsH('“I love the new wellness range” (n=870)',[
+        {label:'Strongly agree',val:46,color:C.aqua,tag:'46%'},
+        {label:'Agree',val:33,color:C.blue,tag:'33%'},
+        {label:'Neutral',val:15,color:C.ref,tag:'15%'},
+        {label:'Disagree',val:6,color:C.crit,tag:'6%'}],{max:54,labelW:84}),
+      signal:'Customers loved the range — 4.4/5, and most said they wanted to see it in more stores.',
+      limit:`Enthusiasm mostly came from urban and online shoppers who'd visit anyway. Liking a range doesn't tell you which stores can carry it profitably.`},
+
+    {id:'demographics',name:'Store-type demographic fit',cat:'Customer insight',tone:'badge-violet',cost:3,value:'medium',
+      q:'Does each store\'s catchment actually want wellness products?',
+      viz:()=>tbl(['Store type','Demographic fit','Wellness demand'],[
+        ['Urban',{t:'strong',c:'pos'},{t:'high',c:'pos'}],
+        ['Suburban',{t:'mixed',c:'neu'},{t:'moderate',c:'neu'}],
+        ['Small-town',{t:'weak',c:'neg'},{t:'low',c:'neg'}],
+        ['Online',{t:'strong',c:'pos'},{t:'high',c:'pos'}]]),
+      signal:'Demand is demographic: young, affluent urban and online customers want the range; small-town catchments show little appetite for it.',
+      limit:`Demographic fit predicts demand, not profitability — a store can have demand and still lose on space cost.`},
+
+    {id:'margin_product',name:'Margin & returns by product',cat:'Profitability',tone:'badge-amber',cost:3,value:'medium',
+      q:'Which parts of the range actually make money?',
+      viz:()=>tbl(['Product group','Margin','Returns'],[
+        ['Sports nutrition',{t:'34%',c:'pos'},{t:'low',c:'pos'}],
+        ['Supplements',{t:'38%',c:'pos'},{t:'low',c:'pos'}],
+        ['Wellness devices',{t:'22%',c:'neg'},{t:'16%',c:'neg'}]]),
+      signal:'The profit sits in supplements and nutrition. Wellness devices flatter the top line but carry low margin and a 16% return rate.',
+      limit:`Product-level margin, not store-level. It says what to stock, not where to stock it.`},
+
+    {id:'space_roi',name:'Sales per shelf-metre',cat:'Operations',tone:'badge-blue',cost:3,value:'medium',
+      q:'Does the category earn its shelf space versus what it replaced?',
+      viz:()=>tbl(['Store type','Sales / shelf-m','vs displaced aisle'],[
+        ['Urban',{t:'high',c:'pos'},{t:'better',c:'pos'}],
+        ['Suburban',{t:'mid',c:'neu'},'about even'],
+        ['Small-town',{t:'low',c:'neg'},{t:'worse',c:'neg'}],
+        ['Online',{t:'n/a',c:'neu'},{t:'no shelf cost',c:'pos'}]]),
+      signal:'Wellness earns its shelf space in urban stores and beats the aisle it replaced; in small-town stores it earns less than what it displaced. Online has no shelf cost at all.',
+      limit:`Space productivity, at trial-period demand. It doesn't forecast how demand settles once novelty fades.`},
+
+    {id:'roi_scenarios',name:'Rollout ROI scenarios',cat:'Profitability',tone:'badge-amber',cost:3,value:'medium',
+      q:'Is a full rollout net-positive after space and staffing?',
+      viz:()=>tbl(['Scenario','Assumption','Net / year'],[
+        ['Optimistic','Urban-led, online scales',{t:'+1.8M',c:'pos'}],
+        ['Base','All stores, mixed demand',{t:'−0.3M',c:'neg'}],
+        ['Conservative','All stores, high dead stock',{t:'−1.5M',c:'neg'}]]),
+      signal:'A rollout to every store is net-negative — the urban and online wins are eaten by dead stock and space cost in stores that don\'t fit.',
+      limit:`Assumption-driven. It shows a targeted rollout beats a blanket one, but the store insights are what tell you which stores.`},
+  ],
+  facit:{
+    segReveal:[
+      ['Urban flagship stores','Right demographics, strong demand, low dead stock. The category\'s natural home.'],
+      ['Suburban stores','Mixed demand and moderate sell-through. Promising but unproven — worth a controlled extension.'],
+      ['Small-town stores','Weak demographic fit, low sell-through, dead stock tying up space and staff. Value-destroying.'],
+      ['Online / app','Strong demand with no shelf or staffing constraint — almost pure upside.'],
+    ],
+    trueEffect:`Category sales rose 9% and footfall 4% in trial stores — but most of that footfall was existing customers browsing the new aisle, not new visits. Once you count the adjacent aisles it cannibalised and the shelf and staffing it consumed, net contribution was a modest +2% — carried almost entirely by urban stores and online.`,
+    hidden:[
+      ['🏙️',`Demand is demographic: urban and online customers want sports nutrition and devices; small-town stores mostly ended up with dead stock.`],
+      ['📦',`Wellness devices flatter the top line but carry 22% margin and a 16% return rate — the range's real profit is in supplements and nutrition.`],
+      ['🔀',`The footfall "lift" was mostly existing shoppers moving around the store — spend shifted between aisles rather than growing.`],
+      ['💻',`Online is the quiet winner: the same demand with none of the shelf or staffing cost that drags the small-town rollout underwater.`],
+    ],
+    right:`<strong>Roll out to the store types that fit.</strong> Put the category in urban flagship stores (include) and lean into online (include), where demand is real and cost is low. Extend a controlled test in suburban stores (test). Keep it out of small-town stores (exclude), where it ties up space and staff for dead stock. And lead with supplements and nutrition, not low-margin devices.`,
+  },
+  feedback:{
+    highValueIds:['store_lift','cannibalization','inventory','footfall_incrementality'],
+    trapId:'survey',
+    onBest:`You put the category where the demand and the economics actually are — urban and online — and kept it out of the stores where it ties up space for dead stock. That's rolling out to fit, not to flag.`,
+    onGood:`Extending a controlled trial is sound — you refuse to read browsing footfall as growth. A little cautious, since urban and online already look like clear wins.`,
+    onBroad:`You rolled out to every store. The insights warned that demand is demographic and that small-town stores end up with dead stock and cannibalised aisles — a blanket rollout drags the winners down with them.`,
+    onStop:`You dropped the category. That throws away a real win in urban stores and online, where demand and margin are genuinely there. Don't kill a category over the stores where it doesn't fit.`,
+    shallowMsg:`Your top insights show the category sold — not whether footfall was incremental, whether it cannibalised, or which stores can carry it. Store-level lift, cannibalisation and inventory are what decide this.`,
+    strongEvidenceMsg:`You leaned on store-level lift, cannibalisation and inventory — the insights that separate a real category win from spend that just moved around the store.`,
+    trapMsg:`You ranked the customer survey among your key evidence. Shoppers love the range — but enthusiasm from customers who'd visit anyway doesn't tell you which stores can carry it profitably. That's the trap card.`,
+    overspendMsg:`You opened a lot of insights. Ask whether each one actually changed your call — or just added comfort. Good analysis is the smallest set that's enough to decide.`,
+    underPoorMsg:`You committed to a weak call on very little evidence. The cheapest analysis is worthless if it lets you fill 210 stores with stock that won't sell.`,
+    segPraise:{
+      A:{dec:'include',msg:`Right call on urban flagships: strong demographic fit, high sell-through, low dead stock — the category's natural home.`},
+      C:{dec:'exclude',msg:`Right call on small-town stores: weak fit and dead stock tying up space and staff. Keeping them out protects the rollout's economics.`},
+    },
+  },
+  disc:{lo:11,budget:21,red:25},
+},
+
+];  // <<CASES_END>>
+
+// ═══════════════════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════════════════
+let CASE=null;
+let selectedTimerMin=20;
+const S={spent:0,opened:new Set(),teamName:'',decisionStep:1,top3:new Set(),
+  segmentDecisions:{},mainDecision:null,recommendation:'',uncertainties:new Set(),
+  timerMinutes:20,timerStarted:false,timeUp:false};
+
+const STEP_LABELS=['Decision','Evidence','Rationale'];
+
+function resetState(){
+  stopTimer();
+  S.spent=0;S.opened=new Set();S.decisionStep=1;S.top3=new Set();
+  S.mainDecision=null;S.recommendation='';S.uncertainties=new Set();
+  S.timerStarted=false;S.timeUp=false;
+  S.segmentDecisions={};CASE.segments.forEach(s=>S.segmentDecisions[s.id]={decision:null});
+}
+
+function setTimer(min,btn){
+  selectedTimerMin=min;
+  document.querySelectorAll('#ts-opts button').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+}
+
+// ═══════════════════════════════════════════════════════════════
+// COACH MARKS  (guided pop-ups, shown once per session, re-openable via ? button)
+// ═══════════════════════════════════════════════════════════════
+const COACH={
+  brief:['folder','','Here\'s your case','You\'ve been handed a real product decision at Nordia. Read the situation and the headline numbers up top — then step into the analysis room.'],
+  shop:['search','','Buy the insights you need','Every card is an analysis, and each one costs credits. Open the ones that could actually change your decision — you can\'t afford them all. Move on when you know enough.'],
+  d1:['target','Step 1 of 3','Make your call','Pick the decision you\'d recommend to leadership. Choose “targeted” and you\'ll also say which segments are in, out, or worth a test.'],
+  d2:['star','Step 2 of 3','Show your evidence','Pick the up-to-3 insights your call really rests on. Choosing the right ones counts for more than choosing many.'],
+  d3:['edit','Step 3 of 3','Make it defensible','Justify your call in a sentence, and flag what you\'re still unsure about. Then make the call.'],
+  results:['chart','','How did it land?','Here\'s your score, how your call compares to the recommendation, and what was really going on behind the numbers.'],
+};
+const seenCoach=new Set();
+let currentCoachKey=null;
+function setCoachContent(k){const c=COACH[k];document.getElementById('coach-emoji').innerHTML=`<div class="icon-chip coach-chip">${icon(c[0])}</div>`;
+  const st=document.getElementById('coach-step');st.textContent=c[1];st.style.display=c[1]?'':'none';
+  document.getElementById('coach-title').textContent=c[2];document.getElementById('coach-body').textContent=c[3];}
+function showCoach(k){currentCoachKey=k;document.getElementById('help-fab').classList.add('show');
+  if(seenCoach.has(k))return;seenCoach.add(k);setCoachContent(k);document.getElementById('coach').classList.add('show');}
+function dismissCoach(){document.getElementById('coach').classList.remove('show');}
+function openHelp(){if(!currentCoachKey)return;setCoachContent(currentCoachKey);document.getElementById('coach').classList.add('show');}
+function hideHelp(){dismissCoach();currentCoachKey=null;document.getElementById('help-fab').classList.remove('show');}
+
+// ═══════════════════════════════════════════════════════════════
+// TIMER  (counts down during the analysis room; at 0 → decision room, buying locked)
+// ═══════════════════════════════════════════════════════════════
+let timerId=null,timeLeft=0;
+function startTimerIfNeeded(){
+  if(S.timerStarted)return;
+  S.timerStarted=true;
+  const pill=document.getElementById('timer-pill');
+  if(!S.timerMinutes){pill.style.display='none';return;}
+  timeLeft=S.timerMinutes*60;pill.style.display='';updateTimerDisplay();
+  timerId=setInterval(()=>{timeLeft--;updateTimerDisplay();if(timeLeft<=0){stopTimer();onTimeUp();}},1000);
+}
+function stopTimer(){if(timerId){clearInterval(timerId);timerId=null;}}
+function updateTimerDisplay(){
+  const m=Math.floor(Math.max(0,timeLeft)/60),s=Math.max(0,timeLeft)%60;
+  document.getElementById('timer-txt').textContent=m+':'+String(s).padStart(2,'0');
+  const pill=document.getElementById('timer-pill');
+  pill.classList.toggle('warn',timeLeft<=300&&timeLeft>60);
+  pill.classList.toggle('danger',timeLeft<=60);
+}
+function onTimeUp(){
+  S.timeUp=true;
+  const hint=document.getElementById('cost-hint');if(hint){hint.innerHTML=icon('lock')+' Time is up — analysis is closed.';hint.classList.add('penalty');}
+  if(activeScreen==='shop'){goToDecision();}else{renderShop();}
+}
+
+// ═══════════════════════════════════════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════════════════════════════════════
+let activeScreen='landing';
+function showScreen(id){activeScreen=id;document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById('screen-'+id).classList.add('active');window.scrollTo(0,0);}
+
+function dealCase(){
+  S.teamName=document.getElementById('team-name-input').value.trim();
+  CASE=CASES[Math.floor(Math.random()*CASES.length)];
+  resetState();
+  S.timerMinutes=selectedTimerMin;
+  document.getElementById('cost-hint').classList.remove('penalty');
+  const dealer=document.getElementById('dealer');
+  const status=document.getElementById('dealer-status');
+  dealer.classList.add('show');
+  const notes=CASE.scanNotes;let i=0;status.textContent=notes[0];
+  const iv=setInterval(()=>{i++;if(i<notes.length)status.textContent=notes[i];},430);
+  setTimeout(()=>{clearInterval(iv);dealer.classList.remove('show');renderBrief();showScreen('brief');},1500);
+}
+
+function goToShop(){renderShop();showScreen('shop');document.getElementById('cost-bar').classList.add('visible');updateCostTracker();startTimerIfNeeded();showCoach('shop');}
+function goToBrief(){document.getElementById('cost-bar').classList.remove('visible');showScreen('brief');showCoach('brief');}
+function goToDecision(){S.decisionStep=1;showScreen('decision');document.getElementById('cost-bar').classList.remove('visible');renderDecisionStep();}
+function submitDecision(){stopTimer();renderResults();showScreen('results');setTimeout(()=>showCoach('results'),1500);}
+function restartGame(){stopTimer();document.getElementById('cost-bar').classList.remove('visible');document.getElementById('timer-pill').style.display='none';document.getElementById('team-name-input').value=S.teamName;hideHelp();showScreen('landing');}
+function playSameCase(){resetState();renderBrief();showScreen('brief');}
+
+function updateCostTracker(){
+  if(!CASE)return;
+  const d=CASE.disc;
+  document.getElementById('budget-txt').textContent=S.spent+'/'+d.budget;
+  const fill=document.getElementById('budget-fill');
+  fill.style.width=Math.min(100,S.spent/d.red*100)+'%';
+  fill.style.background=S.spent<=d.budget?C.aqua:S.spent<=d.red?C.warn:C.crit;
+  document.getElementById('budget-txt').style.color=S.spent<=d.budget?'':S.spent<=d.red?'var(--warn)':'var(--crit)';
+  const hint=document.getElementById('cost-hint');
+  if(S.timeUp)return;
+  if(S.spent>d.red){hint.textContent='Over budget — every extra credit now costs you points.';hint.classList.add('penalty');hint.style.color='';}
+  else if(S.spent>d.budget){hint.textContent='In overdraft — you\'re spending down your discipline score.';hint.classList.remove('penalty');hint.style.color='var(--warn)';}
+  else{hint.textContent='Open what you need — head to the decision room when you know enough.';hint.classList.remove('penalty');hint.style.color='';}
+}
+
+// ═══════════════════════════════════════════════════════════════
+// BRIEF
+// ═══════════════════════════════════════════════════════════════
+function renderBrief(){
+  document.getElementById('brief-content').innerHTML=`
+    <div class="brief-head">
+      <span class="ai-chip"><span class="dot"></span> Case file</span>
+      <span class="case-name">${CASE.name}</span>
+    </div>
+    <h1>The call: <span class="brand">${CASE.name}</span></h1>
+    <div class="scenario">
+      <p>${CASE.move}</p>
+      <div class="stat-row">${CASE.stats.map(s=>`<div class="stat-pill"><div class="sp-num">${s.num}</div><div class="sp-label">${s.label}</div></div>`).join('')}</div>
+      <div class="decision-callout"><strong>Your decision:</strong> ${CASE.question}</div>
+    </div>
+    <div class="room-actions" style="border:none;padding-top:.5rem">
+      <button class="btn btn-ghost" onclick="restartGame()">← New case</button>
+      <button class="btn btn-primary" onclick="goToShop()">Enter the analysis room →</button>
+    </div>`;
+  showCoach('brief');
+}
+
+// ═══════════════════════════════════════════════════════════════
+// ANALYSIS ROOM
+// ═══════════════════════════════════════════════════════════════
+function renderShop(){
+  document.getElementById('decision-preview').innerHTML=`<strong>The decision you're building toward:</strong> ${CASE.question}`;
+  document.getElementById('cards-grid').innerHTML=CASE.cards.map(renderCard).join('');
+  updateRoomSummary();
+}
+function renderCard(card){
+  const isOpen=S.opened.has(card.id);
+  return `<div class="acard ${isOpen?'opened':''}" id="card-${card.id}">
+    <div class="acard-head"><div class="acard-title">${card.name}</div><div class="acard-cost"><span class="cr"></span>${card.cost}</div></div>
+    <div class="acard-cat"><span class="badge ${card.tone}">${icon(catIcon(card.cat))}${card.cat}</span></div>
+    <div class="acard-q">${card.q}</div>
+    ${isOpen?`<div class="reveal">
+        <div class="rev-sec"><div class="rev-label">Result</div>${card.viz()}</div>
+        <div class="rev-sec"><div class="rev-label sig">${icon('signal')} Signal</div><div class="rev-signal">${card.signal}</div></div>
+        <div class="rev-sec"><div class="rev-label">${icon('alert')} Limitation</div><div class="rev-limit">${card.limit}</div></div>
+      </div>
+      <div class="opened-tag">${icon('check')} Opened</div>`
+    :S.timeUp
+      ?`<div class="opened-tag closed">${icon('lock')} Analysis closed</div>`
+      :`<button class="open-btn" onclick="openCard('${card.id}')">${icon('plus')} Open insight · ${card.cost} credits</button>`}
+  </div>`;
+}
+function openCard(id){
+  if(S.timeUp)return;
+  const card=CASE.cards.find(c=>c.id===id);
+  if(!card||S.opened.has(id))return;
+  S.opened.add(id);S.spent+=card.cost;updateCostTracker();
+  const el=document.getElementById('card-'+id);if(el)el.outerHTML=renderCard(card);
+  updateRoomSummary();
+}
+function updateRoomSummary(){
+  const n=S.opened.size;
+  document.getElementById('opened-count-label').innerHTML=n>0?`<strong>${n}</strong> insight${n!==1?'s':''} opened · <strong>${S.spent} credits</strong>`:'';
+}
+
+// ═══════════════════════════════════════════════════════════════
+// DECISION ROOM
+// ═══════════════════════════════════════════════════════════════
+function renderDecisionStep(){
+  document.getElementById('step-indicator').innerHTML=`<div class="step-ind">${STEP_LABELS.map((l,i)=>`
+    <div class="step-item ${i+1===S.decisionStep?'active':i+1<S.decisionStep?'done':''}">
+      <div class="step-num">${i+1<S.decisionStep?icon('check'):i+1}</div><div class="step-label">${l}</div>
+    </div>${i<STEP_LABELS.length-1?`<div class="step-conn ${i+1<S.decisionStep?'done':''}"></div>`:''}`).join('')}</div>`;
+  const renders=[null,renderStep1,renderStep2,renderStep3];
+  document.getElementById('step-content').innerHTML=renders[S.decisionStep]();
+  const canNext=canProceed(S.decisionStep),vm=validationMessage(S.decisionStep),isLast=S.decisionStep===3;
+  document.getElementById('step-nav').innerHTML=`
+    <button class="btn btn-ghost" onclick="${S.decisionStep===1?'goToShop()':'prevStep()'}">${S.decisionStep===1?'← Back to analysis':'← Back'}</button>
+    <div class="step-nav-right">${!canNext&&vm?`<span class="valid-msg">${vm}</span>`:''}
+      <button class="btn btn-primary" onclick="${isLast?'submitDecision()':'nextStep()'}" ${canNext?'':'disabled'}>${isLast?'Make the call →':'Next →'}</button>
+    </div>`;
+  showCoach('d'+S.decisionStep);
+}
+function prevStep(){S.decisionStep--;renderDecisionStep();window.scrollTo(0,0);}
+function nextStep(){if(!canProceed(S.decisionStep))return;S.decisionStep++;renderDecisionStep();window.scrollTo(0,0);}
+function canProceed(step){
+  if(step===1){if(!S.mainDecision)return false;if(S.mainDecision==='targeted')return CASE.segments.every(s=>S.segmentDecisions[s.id].decision!==null);return true;}
+  if(step===2)return S.opened.size===0||S.top3.size>=1;
+  if(step===3)return S.recommendation.trim().length>5;
+  return true;
+}
+function validationMessage(step){
+  if(step===1){if(!S.mainDecision)return 'Pick a decision';if(S.mainDecision==='targeted')return 'Decide on every segment';return '';}
+  if(step===2)return 'Pick at least 1 insight';
+  if(step===3)return 'Write a short rationale';
+  return '';
+}
+
+function renderStep1(){
+  const decHtml=`<div class="dec-grid">${CASE.decisions.map(d=>`
+    <div class="dec-opt ${S.mainDecision===d.id?'selected':''}" onclick="selectMain('${d.id}')">
+      <div class="icon-chip do-chip">${icon(DEC_ICON[d.id])}</div><div class="do-label">${d.label}</div><div class="do-desc">${d.desc}</div>
+    </div>`).join('')}</div>`;
+  const segHtml=S.mainDecision==='targeted'?`
+    <div style="margin-top:2rem">
+      <h3 style="margin-bottom:.35rem">Which segments are in?</h3>
+      <p style="margin-bottom:1rem">Make a call for every segment.</p>
+      <div class="seg-grid">${CASE.segments.map(seg=>{const sd=S.segmentDecisions[seg.id];
+        return `<div class="seg-card">
+          <div class="seg-head"><div class="seg-badge">${seg.id}</div><div class="seg-name">${seg.name}</div></div>
+          <div class="seg-desc">${seg.desc}</div>
+          <div class="seg-row">
+            <button class="seg-btn ${sd.decision==='include'?'on-inc':''}" onclick="setSeg('${seg.id}','include')">Include</button>
+            <button class="seg-btn ${sd.decision==='exclude'?'on-exc':''}" onclick="setSeg('${seg.id}','exclude')">Exclude</button>
+            <button class="seg-btn ${sd.decision==='test'?'on-tst':''}" onclick="setSeg('${seg.id}','test')">Test</button>
+          </div></div>`;}).join('')}</div></div>`:'';
+  return `<div class="step-header"><h2>What's your call?</h2><p>Choose the decision you'd put to Nordia's leadership, based on the insights you opened.</p></div>${decHtml}${segHtml}`;
+}
+function selectMain(id){S.mainDecision=id;renderDecisionStep();}
+function setSeg(id,dec){S.segmentDecisions[id].decision=dec;renderDecisionStep();}
+
+function renderStep2(){
+  const opened=CASE.cards.filter(c=>S.opened.has(c.id));
+  if(opened.length===0)return `<div class="step-header"><h2>Your strongest evidence</h2><p>You didn't open any insights. You can still proceed.</p></div>`;
+  return `<div class="step-header"><h2>Your strongest evidence</h2><p>Pick the <strong>up to 3 insights</strong> your call mainly rests on.</p></div>
+  <div class="t3-counter">Selected: <strong>${S.top3.size}/3</strong></div>
+  <div class="top3-grid">${opened.map(card=>{const sel=S.top3.has(card.id),dis=!sel&&S.top3.size>=3;
+    return `<div class="top3-card ${sel?'selected':''} ${dis?'disabled':''}" onclick="toggleTop3('${card.id}')">
+      <div><div class="t3-name">${card.name}</div><div class="t3-cat">${card.cost} cr · ${card.cat}</div></div>
+      <div class="t3-check">${sel?icon('check'):''}</div></div>`;}).join('')}</div>`;
+}
+function toggleTop3(id){if(S.top3.has(id))S.top3.delete(id);else if(S.top3.size<3)S.top3.add(id);renderDecisionStep();}
+
+function renderStep3(){
+  return `<div class="step-header"><h2>Make it defensible</h2><p>Say why, in a sentence or two — and flag what you're still unsure about.</p></div>
+  <div class="rec-form">
+    <div class="rec-field"><label><strong>Justify your call in 2–3 sentences.</strong></label>
+      <textarea placeholder="We recommend… because… The biggest remaining uncertainty is…" oninput="S.recommendation=this.value" style="min-height:95px">${S.recommendation}</textarea></div>
+    <div class="rec-field"><label><strong>What are you still most unsure about?</strong> (pick any)</label>
+      <div class="chip-group">${CASE.uncertainties.map(o=>`<span class="chip ${S.uncertainties.has(o.id)?'checked':''}" onclick="toggleUnc('${o.id}')">${o.label}</span>`).join('')}</div></div>
+  </div>`;
+}
+function toggleUnc(id){S.uncertainties.has(id)?S.uncertainties.delete(id):S.uncertainties.add(id);renderDecisionStep();}
+
+// ═══════════════════════════════════════════════════════════════
+// SCORING
+// ═══════════════════════════════════════════════════════════════
+// Discipline: full within [lo, budget]; ramps up below lo (too little analysis);
+// tapers to 0 across the overdraft zone [budget, red]. Overshoot beyond the red
+// line is a direct deduction from the total — you can buy everything, but it costs.
+function discipline(sp,lo,B,R){
+  if(sp<=0)return 0;
+  if(sp<lo)return 12*sp/lo;
+  if(sp<=B)return 12;
+  if(sp<=R)return 12*(R-sp)/(R-B);
+  return 0;
+}
+function overshoot(sp,R){return sp>R?Math.min(12,1.8*(sp-R)):0;}
+function scoreRun(){
+  const dec=CASE.decisions.find(d=>d.id===S.mainDecision);
+  const decPts=dec.quality==='best'?55:dec.quality==='good'?42:15;
+  let segPts=0;
+  if(S.mainDecision==='targeted'){let m=0;CASE.segments.forEach(s=>{if(S.segmentDecisions[s.id].decision===CASE.bestSegs[s.id])m++;});segPts=Math.round(m/CASE.segments.length*15);}
+  const fb=CASE.feedback;
+  const highIn=[...S.top3].filter(id=>fb.highValueIds.includes(id)).length;
+  let evPts=Math.min(highIn,3)*6;
+  if(S.top3.has(fb.trapId))evPts=Math.max(0,evPts-8);
+  const d=CASE.disc;
+  const discPts=Math.round(discipline(S.spent,d.lo,d.budget,d.red));
+  const over=Math.round(overshoot(S.spent,d.red));
+  const total=Math.max(0,Math.min(100,Math.round(decPts+segPts+evPts+discPts-over)));
+  return {decPts,segPts,evPts,discPts,over,total,dec};
+}
+function verdict(total){
+  if(total>=88)return {label:'Great call',color:C.good,sub:'You landed on the strongest decision and backed it with the evidence that mattered — at a sensible cost.'};
+  if(total>=68)return {label:'Solid call',color:C.aqua,sub:'A defensible decision, reasonably evidenced — but you either over-analysed or leaned on weaker evidence than the call deserved.'};
+  if(total>=50)return {label:'Left value on the table',color:C.warn,sub:'A workable call, but the data was pointing somewhere sharper — or your evidence didn\'t fully support it.'};
+  return {label:'The data pointed elsewhere',color:C.crit,sub:'The insights available told a different story than the one you acted on. Worth revisiting which uncertainty mattered most.'};
+}
+
+// ═══════════════════════════════════════════════════════════════
+// RESULTS
+// ═══════════════════════════════════════════════════════════════
+function renderResults(){
+  const sc=scoreRun();const v=verdict(sc.total);
+  const chosen=sc.dec;const best=CASE.decisions.find(d=>d.quality==='best');
+  const teamPart=S.teamName?` · ${S.teamName}`:'';
+  const segLabels={include:'Include',exclude:'Exclude',test:'Test'};
+
+  const d=CASE.disc;
+  const discDesc=S.spent<=d.budget?`${S.spent} cr · within budget (${d.budget})`:S.spent<=d.red?`${S.spent} cr · in overdraft`:`${S.spent} cr · over budget`;
+  const scoreCells=[
+    {name:'Decision',val:sc.decPts,max:55,color:C.violet,desc:chosen.quality==='best'?'Strongest available call':chosen.quality==='good'?'Sound but cautious':'Not what the data supported'},
+    {name:'Segment fit',val:sc.segPts,max:15,color:C.aqua,desc:S.mainDecision==='targeted'?'How well your segment calls matched':'Only scored on a targeted rollout'},
+    {name:'Evidence quality',val:sc.evPts,max:18,color:C.blue,desc:'High-leverage insights in your top 3'},
+    {name:'Analysis discipline',val:sc.discPts,max:12,color:C.yellow,desc:discDesc},
+  ];
+
+  let segSection='';
+  if(S.mainDecision==='targeted'){
+    segSection=`<div class="result-2col">
+      <div class="rbox"><h3>Your segment calls</h3><div class="seg-result-row">${CASE.segments.map(s=>{const d=S.segmentDecisions[s.id].decision;return `<div class="srow"><strong>${s.id}:</strong><span class="stag ${d}">${segLabels[d]||'—'}</span> <span style="color:var(--muted);font-size:.8rem">${s.name}</span></div>`;}).join('')}</div></div>
+      <div class="rbox"><h3>Recommended calls</h3><div class="seg-result-row">${CASE.segments.map(s=>{const b=CASE.bestSegs[s.id];return `<div class="srow"><strong>${s.id}:</strong><span class="stag ${b}">${segLabels[b]}</span> <span style="color:var(--muted);font-size:.8rem">${s.name}</span></div>`;}).join('')}</div></div>
+    </div>`;
+  }
+
+  const top3Cards=CASE.cards.filter(c=>S.top3.has(c.id));
+  const fb=CASE.feedback;
+
+  document.getElementById('results-content').innerHTML=`
+    <div class="results-head">
+      <div class="verdict-banner">
+        ${scoreGauge(sc.total,v.color)}
+        <div class="verdict-label" style="color:${v.color}">${v.label}${teamPart}</div>
+      </div>
+      <p class="verdict-sub">${v.sub}</p>
+    </div>
+
+    <div class="score-grid">${scoreCells.map(c=>`
+      <div class="score-cell">
+        <div class="sc-top"><span class="sc-name">${c.name}</span><span class="sc-val">${c.val}/${c.max}</span></div>
+        <div class="sc-bar"><div class="sc-fill" style="width:${Math.round(c.val/c.max*100)}%;background:${c.color}"></div></div>
+        <div class="sc-desc">${c.desc}</div>
+      </div>`).join('')}</div>
+    ${sc.over>0?`<div class="penalty-note">${icon('alert')} <span>Over-analysis penalty: <strong>−${sc.over} pts</strong> — you spent ${S.spent} credits, past this case's red line of ${CASE.disc.red}. You could buy everything — but comfort analysis costs.</span></div>`:''}
+
+    <div class="result-2col">
+      <div class="rbox"><h3>Your call</h3><div style="display:flex;gap:.75rem;align-items:flex-start"><div class="icon-chip rescall-chip">${icon(DEC_ICON[chosen.id])}</div><div><div style="font-weight:700">${chosen.label}</div><div style="font-size:.83rem;color:var(--ink2);margin-top:.25rem">${chosen.explanation}</div></div></div></div>
+      <div class="rbox"><h3>Recommended call</h3><div style="display:flex;gap:.75rem;align-items:flex-start"><div class="icon-chip rescall-chip">${icon(DEC_ICON[best.id])}</div><div><div style="font-weight:700">${best.label}</div><div style="font-size:.83rem;color:var(--ink2);margin-top:.25rem">${best.explanation}</div></div></div></div>
+    </div>
+    ${segSection}
+    <div class="result-2col">
+      <div class="rbox"><h3>Your strongest evidence</h3>${top3Cards.length?top3Cards.map(c=>`<div class="recap-item"><div class="recap-dot ${c.value==='high'?'green':c.value==='medium'?'amber':'red'}"></div><div><strong>${c.name}</strong><br><span style="font-size:.77rem;color:var(--muted)">${c.cat}</span></div></div>`).join(''):'<p style="font-size:.85rem;color:var(--muted)">None selected.</p>'}</div>
+      <div class="rbox"><h3>Your rationale</h3>${S.recommendation?`<div class="rec-display">${S.recommendation}</div>`:'<p style="font-size:.85rem;color:var(--muted)">No rationale given.</p>'}${S.uncertainties.size?`<div style="margin-top:.7rem"><div style="font-size:.7rem;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:.3rem">Remaining uncertainty</div><div style="display:flex;flex-wrap:wrap;gap:.3rem">${[...S.uncertainties].map(u=>{const o=CASE.uncertainties.find(x=>x.id===u);return o?`<span class="badge badge-violet">${o.label}</span>`:'';}).join('')}</div></div>`:''}</div>
+    </div>
+
+    <h3 style="margin-bottom:.75rem;color:var(--muted);font-size:.78rem;text-transform:uppercase;letter-spacing:.6px">Feedback on your reasoning</h3>
+    <div class="feedback-items">${generateFeedback().map(f=>`<div class="fb-item"><span class="fb-ic ${f.cls}">${icon({'✓':'check','~':'minus','!':'alert','i':'info'}[f.icon]||'info')}</span><span class="fb-text">${f.text}</span></div>`).join('')}</div>
+
+    <div class="facit-box">
+      <h2>What was really going on</h2>
+      <div class="facit-sec"><h3>What the segments turned out to be</h3><div class="seg-key">${CASE.facit.segReveal.map(([n,d])=>`<div class="sk-item"><strong>${n}</strong>${d}</div>`).join('')}</div></div>
+      <div class="facit-sec"><h3>The real effect</h3><p>${CASE.facit.trueEffect}</p></div>
+      <div class="facit-sec"><h3>What the headline number hid</h3><div class="ins-items">${CASE.facit.hidden.map(([,t])=>`<div class="ins-item">${icon('dot','ins-ic')}<span>${t}</span></div>`).join('')}</div></div>
+      <div class="facit-sec"><h3>The right call</h3><p>${CASE.facit.right}</p></div>
+    </div>
+
+    <div class="lesson">
+      <div class="lesson-q">"Good analysis isn't the most analysis. It's the least analysis that's enough to make the call."</div>
+      <p>AI can generate an endless stream of insight. The human job is to choose which uncertainty is worth reducing — and to decide when you know enough to act.</p>
+    </div>
+    <div class="restart-row">
+      <button class="btn btn-ghost" onclick="playSameCase()">Replay this case</button>
+      <button class="btn btn-primary" onclick="restartGame()">Deal a new case</button>
+    </div>`;
+  animateGauge();
+}
+
+function generateFeedback(){
+  const items=[];const fb=CASE.feedback;
+  const dec=CASE.decisions.find(d=>d.id===S.mainDecision);
+  if(dec.quality==='best')items.push({icon:'✓',cls:'good',text:fb.onBest});
+  else if(dec.quality==='good')items.push({icon:'~',cls:'warn',text:fb.onGood});
+  else items.push({icon:'!',cls:'crit',text:dec.id==='stop'?fb.onStop:fb.onBroad});
+
+  const highIn=[...S.top3].filter(id=>fb.highValueIds.includes(id)).length;
+  if(S.opened.size>=2&&highIn===0)items.push({icon:'i',cls:'warn',text:fb.shallowMsg});
+  if(highIn>=2)items.push({icon:'✓',cls:'good',text:fb.strongEvidenceMsg});
+  if(S.top3.has(fb.trapId))items.push({icon:'!',cls:'warn',text:fb.trapMsg});
+  if(S.spent>CASE.disc.red)items.push({icon:'i',cls:'warn',text:fb.overspendMsg});
+  if(S.spent<CASE.disc.lo&&dec.quality==='poor')items.push({icon:'!',cls:'crit',text:fb.underPoorMsg});
+  if(S.mainDecision==='targeted'){
+    for(const seg in fb.segPraise){const p=fb.segPraise[seg];if(S.segmentDecisions[seg]&&S.segmentDecisions[seg].decision===p.dec)items.push({icon:'✓',cls:'good',text:p.msg});}
+  }
+  return items;
+}
+
+showScreen('landing');
+</script>
+</body>
+</html>
