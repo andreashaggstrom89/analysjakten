@@ -346,7 +346,7 @@ svg .cx-v.tab{font-variant-numeric:tabular-nums;}
   <div class="cost-inner">
     <div class="cost-pill timer-pill" id="timer-pill" style="display:none"><span class="cp-ic"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"/><path d="M12 7.5V12l3.2 2"/></svg></span><span class="cp-val" id="timer-txt">20:00</span></div>
     <div class="cost-pill budget-pill" id="budget-pill">
-      <span class="cp-label">Analysis budget</span>
+      <span class="cp-label">Token budget</span>
       <div class="budget-meter"><div class="budget-fill" id="budget-fill"></div></div>
       <span class="cp-val" id="budget-txt">0/20</span>
     </div>
@@ -368,8 +368,8 @@ svg .cx-v.tab{font-variant-numeric:tabular-nums;}
       <div class="ts-opts" id="ts-opts">
         <button data-min="0" onclick="setTimer(0,this)">Off</button>
         <button data-min="10" onclick="setTimer(10,this)">10 min</button>
-        <button data-min="15" onclick="setTimer(15,this)">15 min</button>
-        <button data-min="20" class="on" onclick="setTimer(20,this)">20 min</button>
+        <button data-min="15" class="on" onclick="setTimer(15,this)">15 min</button>
+        <button data-min="20" onclick="setTimer(20,this)">20 min</button>
       </div>
     </div>
     <div class="start-row">
@@ -1262,7 +1262,7 @@ const CASES=[
 // STATE
 // ═══════════════════════════════════════════════════════════════
 let CASE=null;
-let selectedTimerMin=20;
+let selectedTimerMin=15;
 const S={spent:0,opened:new Set(),teamName:'',decisionStep:1,top3:new Set(),
   segmentDecisions:{},mainDecision:null,recommendation:'',uncertainties:new Set(),
   timerMinutes:20,timerStarted:false,timeUp:false};
@@ -1288,7 +1288,7 @@ function setTimer(min,btn){
 // ═══════════════════════════════════════════════════════════════
 const COACH={
   brief:['folder','','Here\'s your case','You\'ve been handed a real product decision at Nordia. Read the situation and the headline numbers up top — then step into the analysis room.'],
-  shop:['search','','Buy the insights you need','Every card is an analysis, and each one costs credits. Open the ones that could actually change your decision — you can\'t afford them all. Move on when you know enough.'],
+  shop:['search','','Buy the insights you need','Every card is an analysis, and each one costs tokens. Open the ones that could actually change your decision — you can\'t afford them all. Move on when you know enough.'],
   d1:['target','Step 1 of 3','Make your call','Pick the decision you\'d recommend to leadership. Choose “targeted” and you\'ll also say which segments are in, out, or worth a test.'],
   d2:['star','Step 2 of 3','Show your evidence','Pick the up-to-3 insights your call really rests on. Choosing the right ones counts for more than choosing many.'],
   d3:['edit','Step 3 of 3','Make it defensible','Justify your call in a sentence, and flag what you\'re still unsure about. Then make the call.'],
@@ -1368,7 +1368,7 @@ function updateCostTracker(){
   document.getElementById('budget-txt').style.color=S.spent<=d.budget?'':S.spent<=d.red?'var(--warn)':'var(--crit)';
   const hint=document.getElementById('cost-hint');
   if(S.timeUp)return;
-  if(S.spent>d.red){hint.textContent='Over budget — every extra credit now costs you points.';hint.classList.add('penalty');hint.style.color='';}
+  if(S.spent>d.red){hint.textContent='Over budget — every extra token now costs you points.';hint.classList.add('penalty');hint.style.color='';}
   else if(S.spent>d.budget){hint.textContent='In overdraft — you\'re spending down your discipline score.';hint.classList.remove('penalty');hint.style.color='var(--warn)';}
   else{hint.textContent='Open what you need — head to the decision room when you know enough.';hint.classList.remove('penalty');hint.style.color='';}
 }
@@ -1417,7 +1417,7 @@ function renderCard(card){
       <div class="opened-tag">${icon('check')} Opened</div>`
     :S.timeUp
       ?`<div class="opened-tag closed">${icon('lock')} Analysis closed</div>`
-      :`<button class="open-btn" onclick="openCard('${card.id}')">${icon('plus')} Open insight · ${card.cost} credits</button>`}
+      :`<button class="open-btn" onclick="openCard('${card.id}')">${icon('plus')} Open insight · ${card.cost} tokens</button>`}
   </div>`;
 }
 function openCard(id){
@@ -1430,7 +1430,7 @@ function openCard(id){
 }
 function updateRoomSummary(){
   const n=S.opened.size;
-  document.getElementById('opened-count-label').innerHTML=n>0?`<strong>${n}</strong> insight${n!==1?'s':''} opened · <strong>${S.spent} credits</strong>`:'';
+  document.getElementById('opened-count-label').innerHTML=n>0?`<strong>${n}</strong> insight${n!==1?'s':''} opened · <strong>${S.spent} tokens</strong>`:'';
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -1496,7 +1496,7 @@ function renderStep2(){
   <div class="t3-counter">Selected: <strong>${S.top3.size}/3</strong></div>
   <div class="top3-grid">${opened.map(card=>{const sel=S.top3.has(card.id),dis=!sel&&S.top3.size>=3;
     return `<div class="top3-card ${sel?'selected':''} ${dis?'disabled':''}" onclick="toggleTop3('${card.id}')">
-      <div><div class="t3-name">${card.name}</div><div class="t3-cat">${card.cost} cr · ${card.cat}</div></div>
+      <div><div class="t3-name">${card.name}</div><div class="t3-cat">${card.cost} tokens · ${card.cat}</div></div>
       <div class="t3-check">${sel?icon('check'):''}</div></div>`;}).join('')}</div>`;
 }
 function toggleTop3(id){if(S.top3.has(id))S.top3.delete(id);else if(S.top3.size<3)S.top3.add(id);renderDecisionStep();}
@@ -1558,7 +1558,7 @@ function renderResults(){
   const segLabels={include:'Include',exclude:'Exclude',test:'Test'};
 
   const d=CASE.disc;
-  const discDesc=S.spent<=d.budget?`${S.spent} cr · within budget (${d.budget})`:S.spent<=d.red?`${S.spent} cr · in overdraft`:`${S.spent} cr · over budget`;
+  const discDesc=S.spent<=d.budget?`${S.spent} tokens · within budget (${d.budget})`:S.spent<=d.red?`${S.spent} tokens · in overdraft`:`${S.spent} tokens · over budget`;
   const scoreCells=[
     {name:'Decision',val:sc.decPts,max:55,color:C.violet,desc:chosen.quality==='best'?'Strongest available call':chosen.quality==='good'?'Sound but cautious':'Not what the data supported'},
     {name:'Segment fit',val:sc.segPts,max:15,color:C.aqua,desc:S.mainDecision==='targeted'?'How well your segment calls matched':'Only scored on a targeted rollout'},
@@ -1592,7 +1592,7 @@ function renderResults(){
         <div class="sc-bar"><div class="sc-fill" style="width:${Math.round(c.val/c.max*100)}%;background:${c.color}"></div></div>
         <div class="sc-desc">${c.desc}</div>
       </div>`).join('')}</div>
-    ${sc.over>0?`<div class="penalty-note">${icon('alert')} <span>Over-analysis penalty: <strong>−${sc.over} pts</strong> — you spent ${S.spent} credits, past this case's red line of ${CASE.disc.red}. You could buy everything — but comfort analysis costs.</span></div>`:''}
+    ${sc.over>0?`<div class="penalty-note">${icon('alert')} <span>Over-analysis penalty: <strong>−${sc.over} pts</strong> — you spent ${S.spent} tokens, past this case's red line of ${CASE.disc.red}. You could buy everything — but comfort analysis costs.</span></div>`:''}
 
     <div class="result-2col">
       <div class="rbox"><h3>Your call</h3><div style="display:flex;gap:.75rem;align-items:flex-start"><div class="icon-chip rescall-chip">${icon(DEC_ICON[chosen.id])}</div><div><div style="font-weight:700">${chosen.label}</div><div style="font-size:.83rem;color:var(--ink2);margin-top:.25rem">${chosen.explanation}</div></div></div></div>
