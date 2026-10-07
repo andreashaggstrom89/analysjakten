@@ -315,7 +315,8 @@ function render(){
 }
 
 // ── Breaking news: two events at random times, sent to every active table at once ──
-const NEWS_WINDOWS=[[4,7],[9,12]];   // minutes after the first table starts its analysis
+const NEWS_TEST=new URLSearchParams(location.search).has('test');   // host.html?test → news after 1 and 2 min
+const NEWS_WINDOWS=NEWS_TEST?[[1,1],[2,2]]:[[4,7],[9,12]];   // minutes after the first table starts its analysis
 function planNews(){
   if(newsOff||newsPlan)return;
   const starts=active().filter(t=>t.analysisStart&&!t.result).map(t=>t.analysisStart);
@@ -342,7 +343,7 @@ function newsBar(list){
   const resp=k=>{const got=list.filter(t=>t.news&&t.news[k]&&t.news[k]!=='missed');
     const done=got.filter(t=>t.news[k]!=='pending').length;return got.length?` · ${done}/${got.length} answered`:'';};
   const items=['n1','n2'].map((k,i)=>newsState[k]?`<span class="nb-item sent">${i+1} sent${resp(k)}</span>`:`<span class="nb-item">${i+1} ${newsOff?'paused':'pending'}</span>`).join('');
-  return `<div class="newsbar"><span class="nb-flag">Breaking news</span>${items}
+  return `<div class="newsbar"><span class="nb-flag">Breaking news</span>${NEWS_TEST?'<span class="nb-item">Test timing: 1 & 2 min</span>':''}${items}
     <span class="nb-ctrl">${sent.length<2?`<button class="btn" onclick="sendNextNews()">Send ${sent.length?'#2':'#1'} now</button>`:''}
     ${sent.length<2?`<button class="btn" onclick="toggleNews()">${newsOff?'Resume auto':'Pause auto'}</button>`:''}</span></div>`;
 }
