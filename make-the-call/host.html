@@ -110,6 +110,27 @@ body{font-family:var(--font);background:var(--plane);color:var(--ink);min-height
 .split div{height:100%;}
 .legend{display:flex;gap:.7rem;flex-wrap:wrap;font-size:.68rem;color:var(--muted);margin-top:.3rem;}
 .legend i{display:inline-block;width:7px;height:7px;border-radius:2px;margin-right:4px;vertical-align:0;}
+.btn-primary{background:linear-gradient(92deg,#24764f,#174d36);border:none;color:#fff;font-size:1.05rem;font-weight:700;padding:.85rem 1.6rem;border-radius:12px;
+  box-shadow:0 6px 22px -8px rgba(23,77,54,.7);cursor:pointer;font-family:var(--font);}
+.btn-primary:hover{transform:translateY(-1px);}
+.btn-primary:disabled{background:var(--surface3);color:var(--muted);box-shadow:none;cursor:not-allowed;transform:none;}
+.locked{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:2rem 1.6rem;box-shadow:var(--shadow);text-align:center;}
+.lock-ic{width:58px;height:58px;border-radius:50%;margin:0 auto .9rem;display:flex;align-items:center;justify-content:center;background:var(--accentDim);color:var(--accent);}
+.lock-ic svg{width:28px;height:28px;}
+.locked h3{font-size:1.35rem;font-weight:750;letter-spacing:-.3px;}
+.locked p{color:var(--ink2);margin:.35rem 0 1.2rem;}
+.done-chips{display:flex;flex-wrap:wrap;gap:.45rem;justify-content:center;margin-bottom:1.4rem;}
+.done-chip{font-size:.9rem;font-weight:650;padding:.4rem .85rem;border-radius:99px;background:#dff5ec;color:#0c7c54;border:1px solid #c2ead9;}
+.done-chip.wait{background:var(--surface2);color:var(--muted);border-color:var(--border);}
+.reveal-head{display:flex;align-items:baseline;gap:.8rem;margin-bottom:1rem;flex-wrap:wrap;}
+.reveal-head h2{font-size:clamp(1.4rem,2vw,2rem);font-weight:800;letter-spacing:-.6px;}
+.reveal-head span{color:var(--muted);font-size:.9rem;}
+.board.wide{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,560px),1fr));gap:1rem;align-items:start;}
+.res.pop{opacity:0;animation:pop .7s cubic-bezier(.2,.9,.3,1.2) forwards;}
+@keyframes pop{from{opacity:0;transform:translateY(18px) scale(.96);}to{opacity:1;transform:none;}}
+.res.winner{border:2px solid #d9a514;box-shadow:0 0 0 6px rgba(217,165,20,.14),var(--shadow);}
+.still{margin-top:1.4rem;display:flex;flex-wrap:wrap;gap:.45rem;align-items:center;font-size:.85rem;color:var(--muted);}
+.still b{color:var(--ink2);font-weight:650;margin-right:.3rem;}
 .setup{max-width:640px;margin:12vh auto;background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:2rem;box-shadow:var(--shadow);}
 .setup h2{margin-bottom:.6rem;} .setup p{color:var(--ink2);}
 </style>
@@ -124,7 +145,7 @@ body{font-family:var(--font);background:var(--plane);color:var(--ink);min-height
 const STAGES=[['brief','Briefing'],['analysis','Analysis'],['decision','Decision'],['done','Done']];
 const STEP_LABELS=['Decision','Evidence','Rationale'];
 const MAX_AGE=12*3600*1000;   // ignore tables idle for more than 12 h
-let tables={},offset=0,connected=false,seenDone=new Set(),firstLoad=true,armed=null,armTimer=null,clearArmed=false;
+let tables={},revealed=false,revealAnimated=new Set(),offset=0,connected=false,seenDone=new Set(),firstLoad=true,armed=null,armTimer=null,clearArmed=false;
 
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const now=()=>Date.now()+offset;
@@ -156,8 +177,8 @@ function tileHtml(t){
     clock=`<div class="clock small">Deciding</div>`;
     status=`Decision room · step ${step}/3 — ${STEP_LABELS[step-1]||''}`;
   }
-  if(t.stage==='done'&&t.result){clock=`<div class="clock small" style="color:${verdictColor(t.result.total)}">${t.result.total} pts</div>`;status=esc(t.result.verdict);}
-  if(t.stage==='lobby'){clock=`<div class="clock small">Between rounds</div>`;status=t.result?`Last score ${t.result.total} pts`:'';}
+  if(t.stage==='done'){clock=revealed&&t.result?`<div class="clock small" style="color:${verdictColor(t.result.total)}">${t.result.total} pts</div>`:`<div class="clock small" style="color:var(--good)">Finished ✓</div>`;status=revealed&&t.result?esc(t.result.verdict):'Waiting for the reveal';}
+  if(t.stage==='lobby'){clock=`<div class="clock small">Between rounds</div>`;status=revealed&&t.result?`Last score ${t.result.total} pts`:'';}
   const pct=t.budget?Math.min(100,Math.round((t.spent||0)/t.budget*100)):0;
   const fill=(t.spent||0)<=t.budget?'var(--aqua)':(t.spent||0)<=t.red?'var(--warn)':'var(--crit)';
   return `<div class="tile ${cls}">
@@ -166,17 +187,17 @@ function tileHtml(t){
     <div class="tile-case">${esc(t.caseName||'')}</div>
     <div class="pipe">${STAGES.map(([k,l],i)=>`<div class="${i<stageIdx||(k==='done'&&t.stage==='done')?'on':i===stageIdx?'cur':''}"><i></i><span>${l}</span></div>`).join('')}</div>
     ${clock}<div class="status">${status}</div>
-    <div class="meter"><span>${t.opened||0}/${t.totalCards||12} insights</span><div class="bar"><div class="fill" style="width:${pct}%;background:${fill}"></div></div><span>${t.spent||0}/${t.budget||'–'} tokens</span></div>
+    ${revealed?`<div class="meter"><span>${t.opened||0}/${t.totalCards||12} insights</span><div class="bar"><div class="fill" style="width:${pct}%;background:${fill}"></div></div><span>${t.spent||0}/${t.budget||'–'} tokens</span></div>`:''}
   </div>`;
 }
 
-function resultHtml(t,rank,fresh){
+function resultHtml(t,rank,fresh,anim){
   const r=t.result;
   const qLabel={best:'Strongest call',good:'Sound, cautious',poor:'Off the data'}[r.quality]||'';
   const segs=r.segs?`<div class="segs">${r.segs.map(s=>`<span class="seg ${s.dec===s.best?'ok':'no'}" title="${esc(s.name)}">${esc(s.id)} ${s.dec===s.best?'✓':'✗'} ${esc(s.dec||'—')}</span>`).join('')}</div>`:`<div class="na">Not a targeted rollout</div>`;
   const ev=(r.top3||[]).length?`<div class="ev">${r.top3.map(c=>`<div><i class="${esc(c.value)}"></i>${esc(c.name)}${c.trap?' <span class="trap">trap</span>':''}</div>`).join('')}</div>`:`<div class="na">No evidence picked</div>`;
   const parts=[[r.decPts,'#1f6b4a','Decision'],[r.segPts,'#12a06f','Segments'],[r.evPts,'#2e7d5b','Evidence'],[r.discPts,'#c8860a','Discipline']];
-  return `<div class="res ${fresh?'fresh':''}">
+  return `<div class="res ${fresh?'fresh':''} ${anim?'pop':''} ${rank===1?'winner':''}" ${anim?`style="animation-delay:${anim}s"`:''}>
     <div class="res-head">
       <div class="rank ${rank<=3?'r'+rank:''}">${rank}</div>
       <div><div class="res-name">${esc(t.name)}</div><div class="res-case">${esc(t.caseName||'')} · ${r.spent}/${r.budget} tokens</div></div>
@@ -202,7 +223,7 @@ function render(){
   const fresh=new Set();
   done.forEach(t=>{const key=t.id+':'+t.result.finishedAt;if(!seenDone.has(key)){seenDone.add(key);if(!firstLoad)fresh.add(t.id);}});
   firstLoad=false;
-  document.getElementById('app').innerHTML=`
+  const topBar=`
     <div class="top">
       <div class="brand">MAKE THE CALL</div>
       <span class="live ${connected?'':'off'}"><span class="dot"></span>${connected?'Live':'Connecting…'}</span>
@@ -213,18 +234,45 @@ function render(){
         <div class="stat"><b>${done.length}</b><span>Finished</span></div>
       </div>
       <div class="ctrl">
+        ${revealed?`<button class="btn" onclick="setReveal(false)">Hide results</button>`:''}
         <button class="btn" onclick="toggleFs()">Full screen</button>
         <button class="btn ${clearArmed?'danger':''}" onclick="clearBoard()">${clearArmed?'Click again to clear':'Clear board'}</button>
       </div>
-    </div>
+    </div>`;
+
+  if(revealed){
+    // Stagger the first appearance: last place first, the winner last.
+    const n=done.length;
+    const cards=done.map((t,i)=>{
+      const key=t.id+':'+t.result.finishedAt;let anim=0;
+      if(!revealAnimated.has(key)){revealAnimated.add(key);anim=0.2+(n-1-i)*0.55+(i===0?0.6:0);}
+      return resultHtml(t,i+1,false,anim);
+    }).join('');
+    const playing=inPlay.filter(t=>!t.result);
+    document.getElementById('app').innerHTML=topBar+`
+      <div class="reveal-head"><h2>Results</h2><span>${done.length} table${done.length!==1?'s':''} · ranked by score, fewest tokens breaks a tie</span></div>
+      ${done.length?`<div class="board wide">${cards}</div>`:`<div class="empty">No finished tables yet.</div>`}
+      ${playing.length?`<div class="still"><b>Still playing:</b>${playing.map(t=>`<span class="done-chip wait">${esc(t.name)}</span>`).join('')}</div>`:''}`;
+    return;
+  }
+
+  const finishedNames=done.map(t=>`<span class="done-chip">✓ ${esc(t.name)}</span>`).join('');
+  const waitingNames=inPlay.filter(t=>!t.result).map(t=>`<span class="done-chip wait">${esc(t.name)}</span>`).join('');
+  document.getElementById('app').innerHTML=topBar+`
     <div class="cols">
       <section>
         <div class="sec-h"><h2>Tables in play</h2><span>15 min in the analysis room</span></div>
         ${inPlay.length?`<div class="tiles">${inPlay.map(tileHtml).join('')}</div>`:`<div class="empty">Waiting for tables… They appear here as soon as they enter a name and deal their case.</div>`}
       </section>
       <section>
-        <div class="sec-h"><h2>Leaderboard</h2><span>live as tables finish</span></div>
-        ${done.length?`<div class="board">${done.map((t,i)=>resultHtml(t,i+1,fresh.has(t.id))).join('')}</div>`:`<div class="empty">No results yet. Scores land here the moment a table submits its decision.</div>`}
+        <div class="sec-h"><h2>Leaderboard</h2><span>locked until you reveal it</span></div>
+        <div class="locked">
+          <div class="lock-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></div>
+          <h3>${done.length} of ${list.length} table${list.length!==1?'s':''} finished</h3>
+          <p>Scores, tokens and answers stay hidden until everyone is done.</p>
+          ${finishedNames||waitingNames?`<div class="done-chips">${finishedNames}${waitingNames}</div>`:''}
+          <button class="btn-primary" onclick="setReveal(true)" ${done.length?'':'disabled'}>Reveal results →</button>
+        </div>
       </section>
     </div>`;
 }
@@ -247,8 +295,9 @@ function removeTable(id){
 }
 function clearBoard(){
   if(!clearArmed){clearArmed=true;render();setTimeout(()=>{clearArmed=false;render();},3000);return;}
-  clearArmed=false;firebase.database().ref('live/tables').remove();
+  clearArmed=false;revealAnimated.clear();firebase.database().ref('live').update({tables:null,state:{revealed:false}});
 }
+function setReveal(v){revealAnimated.clear();firebase.database().ref('live/state/revealed').set(v);}
 function toggleFs(){if(document.fullscreenElement)document.exitFullscreen();else document.documentElement.requestFullscreen&&document.documentElement.requestFullscreen();}
 
 if(!window.FB_CONFIG){
@@ -259,6 +308,7 @@ if(!window.FB_CONFIG){
   db.ref('.info/serverTimeOffset').on('value',s=>{offset=s.val()||0;});
   db.ref('.info/connected').on('value',s=>{connected=s.val()===true;render();});
   db.ref('live/tables').on('value',s=>{tables=s.val()||{};render();});
+  db.ref('live/state/revealed').on('value',s=>{const v=s.val()===true;if(v!==revealed){revealed=v;if(!v)revealAnimated.clear();render();}});
   render();
   setInterval(tick,1000);
 }

@@ -8,7 +8,16 @@
         ".write": true,
         "$table": {
           ".validate": "newData.hasChild('name') && newData.child('name').isString() && newData.child('name').val().length <= 40",
-          "result": { ".validate": "newData.hasChild('total')" }
+          "result": {
+            ".validate": "newData.hasChild('total')"
+          }
+        }
+      },
+      "state": {
+        ".read": true,
+        "revealed": {
+          ".write": true,
+          ".validate": "newData.isBoolean()"
         }
       }
     }
