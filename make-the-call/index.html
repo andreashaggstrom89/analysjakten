@@ -511,6 +511,7 @@ function catIcon(cat){const s=cat.toLowerCase();
   if(s.includes('profit'))return 'trending';
   if(s.includes('causal'))return 'gitbranch';
   if(s.includes('retention'))return 'repeat';
+  if(s.includes('after'))return 'clock';
   if(s.includes('experience'))return 'message';
   if(s.includes('trust')||s.includes('ethic'))return 'shield';
   if(s.includes('external'))return 'cloud';
@@ -678,6 +679,25 @@ const CASES=[
         ['Conservative','Low incrementality, high returns',{t:'−1.4M',c:'neg'}]]),
       signal:'A broad rollout is net-thin to negative in the base and conservative cases. The value is real but concentrated — it survives only where incrementality is high.',
       limit:`Built on assumptions and cost allocations. It can't tell you on its own which segments carry the positive cases.`},
+    {id:'pull_forward',name:'Post-pilot purchase check',cat:'After-effects',tone:'badge-blue',cost:3,value:'medium',
+      q:'Did the extra items create new spend — or just pull future purchases forward?',
+      viz:()=>tbl(['Segment','Spend 4 wks after pilot','vs baseline'],[
+        ['Segment A','≈ normal',{t:'±0%',c:'neu'}],
+        ['Segment B','slightly up',{t:'+2%',c:'pos'}],
+        ['Segment C','kept buying',{t:'+3%',c:'pos'}],
+        ['Segment D','dipped',{t:'−9%',c:'neg'}]]),
+      signal:'Deal-driven users (D) spent noticeably less in the weeks after the pilot — part of their big baskets was buying ahead, not new demand. Occasional shoppers (C) kept spending.',
+      limit:`Four weeks is a short window, and it overlaps the end of the cold & flu season. It hints at pull-forward but can't size it precisely.`},
+
+    {id:'benchmark',name:'Industry benchmark',cat:'External factors',tone:'badge-amber',cost:2,value:'low',
+      q:'How does the pilot compare with recommendation engines at other retailers?',
+      viz:()=>barsH('Reported basket lift from AI recommenders',[
+        {label:'Fashion e-com',val:18,color:C.ref,tag:'+18%'},
+        {label:'Grocery',val:11,color:C.ref,tag:'+11%'},
+        {label:'Pharmacy peers',val:7,color:C.ref,tag:'+7%'},
+        {label:'This pilot',val:14,color:C.blue,tag:'+14%'}],{max:20,labelW:86}),
+      signal:'The pilot\'s +14% basket lift is double what pharmacy peers report — on paper it looks like a strong engine.',
+      limit:`Published benchmarks report gross lift from vendor case studies — rarely incrementality, margin or returns. Beating a flattering number with another flattering number proves little.`},
   ],
   facit:{
     segReveal:[
@@ -853,6 +873,24 @@ const CASES=[
         ['Conservative','High cannibalisation in meds',{t:'−1.1M',c:'neg'}]]),
       signal:'A blanket expansion is net-negative in the base and conservative cases — the vitamins win is outweighed by margin loss in meds and basics.',
       limit:`Assumption-driven. It can't tell you on its own which categories carry the positive cases — that's the segment insights' job.`},
+    {id:'supplier',name:'National-brand supplier response',cat:'External factors',tone:'badge-amber',cost:2,value:'medium',
+      q:'How are the national-brand suppliers reacting to own-brand?',
+      viz:()=>tbl(['Category','Supplier reaction','Promo funding at risk'],[
+        ['Vitamins',{t:'neutral',c:'pos'},{t:'low',c:'pos'}],
+        ['Pain relief',{t:'pushing back',c:'neg'},{t:'high',c:'neg'}],
+        ['Skincare',{t:'watching',c:'neu'},{t:'some',c:'neu'}],
+        ['Hygiene',{t:'pushing back',c:'neg'},{t:'moderate',c:'neg'}]]),
+      signal:'Pain-relief and hygiene suppliers are signalling cuts to promotional funding if own-brand expands further. Vitamin suppliers are largely indifferent.',
+      limit:`These are negotiating positions, not signed terms. It flags a hidden cost of expansion but not its final size.`},
+
+    {id:'shopper_basket',name:'Own-brand shopper profile',cat:'Customer insight',tone:'badge-blue',cost:2,value:'low',
+      q:'Are own-brand buyers more valuable customers?',
+      viz:()=>tbl(['Metric','Own-brand buyers','Other shoppers'],[
+        ['Avg basket',{t:'€38',c:'pos'},'€31'],
+        ['Visits / month',{t:'3.4',c:'pos'},'2.6'],
+        ['Loyalty-club members',{t:'71%',c:'pos'},'48%']]),
+      signal:'Customers who bought own-brand have 23% bigger baskets and visit more often — own-brand looks like it attracts the best shoppers.',
+      limit:`Correlation, not cause. Frequent, big-basket shoppers are simply more likely to try anything new on the shelf — own-brand didn't make them that way.`},
   ],
   facit:{
     segReveal:[
@@ -1030,6 +1068,21 @@ const CASES=[
         ['Conservative','Low incrementality, full discount',{t:'−1.6M',c:'neg'}]]),
       signal:'A broad discounted rollout is net-negative. It only turns positive when the discount is dropped and the offer is aimed at incremental, sticky segments.',
       limit:`Assumption-driven. It shows the shape of the answer, not which segments to include — that's the segment insights' job.`},
+    {id:'stockpiling',name:'Order timing & stockpiling',cat:'After-effects',tone:'badge-blue',cost:2,value:'medium',
+      q:'Was the revenue jump steady — or front-loaded at sign-up?',
+      viz:()=>lineIdx('Subscriber revenue per month (index)',[1.0,1.0,1.62,1.31,1.18,1.16],
+        ['','','Month 1','Month 2','Month 3',''],[1.6,2.4,'Sign-up stock-up']),
+      signal:'Much of the revenue jump came in month one, when new subscribers stocked up while the 30% discount applied. By month three revenue settled far closer to the old level.',
+      limit:`Three months can't show the steady state. It flags front-loading but not who keeps ordering long-term.`},
+
+    {id:'fulfilment',name:'Fulfilment capacity at scale',cat:'Operations',tone:'badge-amber',cost:3,value:'medium',
+      q:'Can the delivery network handle a full rollout — and at what cost?',
+      viz:()=>tbl(['Rollout scope','Fits current network?','Extra cost / year'],[
+        ['Pilot volume',{t:'yes',c:'pos'},'—'],
+        ['Targeted (≈2× pilot)',{t:'yes',c:'pos'},{t:'low',c:'pos'}],
+        ['All customers (≈8× pilot)',{t:'no',c:'neg'},{t:'+0.9M',c:'neg'}]]),
+      signal:'A rollout to everyone needs new fulfilment capacity (~0.9M a year). A targeted rollout fits inside today\'s delivery network.',
+      limit:`A logistics estimate. It says what scale costs, not which customers are worth that cost.`},
   ],
   facit:{
     segReveal:[
@@ -1204,6 +1257,21 @@ const CASES=[
         ['Conservative','All stores, high dead stock',{t:'−1.5M',c:'neg'}]]),
       signal:'A rollout to every store is net-negative — the urban and online wins are eaten by dead stock and space cost in stores that don\'t fit.',
       limit:`Assumption-driven. It shows a targeted rollout beats a blanket one, but the store insights are what tell you which stores.`},
+    {id:'novelty',name:'Novelty decay over the trial',cat:'After-effects',tone:'badge-blue',cost:3,value:'medium',
+      q:'Did sales hold up — or fade once the range stopped being new?',
+      viz:()=>lineIdx('Weekly wellness sales (index, week 1 = 1.0)',[1.0,1.28,1.32,1.22,1.14,1.09,1.07,1.05,1.05,1.04],
+        ['Wk 1','','Wk 3','','','Wk 6','','','','Wk 10'],[1,3,'Launch peak']),
+      signal:'Sales peaked in weeks 2–3 and then settled only a few percent above launch level — part of the trial\'s +9% was novelty that has already faded.',
+      limit:`An all-store average. It doesn't show which store types held their demand and which fell back.`},
+
+    {id:'staff_feedback',name:'Store staff feedback',cat:'Experience',tone:'badge-blue',cost:2,value:'low',
+      q:'What did store staff think of running the new category?',
+      viz:()=>barsH('“The range is a good addition to my store” (n=212 staff)',[
+        {label:'Agree',val:74,color:C.aqua,tag:'74%'},
+        {label:'Neutral',val:18,color:C.ref,tag:'18%'},
+        {label:'Disagree',val:8,color:C.crit,tag:'8%'}],{max:80,labelW:62}),
+      signal:'Staff were positive — three in four said the range is a good addition, and many asked for more product training.',
+      limit:`Staff enthusiasm is anecdotal and says nothing about sell-through, cannibalisation or margin. Even small-town staff liked having something new on the shelves.`},
   ],
   facit:{
     segReveal:[
