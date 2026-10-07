@@ -131,6 +131,12 @@ body{font-family:var(--font);background:var(--plane);color:var(--ink);min-height
 .res.winner{border:2px solid #d9a514;box-shadow:0 0 0 6px rgba(217,165,20,.14),var(--shadow);}
 .still{margin-top:1.4rem;display:flex;flex-wrap:wrap;gap:.45rem;align-items:center;font-size:.85rem;color:var(--muted);}
 .still b{color:var(--ink2);font-weight:650;margin-right:.3rem;}
+.confirm-wrap{position:fixed;inset:0;background:rgba(36,31,23,.38);backdrop-filter:blur(2px);display:flex;align-items:center;justify-content:center;padding:16px;z-index:40;}
+.confirm{background:var(--surface);border-radius:18px;padding:1.6rem 1.6rem 1.3rem;max-width:440px;box-shadow:0 20px 50px -18px rgba(0,0,0,.45);}
+.confirm h3{font-size:1.25rem;font-weight:750;margin-bottom:.4rem;}
+.confirm p{color:var(--ink2);font-size:.92rem;margin-bottom:1.2rem;}
+.confirm-row{display:flex;gap:.5rem;justify-content:flex-end;}
+.confirm-row .btn{font-size:.9rem;padding:.6rem 1rem;}
 .setup{max-width:640px;margin:12vh auto;background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:2rem;box-shadow:var(--shadow);}
 .setup h2{margin-bottom:.6rem;} .setup p{color:var(--ink2);}
 </style>
@@ -236,10 +242,15 @@ function render(){
       <div class="ctrl">
         ${revealed?`<button class="btn" onclick="setReveal(false)">Hide results</button>`:''}
         <button class="btn" onclick="toggleFs()">Full screen</button>
-        <button class="btn ${clearArmed?'danger':''}" onclick="clearBoard()">${clearArmed?'Click again to clear':'Clear board'}</button>
+        <button class="btn" onclick="clearBoard()">Clear board</button>
       </div>
     </div>`;
 
+  const confirmHtml=clearArmed?`<div class="confirm-wrap" onclick="if(event.target===this)cancelClear()"><div class="confirm">
+      <h3>Clear the whole board?</h3>
+      <p>This removes all ${list.length} table${list.length!==1?'s':''} and their results, and locks the leaderboard again. Tables that still have the game open will reappear at their next step.</p>
+      <div class="confirm-row"><button class="btn" onclick="cancelClear()">Cancel</button><button class="btn danger" onclick="confirmClear()">Yes, clear the board</button></div>
+    </div></div>`:'';
   if(revealed){
     // Stagger the first appearance: last place first, the winner last.
     const n=done.length;
@@ -252,7 +263,7 @@ function render(){
     document.getElementById('app').innerHTML=topBar+`
       <div class="reveal-head"><h2>Results</h2><span>${done.length} table${done.length!==1?'s':''} · ranked by score, fewest tokens breaks a tie</span></div>
       ${done.length?`<div class="board wide">${cards}</div>`:`<div class="empty">No finished tables yet.</div>`}
-      ${playing.length?`<div class="still"><b>Still playing:</b>${playing.map(t=>`<span class="done-chip wait">${esc(t.name)}</span>`).join('')}</div>`:''}`;
+      ${playing.length?`<div class="still"><b>Still playing:</b>${playing.map(t=>`<span class="done-chip wait">${esc(t.name)}</span>`).join('')}</div>`:''}`+confirmHtml;
     return;
   }
 
@@ -274,7 +285,7 @@ function render(){
           <button class="btn-primary" onclick="setReveal(true)" ${done.length?'':'disabled'}>Reveal results →</button>
         </div>
       </section>
-    </div>`;
+    </div>`+confirmHtml;
 }
 
 // Only the clocks change every second — update them in place.
@@ -293,15 +304,18 @@ function removeTable(id){
   if(armed!==id){armed=id;clearTimeout(armTimer);armTimer=setTimeout(()=>{armed=null;render();},3000);render();return;}
   armed=null;firebase.database().ref('live/tables/'+id).remove().catch(e=>alertBar('Could not remove the table: '+e.message));
 }
-function clearBoard(){
-  if(!clearArmed){clearArmed=true;render();setTimeout(()=>{clearArmed=false;render();},3000);return;}
-  clearArmed=false;revealAnimated.clear();
-  firebase.database().ref('live').update({'tables':null,'state/revealed':false}).catch(e=>alertBar('Could not clear the board: '+e.message));
+function clearBoard(){clearArmed=true;render();}
+function cancelClear(){clearArmed=false;render();}
+function confirmClear(){
+  clearArmed=false;revealAnimated.clear();render();
+  firebase.database().ref('live').update({'tables':null,'state/revealed':false})
+    .then(()=>alertBar('Board cleared',true))
+    .catch(e=>alertBar('Could not clear the board: '+e.message));
 }
 function setReveal(v){revealAnimated.clear();firebase.database().ref('live/state/revealed').set(v).catch(e=>alertBar('Could not update the reveal: '+e.message));}
-function alertBar(msg){let el=document.getElementById('alert-bar');if(!el){el=document.createElement('div');el.id='alert-bar';
+function alertBar(msg,ok){let el=document.getElementById('alert-bar');if(!el){el=document.createElement('div');el.id='alert-bar';
   el.style.cssText='position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#cf3b3b;color:#fff;font-weight:650;padding:.7rem 1.2rem;border-radius:12px;box-shadow:0 10px 30px -10px rgba(0,0,0,.4);z-index:50;font-family:var(--font)';
-  document.body.appendChild(el);}el.textContent=msg;el.hidden=false;clearTimeout(el._t);el._t=setTimeout(()=>{el.hidden=true;},6000);}
+  document.body.appendChild(el);}el.textContent=msg;el.style.background=ok?'#1f6b4a':'#cf3b3b';el.hidden=false;clearTimeout(el._t);el._t=setTimeout(()=>{el.hidden=true;},6000);}
 function toggleFs(){if(document.fullscreenElement)document.exitFullscreen();else document.documentElement.requestFullscreen&&document.documentElement.requestFullscreen();}
 
 if(!window.FB_CONFIG){
