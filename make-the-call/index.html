@@ -1351,7 +1351,7 @@ const COACH={
   shop:['search','','Buy the insights you need','Every card is an AI-generated insight, and each one costs tokens. Open the ones that could actually change your decision — you can\'t afford them all. Move on when you know enough.'],
   d1:['target','Step 1 of 3','Make your call','Pick the decision you\'d recommend to leadership. If you go for a targeted rollout, you\'ll also decide which segments are in, out, or worth a test.'],
   d2:['star','Step 2 of 3','Show your evidence','Pick up to three insights your call really rests on. Picking the right ones counts for more than picking many.'],
-  d3:['edit','Step 3 of 3','Make it defensible','Justify your call in two or three sentences and flag what you\'re still unsure about. Then make the call.'],
+  d3:['edit','Step 3 of 3','Make it defensible','Justify your call in two or three sentences and flag what you\'re still unsure about. Your reasoning goes up on the big screen at the reveal — make it one you\'d defend.'],
   results:['chart','','How did it land?','Here\'s your score, how your call compares to the recommendation, and what was really going on behind the numbers.'],
 };
 const seenCoach=new Set();
@@ -1565,10 +1565,10 @@ function renderStep2(){
 function toggleTop3(id){if(S.top3.has(id))S.top3.delete(id);else if(S.top3.size<3)S.top3.add(id);renderDecisionStep();}
 
 function renderStep3(){
-  return `<div class="step-header"><h2>Make it defensible</h2><p>Say why in two or three sentences — and flag what you're still unsure about.</p></div>
+  return `<div class="step-header"><h2>Make it defensible</h2><p>Say why in two or three sentences — and flag what you're still unsure about. Your reasoning is shown on the big screen when the results are revealed.</p></div>
   <div class="rec-form">
     <div class="rec-field"><label><strong>Why this call?</strong></label>
-      <textarea placeholder="We recommend… because… The biggest remaining uncertainty is…" oninput="S.recommendation=this.value" style="min-height:95px">${S.recommendation}</textarea></div>
+      <textarea maxlength="600" placeholder="We recommend… because… The biggest remaining uncertainty is…" oninput="S.recommendation=this.value" style="min-height:95px">${S.recommendation}</textarea></div>
     <div class="rec-field"><label><strong>What are you still most unsure about?</strong> (pick any)</label>
       <div class="chip-group">${CASE.uncertainties.map(o=>`<span class="chip ${S.uncertainties.has(o.id)?'checked':''}" onclick="toggleUnc('${o.id}')">${o.label}</span>`).join('')}</div></div>
   </div>`;
@@ -1762,7 +1762,10 @@ const LIVE=(()=>{
     const top3=CASE.cards.filter(c=>S.top3.has(c.id)).map(c=>({name:c.name,value:c.value,trap:c.id===fb.trapId}));
     push({result:{total:sc.total,decPts:sc.decPts,segPts:sc.segPts,evPts:sc.evPts,discPts:sc.discPts,over:sc.over,
       verdict:v.label,decision:sc.dec.label,quality:sc.dec.quality,bestDecision:best.label,
-      segs,top3,spent:S.spent,budget:CASE.disc.budget,finishedAt:firebase.database.ServerValue.TIMESTAMP}});
+      segs,top3,spent:S.spent,budget:CASE.disc.budget,
+      rationale:S.recommendation.trim().slice(0,600),
+      unsure:[...S.uncertainties].map(u=>(CASE.uncertainties.find(o=>o.id===u)||{}).label).filter(Boolean),
+      finishedAt:firebase.database.ServerValue.TIMESTAMP}});
   }
   return {push,newRound,analysisStarted,done};
 })();

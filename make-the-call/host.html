@@ -138,6 +138,11 @@ body{font-family:var(--font);background:var(--plane);color:var(--ink);min-height
 .confirm p{color:var(--ink2);font-size:.92rem;margin-bottom:1.2rem;}
 .confirm-row{display:flex;gap:.5rem;justify-content:flex-end;}
 .confirm-row .btn{font-size:.9rem;padding:.6rem 1rem;}
+.why{margin-top:.85rem;padding-top:.8rem;border-top:1px solid var(--border);}
+.why blockquote{font-size:1rem;line-height:1.5;color:var(--ink);font-style:italic;border-left:3px solid var(--accent);padding:.15rem 0 .15rem .8rem;}
+.unsure{display:flex;flex-wrap:wrap;gap:.35rem;align-items:center;margin-top:.6rem;}
+.unsure .lbl{margin:0 .2rem 0 0;}
+.unsure .u{font-size:.72rem;font-weight:650;padding:2px 8px;border-radius:99px;background:var(--accentDim);color:var(--accent);}
 .setup{max-width:640px;margin:12vh auto;background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:2rem;box-shadow:var(--shadow);}
 .setup h2{margin-bottom:.6rem;} .setup p{color:var(--ink2);}
 </style>
@@ -220,6 +225,10 @@ function resultHtml(t,rank,fresh,anim){
         <div class="split">${parts.map(([v,c])=>`<div style="width:${v}%;background:${c}"></div>`).join('')}</div>
         <div class="legend">${parts.map(([v,c,l])=>`<span><i style="background:${c}"></i>${l} ${v}</span>`).join('')}</div></div>
     </div>
+    ${r.rationale||(r.unsure||[]).length?`<div class="why">
+      ${r.rationale?`<blockquote>“${esc(r.rationale)}”</blockquote>`:''}
+      ${(r.unsure||[]).length?`<div class="unsure"><span class="lbl">Still unsure about</span>${r.unsure.map(u=>`<span class="u">${esc(u)}</span>`).join('')}</div>`:''}
+    </div>`:''}
   </div>`;
 }
 
