@@ -9,7 +9,7 @@
   --plane:#f3efe6; --surface:#ffffff; --surface2:#f7f3ea; --surface3:#ece6d9;
   --border:rgba(35,30,20,.11); --border2:rgba(35,30,20,.20);
   --ink:#241f17; --ink2:#5f594d; --muted:#938c7d;
-  --accent:#6d5df0; --accent2:#2a78d6; --accentDim:rgba(109,93,240,.10);
+  --accent:#1f6b4a; --accent2:#2e7d5b; --accentDim:rgba(31,107,74,.10);
   --good:#0a9d34; --warn:#c2830a; --serious:#d9743c; --crit:#cf3b3b; --aqua:#12a06f;
   --grid:#ebe5d9; --base:#d9d3c5; --radius:18px;
   --shadow:0 4px 16px -6px rgba(45,38,22,.16); --shadow-lg:0 16px 40px -14px rgba(60,48,26,.24);
@@ -17,7 +17,7 @@
 }
 *{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:var(--font);background:var(--plane);color:var(--ink);min-height:100vh;line-height:1.6;
-  background-image:radial-gradient(760px 420px at 6% -60px,rgba(109,93,240,.11),transparent 64%),radial-gradient(720px 400px at 98% 2%,rgba(42,120,214,.10),transparent 60%),radial-gradient(680px 460px at 50% 112%,rgba(18,160,111,.09),transparent 58%);
+  background-image:radial-gradient(760px 420px at 6% -60px,rgba(31,107,74,.11),transparent 64%),radial-gradient(720px 400px at 98% 2%,rgba(46,125,91,.10),transparent 60%),radial-gradient(680px 460px at 50% 112%,rgba(18,160,111,.09),transparent 58%);
   background-attachment:fixed;}
 .card-shadow,.acard,.dec-opt,.scenario,.rbox,.facit-box,.score-cell,.fb-item,.stat-pill,.top3-card,.seg-card,.decision-preview,.verdict-banner,.how-card{box-shadow:var(--shadow);}
 .screen{display:none;} .screen.active{display:block;animation:fade .35s ease;}
@@ -29,23 +29,23 @@ h3{font-size:1.05rem;font-weight:650;}
 p{color:var(--ink2);margin-bottom:.7rem;} p:last-child{margin-bottom:0;}
 strong{color:var(--ink);font-weight:650;}
 em{color:var(--ink2);font-style:italic;}
-.brand{font-weight:800;letter-spacing:-.5px;background:linear-gradient(92deg,#6d5df0,#2a78d6 52%,#12a08a);-webkit-background-clip:text;background-clip:text;color:transparent;}
-.ai-chip{display:inline-flex;align-items:center;gap:6px;font-size:.7rem;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--accent);background:var(--accentDim);border:1px solid rgba(109,93,240,.28);padding:5px 12px;border-radius:99px;}
-.ai-chip .dot{width:7px;height:7px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 0 rgba(109,93,240,.6);animation:pulse 2s infinite;}
-@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(109,93,240,.45);}70%{box-shadow:0 0 0 7px rgba(109,93,240,0);}100%{box-shadow:0 0 0 0 rgba(109,93,240,0);}}
+.brand{font-weight:800;letter-spacing:-.5px;background:linear-gradient(92deg,#123f2b,#1f6b4a 55%,#2e7d5b);-webkit-background-clip:text;background-clip:text;color:transparent;}
+.ai-chip{display:inline-flex;align-items:center;gap:6px;font-size:.7rem;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--accent);background:var(--accentDim);border:1px solid rgba(31,107,74,.28);padding:5px 12px;border-radius:99px;}
+.ai-chip .dot{width:7px;height:7px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 0 rgba(31,107,74,.6);animation:pulse 2s infinite;}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(31,107,74,.45);}70%{box-shadow:0 0 0 7px rgba(31,107,74,0);}100%{box-shadow:0 0 0 0 rgba(31,107,74,0);}}
 
 /* buttons */
 .btn{display:inline-flex;align-items:center;gap:.5rem;padding:.8rem 1.6rem;border-radius:10px;border:none;cursor:pointer;font-size:1rem;font-weight:650;font-family:var(--font);transition:transform .12s,box-shadow .2s,background .2s,border-color .2s;}
-.btn-primary{background:linear-gradient(92deg,#8b7ef0,#5b8def);color:#fff;box-shadow:0 6px 22px -8px rgba(120,120,240,.7);}
-.btn-primary:hover{transform:translateY(-1px);box-shadow:0 10px 28px -8px rgba(120,120,240,.8);}
+.btn-primary{background:linear-gradient(92deg,#24764f,#174d36);color:#fff;box-shadow:0 6px 22px -8px rgba(23,77,54,.7);}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 10px 28px -8px rgba(23,77,54,.8);}
 .btn-primary:disabled{background:var(--surface3);color:var(--muted);cursor:not-allowed;transform:none;box-shadow:none;}
 .btn-ghost{background:var(--surface2);color:var(--ink);border:1px solid var(--border);}
 .btn-ghost:hover{border-color:var(--border2);background:var(--surface3);}
 .btn-sm{padding:.5rem 1rem;font-size:.85rem;}
 
 .badge{display:inline-block;padding:2px 10px;border-radius:99px;font-size:.68rem;font-weight:700;letter-spacing:.5px;text-transform:uppercase;border:1px solid;}
-.badge-blue{background:#e8f1fc;color:#1f5fae;border-color:#cfe0f6;}
-.badge-violet{background:#eeeafe;color:#5646c9;border-color:#ddd6fb;}
+.badge-blue{background:#e6f0ea;color:#1a5a3d;border-color:#cde3d5;}
+.badge-violet{background:#e4efe8;color:#1d5a40;border-color:#c8dfd1;}
 .badge-amber{background:#fbf1d8;color:#946608;border-color:#f2e3ba;}
 .badge-aqua{background:#dff5ec;color:#0c7c54;border-color:#c2ead9;}
 /* icons */
@@ -88,12 +88,6 @@ em{color:var(--ink2);font-style:italic;}
 .timer-pill.danger{border-color:var(--crit);background:rgba(208,59,59,.12);animation:tpulse 1s infinite;} .timer-pill.danger .cp-val{color:var(--crit);}
 @keyframes tpulse{0%,100%{box-shadow:0 0 0 0 rgba(208,59,59,.4);}50%{box-shadow:0 0 0 5px rgba(208,59,59,0);}}
 /* landing timer picker */
-.timer-select{display:flex;flex-direction:column;align-items:center;gap:.5rem;margin-top:1.4rem;}
-.ts-label{font-size:.72rem;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--muted);}
-.ts-opts{display:inline-flex;background:var(--surface);border:1px solid var(--border);border-radius:99px;padding:3px;gap:2px;box-shadow:var(--shadow);}
-.ts-opts button{border:none;background:transparent;color:var(--ink2);font-family:var(--font);font-size:.85rem;font-weight:600;padding:.4rem .95rem;border-radius:99px;cursor:pointer;transition:all .15s;}
-.ts-opts button:hover{color:var(--ink);}
-.ts-opts button.on{background:var(--accent);color:#fff;}
 
 /* landing */
 .landing{text-align:center;padding:3.5rem 1rem 1rem;}
@@ -103,7 +97,7 @@ em{color:var(--ink2);font-style:italic;}
 .landing-blurb{font-size:.98rem;color:var(--ink2);max-width:540px;margin:0 auto 1.5rem;line-height:1.6;}
 .how-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:1rem;margin:2.5rem 0;}
 .how-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem;text-align:left;}
-.how-card .n{width:26px;height:26px;border-radius:8px;background:var(--accentDim);border:1px solid rgba(144,133,233,.3);color:var(--accent);font-weight:750;font-size:.85rem;display:flex;align-items:center;justify-content:center;margin-bottom:.65rem;}
+.how-card .n{width:26px;height:26px;border-radius:8px;background:var(--accentDim);border:1px solid rgba(46,125,91,.3);color:var(--accent);font-weight:750;font-size:.85rem;display:flex;align-items:center;justify-content:center;margin-bottom:.65rem;}
 .how-card h3{margin-bottom:.3rem;font-size:.98rem;}
 .how-card p{font-size:.85rem;margin:0;}
 .start-row{display:flex;gap:.75rem;align-items:center;justify-content:center;flex-wrap:wrap;margin-top:1rem;}
@@ -117,7 +111,7 @@ em{color:var(--ink2);font-style:italic;}
 .dealer-box .ai-chip{margin-bottom:1.5rem;}
 .dealer-box h2{margin-bottom:1.4rem;font-weight:750;}
 .scan{width:280px;max-width:80vw;margin:0 auto 1.4rem;}
-.scanline{height:10px;border-radius:6px;background:linear-gradient(90deg,#efeafe,var(--accent),#e6f0fb);background-size:200% 100%;margin-bottom:10px;animation:sweep 1.1s ease-in-out infinite;opacity:.8;}
+.scanline{height:10px;border-radius:6px;background:linear-gradient(90deg,#e8f1eb,var(--accent),#e6f0ea);background-size:200% 100%;margin-bottom:10px;animation:sweep 1.1s ease-in-out infinite;opacity:.8;}
 .scanline:nth-child(2){width:82%;animation-delay:.12s;} .scanline:nth-child(3){width:64%;animation-delay:.24s;}
 @keyframes sweep{0%{background-position:180% 0;}100%{background-position:-80% 0;}}
 .dealer-status{font-size:.9rem;color:var(--muted);min-height:1.4em;}
@@ -131,7 +125,7 @@ em{color:var(--ink2);font-style:italic;}
 .stat-pill{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:.7rem 1.1rem;min-width:120px;}
 .stat-pill .sp-num{font-size:1.5rem;font-weight:800;color:var(--ink);letter-spacing:-.5px;}
 .stat-pill .sp-label{font-size:.74rem;color:var(--muted);line-height:1.3;}
-.decision-callout{background:var(--accentDim);border:1px solid rgba(144,133,233,.28);border-radius:12px;padding:1rem 1.25rem;margin-top:1.2rem;}
+.decision-callout{background:var(--accentDim);border:1px solid rgba(46,125,91,.28);border-radius:12px;padding:1rem 1.25rem;margin-top:1.2rem;}
 .decision-callout strong{color:var(--accent);}
 
 /* analysis room */
@@ -141,7 +135,7 @@ em{color:var(--ink2);font-style:italic;}
 .decision-preview strong{color:var(--ink);}
 .cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:1rem;margin-bottom:1.5rem;}
 .acard{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;transition:border-color .2s,box-shadow .2s,transform .15s;}
-.acard:not(.opened):hover{border-color:var(--accent);box-shadow:0 0 0 1px rgba(144,133,233,.25);cursor:pointer;transform:translateY(-2px);}
+.acard:not(.opened):hover{border-color:var(--accent);box-shadow:0 0 0 1px rgba(46,125,91,.25);cursor:pointer;transform:translateY(-2px);}
 .acard.opened{border-color:rgba(25,158,112,.4);}
 .acard-head{display:flex;justify-content:space-between;align-items:flex-start;padding:1rem 1rem .55rem;gap:.5rem;}
 .acard-title{font-weight:650;font-size:.96rem;flex:1;line-height:1.3;}
@@ -149,14 +143,14 @@ em{color:var(--ink2);font-style:italic;}
 .acard-cost .cr{width:7px;height:7px;border-radius:50%;background:var(--warn);}
 .acard-q{padding:0 1rem .7rem;font-size:.8rem;color:var(--muted);}
 .acard-cat{padding:0 1rem .75rem;}
-.open-btn{margin:0 1rem 1rem;width:calc(100% - 2rem);padding:.6rem;border-radius:10px;border:1px solid rgba(109,93,240,.32);background:#f1effe;color:#5646c9;cursor:pointer;font-size:.85rem;font-weight:650;font-family:var(--font);transition:all .15s;}
+.open-btn{margin:0 1rem 1rem;width:calc(100% - 2rem);padding:.6rem;border-radius:10px;border:1px solid rgba(31,107,74,.32);background:#ebf3ee;color:#1d5a40;cursor:pointer;font-size:.85rem;font-weight:650;font-family:var(--font);transition:all .15s;}
 .open-btn:hover{background:var(--accent);color:#fff;border-color:var(--accent);}
 .reveal{padding:0 1rem;display:none;}
 .acard.opened .reveal{display:block;}
 .rev-sec{margin-bottom:.8rem;}
 .rev-label{font-size:.66rem;font-weight:750;letter-spacing:.8px;text-transform:uppercase;color:var(--muted);margin-bottom:.35rem;display:flex;align-items:center;gap:5px;}
 .rev-label.sig{color:var(--accent);}
-.rev-signal{background:#f2f0fd;border-left:3px solid var(--accent);padding:.6rem .75rem;border-radius:0 8px 8px 0;font-size:.83rem;color:var(--ink);}
+.rev-signal{background:#ecf4ef;border-left:3px solid var(--accent);padding:.6rem .75rem;border-radius:0 8px 8px 0;font-size:.83rem;color:var(--ink);}
 .rev-limit{background:#fbf4e4;border-left:3px solid var(--warn);padding:.6rem .75rem;border-radius:0 8px 8px 0;font-size:.82rem;color:var(--ink2);margin-bottom:1rem;}
 .opened-tag{margin:0 1rem 1rem;display:flex;align-items:center;gap:6px;font-size:.82rem;color:var(--aqua);font-weight:650;}
 .opened-tag.closed{color:var(--muted);}
@@ -215,7 +209,7 @@ svg .cx-v.tab{font-variant-numeric:tabular-nums;}
 .seg-btn:hover{border-color:var(--accent);}
 .seg-btn.on-inc{background:#dff5ec;border-color:var(--aqua);color:#0c7c54;font-weight:650;}
 .seg-btn.on-exc{background:#fbe4e4;border-color:var(--crit);color:#b83636;font-weight:650;}
-.seg-btn.on-tst{background:#e8f1fc;border-color:var(--accent2);color:#1f5fae;font-weight:650;}
+.seg-btn.on-tst{background:#e6f0ea;border-color:var(--accent2);color:#1a5a3d;font-weight:650;}
 
 /* top3 */
 .top3-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:.75rem;}
@@ -239,7 +233,7 @@ svg .cx-v.tab{font-variant-numeric:tabular-nums;}
 .chip-group{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:.4rem;}
 .chip{padding:5px 13px;border-radius:99px;border:1px solid var(--border);font-size:.78rem;cursor:pointer;color:var(--ink2);background:transparent;transition:all .12s;}
 .chip:hover{border-color:var(--accent);}
-.chip.checked{background:#f1effe;border-color:var(--accent);color:#5646c9;}
+.chip.checked{background:#ebf3ee;border-color:var(--accent);color:#1d5a40;}
 
 .step-nav{display:flex;justify-content:space-between;align-items:center;padding:1.5rem 0 2rem;border-top:1px solid var(--border);margin-top:1.5rem;flex-wrap:wrap;gap:1rem;}
 .step-nav-right{display:flex;align-items:center;gap:1rem;}
@@ -280,7 +274,7 @@ svg .cx-v.tab{font-variant-numeric:tabular-nums;}
 .seg-result-row{display:flex;flex-direction:column;gap:.4rem;}
 .srow{display:flex;align-items:center;gap:.5rem;font-size:.85rem;}
 .stag{padding:2px 9px;border-radius:99px;font-size:.72rem;font-weight:650;}
-.stag.include{background:#dff5ec;color:#0c7c54;} .stag.exclude{background:#fbe4e4;color:#b83636;} .stag.test{background:#e8f1fc;color:#1f5fae;}
+.stag.include{background:#dff5ec;color:#0c7c54;} .stag.exclude{background:#fbe4e4;color:#b83636;} .stag.test{background:#e6f0ea;color:#1a5a3d;}
 .rec-display{background:var(--surface2);border-radius:10px;padding:.75rem 1rem;font-size:.85rem;color:var(--ink2);font-style:italic;}
 
 .facit-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.6rem;margin-bottom:1.5rem;position:relative;overflow:hidden;}
@@ -296,7 +290,7 @@ svg .cx-v.tab{font-variant-numeric:tabular-nums;}
 .ins-items{display:flex;flex-direction:column;gap:.55rem;}
 .ins-item{display:flex;gap:.6rem;align-items:flex-start;font-size:.87rem;color:var(--ink2);}
 .ins-item .ic{flex-shrink:0;margin-top:1px;}
-.lesson{background:linear-gradient(120deg,rgba(144,133,233,.1),rgba(57,135,229,.07));border:1px solid rgba(144,133,233,.28);border-radius:var(--radius);padding:1.6rem;margin-bottom:2rem;text-align:center;}
+.lesson{background:linear-gradient(120deg,rgba(46,125,91,.1),rgba(46,125,91,.07));border:1px solid rgba(46,125,91,.28);border-radius:var(--radius);padding:1.6rem;margin-bottom:2rem;text-align:center;}
 .lesson-q{font-size:1.2rem;font-weight:700;color:var(--ink);font-style:italic;margin-bottom:.5rem;letter-spacing:-.3px;}
 .lesson p{font-size:.9rem;margin:0;}
 .restart-row{display:flex;gap:.75rem;justify-content:center;padding:1rem 0 3rem;flex-wrap:wrap;}
@@ -325,7 +319,7 @@ svg .cx-v.tab{font-variant-numeric:tabular-nums;}
     <span class="ai-chip"><span class="dot"></span> Preparing case file</span>
     <h2>Dealing your case…</h2>
     <div class="scan"><div class="scanline"></div><div class="scanline"></div><div class="scanline"></div></div>
-    <div class="dealer-status" id="dealer-status">Scanning Nordia data lake…</div>
+    <div class="dealer-status" id="dealer-status">Scanning the retailer's data lake…</div>
   </div>
 </div>
 
@@ -358,23 +352,14 @@ svg .cx-v.tab{font-variant-numeric:tabular-nums;}
 <div id="screen-landing" class="screen active">
 <div class="container">
   <div class="landing">
-    <div class="eyebrow">Nordia · The human in the AI loop</div>
+    <div class="eyebrow">The human in the AI loop</div>
     <h1 class="brand">MAKE THE CALL</h1>
     <p class="tag">AI delivers the insights. <strong>You</strong> make the decisions.</p>
-    <p class="landing-blurb">You lead a product decision at <strong>Nordia</strong>, a Nordic pharmacy retailer with online and a big store network. Each round hands your table a real case and the analysis behind it — you decide what's worth knowing, and what to do about it. We'll guide you at each step.</p>
-    <span class="ai-chip"><span class="dot"></span> A new case each round</span>
-    <div class="timer-select">
-      <span class="ts-label">Analysis timer</span>
-      <div class="ts-opts" id="ts-opts">
-        <button data-min="0" onclick="setTimer(0,this)">Off</button>
-        <button data-min="10" onclick="setTimer(10,this)">10 min</button>
-        <button data-min="15" class="on" onclick="setTimer(15,this)">15 min</button>
-        <button data-min="20" onclick="setTimer(20,this)">20 min</button>
-      </div>
-    </div>
+    <p class="landing-blurb">You lead a product decision at <strong>a Nordic pharmacy retailer</strong> with online sales and a big store network. Each round hands your table a real case and the analysis behind it — you decide what's worth knowing, and what to do about it. We'll guide you at each step.</p>
+    <span class="ai-chip"><span class="dot"></span> A new case each round · 15 min to analyse</span>
     <div class="start-row">
-      <input type="text" id="team-name-input" placeholder="Table name (optional)" maxlength="40" />
-      <button class="btn btn-primary" onclick="dealCase()">Deal my case →</button>
+      <input type="text" id="team-name-input" placeholder="Table name" maxlength="40" required oninput="checkName()" onkeydown="if(event.key==='Enter')dealCase()" />
+      <button class="btn btn-primary" id="deal-btn" onclick="dealCase()" disabled>Deal my case →</button>
     </div>
   </div>
 </div>
@@ -419,8 +404,8 @@ svg .cx-v.tab{font-variant-numeric:tabular-nums;}
 // ═══════════════════════════════════════════════════════════════
 // PALETTE (from validated dataviz dark ramp)
 // ═══════════════════════════════════════════════════════════════
-const C={blue:'#2a78d6',ref:'#c8c2b4',refDim:'#d8d2c5',good:'#0a9d34',warn:'#e0940a',
-  serious:'#e0743a',crit:'#cf3b3b',aqua:'#12a06f',violet:'#5646c9',orange:'#eb6834',yellow:'#c8860a',
+const C={blue:'#2e7d5b',ref:'#c8c2b4',refDim:'#d8d2c5',good:'#0a9d34',warn:'#e0940a',
+  serious:'#e0743a',crit:'#cf3b3b',aqua:'#12a06f',violet:'#1d5a40',orange:'#eb6834',yellow:'#c8860a',
   pos:'#0a8a3f',neg:'#c23636'};
 
 // ═══════════════════════════════════════════════════════════════
@@ -564,8 +549,8 @@ const CASES=[
   id:'reco',
   name:'AI Recommendation Engine',
   scanNotes:['Loading app checkout logs…','Segmenting basket data…','Compiling insight deck…'],
-  move:`Nordia ran a 6-week pilot of an <strong>AI "You might also need…" engine</strong> in its app and online checkout. It suggests extra health & self-care products at the basket. On the surface it looks like a hit — average basket size is up and more customers are adding a second item.`,
-  question:`Should Nordia roll out the AI recommender across the whole business — and if so, how?`,
+  move:`The retailer ran a 6-week pilot of an <strong>AI "You might also need…" engine</strong> in its app and online checkout. It suggests extra health & self-care products at the basket. On the surface it looks like a hit — average basket size is up and more customers are adding a second item.`,
+  question:`Should the retailer roll out the AI recommender across the whole business — and if so, how?`,
   stats:[
     {num:'+14%',label:'Avg basket size vs control'},
     {num:'31%',label:'Attach rate (was 22%)'},
@@ -737,8 +722,8 @@ const CASES=[
   id:'ownbrand',
   name:'Own-Brand Line',
   scanNotes:['Loading POS & range data…','Comparing to national brands…','Compiling insight deck…'],
-  move:`Nordia launched a private-label range, <strong>"Nordia Basics"</strong>, across its stores and app over 8 weeks — vitamins, pain relief, skincare and everyday basics at a lower price than the national brands. Own-brand units sold strongly and total category revenue rose.`,
-  question:`Should Nordia expand the own-brand range — and across which product categories?`,
+  move:`The retailer launched a private-label range, <strong>"Pharmacy Basics"</strong>, across its stores and app over 8 weeks — vitamins, pain relief, skincare and everyday basics at a lower price than the national brands. Own-brand units sold strongly and total category revenue rose.`,
+  question:`Should the retailer expand the own-brand range — and across which product categories?`,
   stats:[
     {num:'11%',label:'Own-brand share of units'},
     {num:'+6%',label:'Category revenue'},
@@ -753,11 +738,11 @@ const CASES=[
   ],
   bestSegs:{A:'include',B:'exclude',C:'test',D:'exclude'},
   decisions:[
-    {id:'broad',icon:'🚀',label:'Expand own-brand across all categories',desc:'Push Nordia Basics into every category, everywhere',quality:'poor',
+    {id:'broad',icon:'🚀',label:'Expand own-brand across all categories',desc:'Push Pharmacy Basics into every category, everywhere',quality:'poor',
       explanation:'Scales the margin loss. Own-brand mostly switches buyers off higher-margin national brands, and customers distrust own-brand medicines — a blanket push destroys value in exactly the categories that looked like volume wins.'},
     {id:'targeted',icon:'🎯',label:'Expand where it is accretive, hold back elsewhere',desc:'Grow own-brand in trusting, price-driven categories only',quality:'best',
       explanation:'The strongest call. Own-brand creates value only when it beats the margin of what it displaces and customers trust it — true for vitamins, false for trust-sensitive meds and margin-thin basics.'},
-    {id:'stop',icon:'🛑',label:'Discontinue the own-brand line',desc:'Pull Nordia Basics from the range',quality:'poor',
+    {id:'stop',icon:'🛑',label:'Discontinue the own-brand line',desc:'Pull Pharmacy Basics from the range',quality:'poor',
       explanation:'An over-correction. Vitamins & supplements are a genuine margin win. Killing the whole line on aggregate caution throws away the category where private label clearly works.'},
     {id:'test',icon:'🧪',label:'Run a controlled category test first',desc:'Test cannibalisation properly before expanding',quality:'good',
       explanation:'Methodologically sound — you refuse to read cannibalisation as growth. A little cautious, since vitamins already look like a clear, accretive win.'},
@@ -823,12 +808,12 @@ const CASES=[
 
     {id:'trust_survey',name:'“Value for money” survey',cat:'Experience',tone:'badge-blue',cost:2,value:'low',
       q:'What did customers think of the own-brand range?',
-      viz:()=>barsH('“Nordia Basics is good value” (n=980)',[
+      viz:()=>barsH('“Pharmacy Basics is good value” (n=980)',[
         {label:'Strongly agree',val:48,color:C.aqua,tag:'48%'},
         {label:'Agree',val:34,color:C.blue,tag:'34%'},
         {label:'Neutral',val:13,color:C.ref,tag:'13%'},
         {label:'Disagree',val:5,color:C.crit,tag:'5%'}],{max:56,labelW:84}),
-      signal:'Customers rated Nordia Basics highly on value — 4.5/5, and 82% agreed it was good value for money.',
+      signal:'Customers rated Pharmacy Basics highly on value — 4.5/5, and 82% agreed it was good value for money.',
       limit:`Loving the price is not the same as the line being profitable. Customers praised the value in every category — including the ones losing money on margin.`},
 
     {id:'brand_trust',name:'Own-brand trust by category',cat:'Trust & ethics',tone:'badge-violet',cost:3,value:'medium',
@@ -842,7 +827,7 @@ const CASES=[
       limit:`Stated willingness, not observed behaviour. It flags where trust is a barrier but not exactly how much revenue it costs.`},
 
     {id:'incrementality',name:'Incrementality estimate',cat:'Causality',tone:'badge-violet',cost:5,value:'medium',
-      q:'How much of own-brand revenue was genuinely new to Nordia?',
+      q:'How much of own-brand revenue was genuinely new to the retailer?',
       viz:()=>tbl(['Component','Estimate','CI'],[
         ['Own-brand share gained','11%',{t:'—',c:'neu'}],
         ['Switched from national brand',{t:'~8pp',c:'neg'},'±2pp'],
@@ -912,8 +897,8 @@ const CASES=[
   id:'refill',
   name:'Auto-Refill Subscription',
   scanNotes:['Loading subscription ledger…','Modelling churn & incrementality…','Compiling insight deck…'],
-  move:`Nordia piloted an <strong>auto-refill subscription</strong> for 3 months — repeat prescriptions and recurring self-care items delivered automatically, with a 30% launch discount and free delivery. 12,400 customers signed up and subscriber revenue jumped.`,
-  question:`Should Nordia roll out auto-refill — to whom, and on what terms?`,
+  move:`The retailer piloted an <strong>auto-refill subscription</strong> for 3 months — repeat prescriptions and recurring self-care items delivered automatically, with a 30% launch discount and free delivery. 12,400 customers signed up and subscriber revenue jumped.`,
+  question:`Should the retailer roll out auto-refill — to whom, and on what terms?`,
   stats:[
     {num:'12.4k',label:'Sign-ups'},
     {num:'+18%',label:'Subscriber revenue'},
@@ -954,7 +939,7 @@ const CASES=[
         ['90-day retention',{t:'84%',c:'pos'}],
         ['Orders / subscriber','+1.3']]),
       signal:'Adoption looked strong — 12.4k sign-ups, subscriber revenue up 18%, and most subscribers still active at 90 days.',
-      limit:`It shows people subscribed — not whether that revenue was new to Nordia, whether it's profitable after service cost, or who stays once the discount ends.`},
+      limit:`It shows people subscribed — not whether that revenue was new to the retailer, whether it's profitable after service cost, or who stays once the discount ends.`},
 
     {id:'incrementality',name:'Incrementality holdout',cat:'Causality',tone:'badge-violet',cost:5,value:'high',
       q:'Would subscribers have bought these items anyway?',
@@ -984,7 +969,7 @@ const CASES=[
         ['Reminders & support',{t:'−1pp',c:'neg'}],
         ['Higher order frequency',{t:'+5pp',c:'pos'}],
         ['Net vs one-off purchase',{t:'−5pp',c:'neg'}]]),
-      signal:'A subscriber earns Nordia ~5pp less margin than the same customer buying one-off — the launch discount and free delivery outweigh the margin from more frequent orders.',
+      signal:'A subscriber earns the retailer ~5pp less margin than the same customer buying one-off — the launch discount and free delivery outweigh the margin from more frequent orders.',
       limit:`Average cost-to-serve. It doesn't capture the defensive value of locking in a high-value customer for years.`},
 
     {id:'churn',name:'Churn by segment',cat:'Retention',tone:'badge-blue',cost:3,value:'high',
@@ -1028,7 +1013,7 @@ const CASES=[
       limit:`Sign-up mix, not lifetime value. It flags that the headline sign-up number is inflated by unprofitable acquisitions.`},
 
     {id:'base_retention',name:'Counterfactual retention',cat:'Causality',tone:'badge-blue',cost:3,value:'medium',
-      q:'Would these customers have stayed with Nordia anyway?',
+      q:'Would these customers have stayed with the retailer anyway?',
       viz:()=>tbl(['Segment','Baseline retention','With subscription'],[
         ['Segment A',{t:'88%',c:'neu'},{t:'94%',c:'pos'}],
         ['Segment B',{t:'61%',c:'neu'},{t:'82%',c:'pos'}],
@@ -1089,8 +1074,8 @@ const CASES=[
   id:'category',
   name:'New Wellness Category',
   scanNotes:['Loading store-level POS…','Modelling footfall & space…','Compiling insight deck…'],
-  move:`Nordia trialed a new in-store <strong>"Wellness" category</strong> — sports nutrition, supplements and wellness devices — across 40 of its 210 stores plus the app, for 10 weeks. Category sales looked promising and footfall rose in trial stores.`,
-  question:`Should Nordia roll out the wellness category — and to which store types?`,
+  move:`The retailer trialed a new in-store <strong>"Wellness" category</strong> — sports nutrition, supplements and wellness devices — across 40 of its 210 stores plus the app, for 10 weeks. Category sales looked promising and footfall rose in trial stores.`,
+  question:`Should the retailer roll out the wellness category — and to which store types?`,
   stats:[
     {num:'+9%',label:'Category sales (trial)'},
     {num:'+4%',label:'Footfall in trial stores'},
@@ -1105,7 +1090,7 @@ const CASES=[
   ],
   bestSegs:{A:'include',B:'test',C:'exclude',D:'include'},
   decisions:[
-    {id:'broad',icon:'🚀',label:'Roll out to all stores',desc:'Put the wellness category in every Nordia store',quality:'poor',
+    {id:'broad',icon:'🚀',label:'Roll out to all stores',desc:'Put the wellness category in every store',quality:'poor',
       explanation:'Drags the winners down with the losers. Demand is demographic — small-town stores end up with dead stock and cannibalised aisles, while the shelf and staffing cost applies everywhere.'},
     {id:'targeted',icon:'🎯',label:'Roll out to the store types that fit, plus online',desc:'Urban & online where demand and economics work',quality:'best',
       explanation:'The strongest call. Demand and margin are real in urban stores and online, where costs are low; small-town stores only tie up space and staff for stock that won\'t sell.'},
@@ -1262,7 +1247,7 @@ const CASES=[
 // STATE
 // ═══════════════════════════════════════════════════════════════
 let CASE=null;
-let selectedTimerMin=15;
+const selectedTimerMin=15;
 const S={spent:0,opened:new Set(),teamName:'',decisionStep:1,top3:new Set(),
   segmentDecisions:{},mainDecision:null,recommendation:'',uncertainties:new Set(),
   timerMinutes:20,timerStarted:false,timeUp:false};
@@ -1277,17 +1262,12 @@ function resetState(){
   S.segmentDecisions={};CASE.segments.forEach(s=>S.segmentDecisions[s.id]={decision:null});
 }
 
-function setTimer(min,btn){
-  selectedTimerMin=min;
-  document.querySelectorAll('#ts-opts button').forEach(b=>b.classList.remove('on'));
-  btn.classList.add('on');
-}
 
 // ═══════════════════════════════════════════════════════════════
 // COACH MARKS  (guided pop-ups, shown once per session, re-openable via ? button)
 // ═══════════════════════════════════════════════════════════════
 const COACH={
-  brief:['folder','','Here\'s your case','You\'ve been handed a real product decision at Nordia. Read the situation and the headline numbers up top — then step into the analysis room.'],
+  brief:['folder','','Here\'s your case','You\'ve been handed a real product decision at a Nordic pharmacy retailer. Read the situation and the headline numbers up top — then step into the analysis room.'],
   shop:['search','','Buy the insights you need','Every card is an analysis, and each one costs tokens. Open the ones that could actually change your decision — you can\'t afford them all. Move on when you know enough.'],
   d1:['target','Step 1 of 3','Make your call','Pick the decision you\'d recommend to leadership. Choose “targeted” and you\'ll also say which segments are in, out, or worth a test.'],
   d2:['star','Step 2 of 3','Show your evidence','Pick the up-to-3 insights your call really rests on. Choosing the right ones counts for more than choosing many.'],
@@ -1337,8 +1317,11 @@ function onTimeUp(){
 let activeScreen='landing';
 function showScreen(id){activeScreen=id;document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById('screen-'+id).classList.add('active');window.scrollTo(0,0);}
 
+function checkName(){document.getElementById('deal-btn').disabled=!document.getElementById('team-name-input').value.trim();}
 function dealCase(){
-  S.teamName=document.getElementById('team-name-input').value.trim();
+  const nameEl=document.getElementById('team-name-input');
+  if(!nameEl.value.trim()){nameEl.focus();return;}
+  S.teamName=nameEl.value.trim();
   CASE=CASES[Math.floor(Math.random()*CASES.length)];
   resetState();
   S.timerMinutes=selectedTimerMin;
@@ -1355,7 +1338,7 @@ function goToShop(){renderShop();showScreen('shop');document.getElementById('cos
 function goToBrief(){document.getElementById('cost-bar').classList.remove('visible');showScreen('brief');showCoach('brief');}
 function goToDecision(){S.decisionStep=1;showScreen('decision');document.getElementById('cost-bar').classList.remove('visible');renderDecisionStep();}
 function submitDecision(){stopTimer();renderResults();showScreen('results');setTimeout(()=>showCoach('results'),1500);}
-function restartGame(){stopTimer();document.getElementById('cost-bar').classList.remove('visible');document.getElementById('timer-pill').style.display='none';document.getElementById('team-name-input').value=S.teamName;hideHelp();showScreen('landing');}
+function restartGame(){stopTimer();document.getElementById('cost-bar').classList.remove('visible');document.getElementById('timer-pill').style.display='none';document.getElementById('team-name-input').value=S.teamName;checkName();hideHelp();showScreen('landing');}
 function playSameCase(){resetState();renderBrief();showScreen('brief');}
 
 function updateCostTracker(){
@@ -1484,7 +1467,7 @@ function renderStep1(){
             <button class="seg-btn ${sd.decision==='exclude'?'on-exc':''}" onclick="setSeg('${seg.id}','exclude')">Exclude</button>
             <button class="seg-btn ${sd.decision==='test'?'on-tst':''}" onclick="setSeg('${seg.id}','test')">Test</button>
           </div></div>`;}).join('')}</div></div>`:'';
-  return `<div class="step-header"><h2>What's your call?</h2><p>Choose the decision you'd put to Nordia's leadership, based on the insights you opened.</p></div>${decHtml}${segHtml}`;
+  return `<div class="step-header"><h2>What's your call?</h2><p>Choose the decision you'd put to the retailer's leadership, based on the insights you opened.</p></div>${decHtml}${segHtml}`;
 }
 function selectMain(id){S.mainDecision=id;renderDecisionStep();}
 function setSeg(id,dec){S.segmentDecisions[id].decision=dec;renderDecisionStep();}
