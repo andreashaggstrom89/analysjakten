@@ -291,13 +291,17 @@ function tick(){
 
 function removeTable(id){
   if(armed!==id){armed=id;clearTimeout(armTimer);armTimer=setTimeout(()=>{armed=null;render();},3000);render();return;}
-  armed=null;firebase.database().ref('live/tables/'+id).remove();
+  armed=null;firebase.database().ref('live/tables/'+id).remove().catch(e=>alertBar('Could not remove the table: '+e.message));
 }
 function clearBoard(){
   if(!clearArmed){clearArmed=true;render();setTimeout(()=>{clearArmed=false;render();},3000);return;}
-  clearArmed=false;revealAnimated.clear();firebase.database().ref('live').update({tables:null,state:{revealed:false}});
+  clearArmed=false;revealAnimated.clear();
+  firebase.database().ref('live').update({'tables':null,'state/revealed':false}).catch(e=>alertBar('Could not clear the board: '+e.message));
 }
-function setReveal(v){revealAnimated.clear();firebase.database().ref('live/state/revealed').set(v);}
+function setReveal(v){revealAnimated.clear();firebase.database().ref('live/state/revealed').set(v).catch(e=>alertBar('Could not update the reveal: '+e.message));}
+function alertBar(msg){let el=document.getElementById('alert-bar');if(!el){el=document.createElement('div');el.id='alert-bar';
+  el.style.cssText='position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#cf3b3b;color:#fff;font-weight:650;padding:.7rem 1.2rem;border-radius:12px;box-shadow:0 10px 30px -10px rgba(0,0,0,.4);z-index:50;font-family:var(--font)';
+  document.body.appendChild(el);}el.textContent=msg;el.hidden=false;clearTimeout(el._t);el._t=setTimeout(()=>{el.hidden=true;},6000);}
 function toggleFs(){if(document.fullscreenElement)document.exitFullscreen();else document.documentElement.requestFullscreen&&document.documentElement.requestFullscreen();}
 
 if(!window.FB_CONFIG){
