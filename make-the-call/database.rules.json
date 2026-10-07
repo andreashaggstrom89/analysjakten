@@ -18,6 +18,19 @@
         "revealed": {
           ".write": true,
           ".validate": "newData.isBoolean()"
+        },
+        "news": {
+          ".write": true,
+          "$k": {
+            ".validate": "newData.isNumber()"
+          }
+        },
+        "newsPlan": {
+          ".write": true
+        },
+        "newsOff": {
+          ".write": true,
+          ".validate": "newData.isBoolean()"
         }
       }
     }

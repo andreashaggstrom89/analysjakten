@@ -143,6 +143,17 @@ body{font-family:var(--font);background:var(--plane);color:var(--ink);min-height
 .unsure{display:flex;flex-wrap:wrap;gap:.35rem;align-items:center;margin-top:.6rem;}
 .unsure .lbl{margin:0 .2rem 0 0;}
 .unsure .u{font-size:.72rem;font-weight:650;padding:2px 8px;border-radius:99px;background:var(--accentDim);color:var(--accent);}
+.newsbar{display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;margin:-.4rem 0 1.2rem;font-size:.8rem;color:var(--ink2);}
+.nb-flag{font-size:.66rem;font-weight:800;letter-spacing:.8px;text-transform:uppercase;color:#fff;background:var(--crit);padding:3px 9px;border-radius:99px;}
+.nb-item{padding:3px 10px;border-radius:99px;background:var(--surface);border:1px solid var(--border);}
+.nb-item.sent{background:#fbe4e4;border-color:#f2caca;color:#b83636;font-weight:650;}
+.nb-ctrl{display:flex;gap:.35rem;margin-left:.3rem;}
+.nb-ctrl .btn{font-size:.72rem;padding:.3rem .65rem;}
+.reading{margin-top:.5rem;font-size:.72rem;font-weight:800;letter-spacing:.4px;text-transform:uppercase;color:#fff;background:var(--crit);display:inline-block;padding:3px 9px;border-radius:99px;animation:blink 1.4s ease-in-out infinite;}
+.newsrow{display:flex;flex-wrap:wrap;gap:.35rem;align-items:center;margin-top:.8rem;}
+.newsrow .lbl{margin:0 .2rem 0 0;}
+.nr{font-size:.72rem;font-weight:700;padding:3px 9px;border-radius:7px;border:1px solid var(--border);background:var(--surface2);color:var(--ink2);}
+.nr.ok{background:#dff5ec;color:#0c7c54;border-color:#c2ead9;} .nr.no{background:#fbe4e4;color:#b83636;border-color:#f2caca;}
 .setup{max-width:640px;margin:12vh auto;background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:2rem;box-shadow:var(--shadow);}
 .setup h2{margin-bottom:.6rem;} .setup p{color:var(--ink2);}
 </style>
@@ -156,9 +167,9 @@ body{font-family:var(--font);background:var(--plane);color:var(--ink);min-height
 <script>
 const STAGES=[['brief','Briefing'],['analysis','Analysis'],['decision','Decision'],['done','Done']];
 const STEP_LABELS=['Decision','Evidence','Rationale'];
-const LIVE_VERSION=2;          // must match index.html
+const LIVE_VERSION=3;          // must match index.html
 const MAX_AGE=12*3600*1000;   // ignore tables idle for more than 12 h
-let tables={},revealed=false,revealAnimated=new Set(),offset=0,connected=false,seenDone=new Set(),firstLoad=true,armed=null,armTimer=null,clearArmed=false;
+let tables={},revealed=false,newsState={},newsPlan=null,newsOff=false,revealAnimated=new Set(),offset=0,connected=false,seenDone=new Set(),firstLoad=true,armed=null,armTimer=null,clearArmed=false;
 
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const now=()=>Date.now()+offset;
@@ -201,6 +212,7 @@ function tileHtml(t){
     <div class="tile-case">${esc(t.caseName||'')}</div>
     <div class="pipe">${STAGES.map(([k,l],i)=>`<div class="${i<stageIdx||(k==='done'&&t.stage==='done')?'on':i===stageIdx?'cur':''}"><i></i><span>${l}</span></div>`).join('')}</div>
     ${clock}<div class="status">${status}</div>
+    ${t.news&&Object.values(t.news).includes('pending')?'<div class="reading">Breaking news on screen</div>':''}
     ${revealed?`<div class="meter"><span>${t.opened||0}/${t.totalCards||12} insights</span><div class="bar"><div class="fill" style="width:${pct}%;background:${fill}"></div></div><span>${t.spent||0}/${t.budget||'–'} tokens</span></div>`:''}
   </div>`;
 }
@@ -211,6 +223,7 @@ function resultHtml(t,rank,fresh,anim){
   const segs=r.segs?`<div class="segs">${r.segs.map(s=>`<span class="seg ${s.dec===s.best?'ok':'no'}" title="${esc(s.name)}">${esc(s.id)} ${s.dec===s.best?'✓':'✗'} ${esc(s.dec||'—')}</span>`).join('')}</div>`:`<div class="na">Not a targeted rollout</div>`;
   const ev=(r.top3||[]).length?`<div class="ev">${r.top3.map(c=>`<div><i class="${esc(c.value)}"></i>${esc(c.name)}${c.trap?' <span class="trap">trap</span>':''}</div>`).join('')}</div>`:`<div class="na">No evidence picked</div>`;
   const parts=[[r.decPts,'#1f6b4a','Decision'],[r.segPts,'#12a06f','Segment fit'],[r.evPts,'#2e7d5b','Evidence'],[r.discPts,'#c8860a','Discipline']];
+  const newsLeg=(r.newsReactions||[]).length?`<span><i style="background:${r.newsPts<0?'#cf3b3b':'#0a9d34'}"></i>News ${r.newsPts>0?'+':''}${r.newsPts||0}</span>`:'';
   return `<div class="res ${fresh?'fresh':''} ${anim?'pop':''} ${rank===1?'winner':''}" ${anim?`style="animation-delay:${anim}s"`:''}>
     <div class="res-head">
       <div class="rank ${rank<=3?'r'+rank:''}">${rank}</div>
@@ -223,8 +236,9 @@ function resultHtml(t,rank,fresh,anim){
       <div><div class="lbl">Top 3 evidence</div>${ev}</div>
       <div><div class="lbl">Score build-up${r.over?` · −${r.over} over-analysis`:''}</div>
         <div class="split">${parts.map(([v,c])=>`<div style="width:${v}%;background:${c}"></div>`).join('')}</div>
-        <div class="legend">${parts.map(([v,c,l])=>`<span><i style="background:${c}"></i>${l} ${v}</span>`).join('')}</div></div>
+        <div class="legend">${parts.map(([v,c,l])=>`<span><i style="background:${c}"></i>${l} ${v}</span>`).join('')}${newsLeg}</div></div>
     </div>
+    ${(r.newsReactions||[]).length?`<div class="newsrow"><span class="lbl">Breaking news</span>${r.newsReactions.map(n=>`<span class="nr ${n.pts>0?'ok':n.pts<0?'no':''}" title="${esc(n.headline)}">${esc({change:'Changed thinking',investigate:'Investigated',ignore:'Stayed the course'}[n.choice]||n.choice)} ${n.pts>0?'+':''}${n.pts}</span>`).join('')}</div>`:''}
     ${r.rationale||(r.unsure||[]).length?`<div class="why">
       ${r.rationale?`<blockquote>“${esc(r.rationale)}”</blockquote>`:''}
       ${(r.unsure||[]).length?`<div class="unsure"><span class="lbl">Still unsure about</span>${r.unsure.map(u=>`<span class="u">${esc(u)}</span>`).join('')}</div>`:''}
@@ -281,7 +295,7 @@ function render(){
 
   const finishedNames=done.map(t=>`<span class="done-chip">✓ ${esc(t.name)}</span>`).join('');
   const waitingNames=inPlay.filter(t=>!t.result).map(t=>`<span class="done-chip wait">${esc(t.name)}</span>`).join('');
-  document.getElementById('app').innerHTML=topBar+`
+  document.getElementById('app').innerHTML=topBar+newsBar(list)+`
     <div class="cols">
       <section>
         <div class="sec-h"><h2>Tables in play</h2><span>15 min in the analysis room</span></div>
@@ -300,8 +314,42 @@ function render(){
     </div>`+confirmHtml;
 }
 
+// ── Breaking news: two events at random times, sent to every active table at once ──
+const NEWS_WINDOWS=[[4,7],[9,12]];   // minutes after the first table starts its analysis
+function planNews(){
+  if(newsOff||newsPlan)return;
+  const starts=active().filter(t=>t.analysisStart&&!t.result).map(t=>t.analysisStart);
+  if(!starts.length)return;
+  const first=Math.min(...starts),rnd=([a,b])=>Math.round((a+Math.random()*(b-a))*60000);
+  const plan={at1:first+rnd(NEWS_WINDOWS[0]),at2:first+rnd(NEWS_WINDOWS[1])};
+  firebase.database().ref('live/state/newsPlan').transaction(cur=>cur||plan);
+}
+function sendNews(k){
+  firebase.database().ref('live/state/news/'+k).transaction(cur=>cur||firebase.database.ServerValue.TIMESTAMP)
+    .catch(e=>alertBar('Could not send breaking news: '+e.message));
+}
+function checkNews(){
+  if(newsOff)return;
+  planNews();
+  if(!newsPlan)return;
+  if(!newsState.n1&&now()>=newsPlan.at1)sendNews('n1');
+  else if(newsState.n1&&!newsState.n2&&now()>=newsPlan.at2)sendNews('n2');
+}
+function sendNextNews(){sendNews(newsState.n1?'n2':'n1');}
+function toggleNews(){firebase.database().ref('live/state/newsOff').set(!newsOff);}
+function newsBar(list){
+  const sent=['n1','n2'].filter(k=>newsState[k]);
+  const resp=k=>{const got=list.filter(t=>t.news&&t.news[k]&&t.news[k]!=='missed');
+    const done=got.filter(t=>t.news[k]!=='pending').length;return got.length?` · ${done}/${got.length} answered`:'';};
+  const items=['n1','n2'].map((k,i)=>newsState[k]?`<span class="nb-item sent">${i+1} sent${resp(k)}</span>`:`<span class="nb-item">${i+1} ${newsOff?'paused':'pending'}</span>`).join('');
+  return `<div class="newsbar"><span class="nb-flag">Breaking news</span>${items}
+    <span class="nb-ctrl">${sent.length<2?`<button class="btn" onclick="sendNextNews()">Send ${sent.length?'#2':'#1'} now</button>`:''}
+    ${sent.length<2?`<button class="btn" onclick="toggleNews()">${newsOff?'Resume auto':'Pause auto'}</button>`:''}</span></div>`;
+}
+
 // Only the clocks change every second — update them in place.
 function tick(){
+  checkNews();
   const list=active();let needFull=false;
   list.forEach(t=>{
     const el=document.querySelector(`[data-clock="${t.id}"]`);if(!el)return;
@@ -320,7 +368,7 @@ function clearBoard(){clearArmed=true;render();}
 function cancelClear(){clearArmed=false;render();}
 function confirmClear(){
   clearArmed=false;revealAnimated.clear();render();
-  firebase.database().ref('live').update({'tables':null,'state/revealed':false})
+  firebase.database().ref('live').update({'tables':null,'state/revealed':false,'state/news':null,'state/newsPlan':null})
     .then(()=>alertBar('Board cleared',true))
     .catch(e=>alertBar('Could not clear the board: '+e.message));
 }
@@ -338,6 +386,9 @@ if(!window.FB_CONFIG){
   db.ref('.info/serverTimeOffset').on('value',s=>{offset=s.val()||0;});
   db.ref('.info/connected').on('value',s=>{connected=s.val()===true;render();});
   db.ref('live/tables').on('value',s=>{tables=s.val()||{};render();});
+  db.ref('live/state/news').on('value',s=>{newsState=s.val()||{};render();});
+  db.ref('live/state/newsPlan').on('value',s=>{newsPlan=s.val();});
+  db.ref('live/state/newsOff').on('value',s=>{newsOff=s.val()===true;render();});
   db.ref('live/state/revealed').on('value',s=>{const v=s.val()===true;if(v!==revealed){revealed=v;if(!v)revealAnimated.clear();render();}});
   render();
   setInterval(tick,1000);

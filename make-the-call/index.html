@@ -295,6 +295,32 @@ svg .cx-v.tab{font-variant-numeric:tabular-nums;}
 .lesson p{font-size:.9rem;margin:0;}
 .restart-row{display:flex;gap:.75rem;justify-content:center;padding:1rem 0 3rem;flex-wrap:wrap;}
 
+/* breaking news */
+#news[hidden],[hidden]{display:none!important;}
+#news{position:fixed;inset:0;z-index:450;background:rgba(36,31,23,.55);backdrop-filter:blur(3px);display:flex;align-items:center;justify-content:center;padding:1rem;animation:fade .25s ease;}
+.news-card{background:var(--surface);border-radius:22px;max-width:520px;width:100%;padding:1.6rem 1.6rem 1.4rem;box-shadow:var(--shadow-lg);border-top:6px solid var(--crit);animation:pop .35s cubic-bezier(.2,.9,.3,1.25);max-height:calc(100vh - 2rem);overflow:auto;}
+.news-flag{display:inline-flex;align-items:center;gap:7px;font-size:.72rem;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:#fff;background:var(--crit);padding:4px 11px;border-radius:99px;}
+.news-dot{width:7px;height:7px;border-radius:50%;background:#fff;animation:blinkdot 1s infinite;}
+@keyframes blinkdot{50%{opacity:.25;}}
+.news-src{font-size:.75rem;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--muted);margin:.9rem 0 .2rem;}
+.news-card h3{font-size:1.3rem;line-height:1.25;letter-spacing:-.3px;margin-bottom:.5rem;}
+.news-card p{font-size:.95rem;}
+.news-q{font-weight:700;margin:1.1rem 0 .6rem;}
+.news-opts{display:flex;flex-direction:column;gap:.5rem;}
+.news-opt{text-align:left;border:1.5px solid var(--border);background:var(--surface2);border-radius:12px;padding:.7rem .9rem;cursor:pointer;font-family:var(--font);display:flex;flex-direction:column;gap:2px;transition:border-color .15s,background .15s;}
+.news-opt strong{font-size:.95rem;}
+.news-opt span{font-size:.8rem;color:var(--ink2);}
+.news-opt:hover{border-color:var(--accent);background:var(--accentDim);}
+.news-catch-label{font-size:.72rem;font-weight:800;letter-spacing:.7px;text-transform:uppercase;color:var(--accent);margin:1.1rem 0 .35rem;}
+#news-catch p{background:var(--accentDim);border-left:3px solid var(--accent);border-radius:8px;padding:.7rem .85rem;color:var(--ink);margin-bottom:1rem;}
+.news-recap{margin-bottom:1rem;}
+.nr-item{padding:.8rem 0;border-top:1px solid var(--border);} .nr-item:first-of-type{border-top:none;padding-top:.3rem;}
+.nr-top{display:flex;justify-content:space-between;font-size:.72rem;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--muted);}
+.nr-pts.pos{color:var(--good);} .nr-pts.neg{color:var(--crit);}
+.nr-head{font-weight:700;margin:.15rem 0 .25rem;}
+.nr-you{font-size:.88rem;color:var(--ink2);}
+.nr-catch{font-size:.82rem;color:var(--muted);margin-top:.3rem;}
+
 /* coach marks */
 #coach{position:fixed;inset:0;z-index:400;background:rgba(45,38,22,.34);backdrop-filter:blur(2px);display:none;align-items:center;justify-content:center;padding:1.5rem;}
 #coach.show{display:flex;animation:fade .22s ease;}
@@ -333,6 +359,29 @@ svg .cx-v.tab{font-variant-numeric:tabular-nums;}
     <h2>Dealing your case…</h2>
     <div class="scan"><div class="scanline"></div><div class="scanline"></div><div class="scanline"></div></div>
     <div class="dealer-status" id="dealer-status">Scanning the retailer's data lake…</div>
+  </div>
+</div>
+
+<!-- BREAKING NEWS -->
+<div id="news" hidden>
+  <div class="news-card">
+    <div class="news-flag"><span class="news-dot"></span> Breaking news</div>
+    <div class="news-src" id="news-src"></div>
+    <h3 id="news-head"></h3>
+    <p id="news-body"></p>
+    <div id="news-actions">
+      <div class="news-q">How does this affect your call?</div>
+      <div class="news-opts">
+        <button class="news-opt" onclick="answerNews('change')"><strong>This changes our thinking</strong><span>We'd reconsider our decision</span></button>
+        <button class="news-opt" onclick="answerNews('investigate')"><strong>Investigate · 2 tokens</strong><span>Check what's behind it first</span></button>
+        <button class="news-opt" onclick="answerNews('ignore')"><strong>Noise — stay the course</strong><span>It doesn't change what we know</span></button>
+      </div>
+    </div>
+    <div id="news-catch" hidden>
+      <div class="news-catch-label">What the check found</div>
+      <p id="news-catch-text"></p>
+      <button class="btn btn-primary btn-sm" onclick="closeNews()">Back to the game →</button>
+    </div>
   </div>
 </div>
 
@@ -754,6 +803,14 @@ const CASES=[
       A:{dec:'exclude',msg:`Right call on Segment A: these customers buy anyway, and the recs eroded trust. Excluding them cuts cost and risk with no lost sales.`},
     },
   },
+  breaking:[
+    {kind:'noise',source:'Forwarded by the CEO',headline:'“Competitor\'s AI lifted revenue 30% — why are we behind?”',
+      body:'The CEO forwards a LinkedIn post from a rival pharmacy chain: <em>“Our new AI recommender drove a 30% revenue uplift in its first month!”</em> The note on top just says: <em>“Can we hit 30% if we go all in?”</em>',
+      catch:'The 30% comes from the vendor\'s own case study: first month, no control group, measured during a campaign week. It says nothing about incrementality or margin — and nothing about your customers.'},
+    {kind:'ambiguous',source:'Data team',headline:'Tracking bug found in the pilot data',
+      body:'The data team has found that for two weeks of the pilot, some app sessions logged recommended items twice. They are re-running the numbers now.',
+      catch:'Re-run: attach rate drops from 31% to 29% and the basket lift from +14% to about +12%. The segment pattern is unchanged — occasional shoppers still drive the real lift, and deal-driven users still return the most.'},
+  ],
   disc:{lo:10,budget:20,red:24},
 },
 
@@ -948,6 +1005,14 @@ const CASES=[
       B:{dec:'exclude',msg:`Right call on pain relief: customers trust national brands and revert, forcing discounts that erase margin. Holding back protects the category's economics.`},
     },
   },
+  breaking:[
+    {kind:'noise',source:'Social media',headline:'Viral video slams “Pharmacy Basics” painkillers',
+      body:'A clip titled <em>“I tried the cheap pharmacy painkillers so you don\'t have to”</em> has 400k views and the comments are split. Marketing asks whether the whole own-brand range should be pulled.',
+      catch:'Complaint and return rates haven\'t moved since the video. One viral clip is a sample of one — and it only echoes what the trust data already showed for pain relief. It says nothing new about the other categories.'},
+    {kind:'ambiguous',source:'Category management',headline:'Leading vitamin brand cuts prices by 15%',
+      body:'The market-leading national vitamin brand has announced a 15% price cut from next month, narrowing the gap to own-brand.',
+      catch:'Modelled impact: own-brand vitamin share dips from 24% to around 20%, but own-brand margin still beats the national brand\'s. Vitamins stay accretive — the expansion case holds, with a closer eye on pricing.'},
+  ],
   disc:{lo:10,budget:20,red:24},
 },
 
@@ -1141,6 +1206,14 @@ const CASES=[
       D:{dec:'exclude',msg:`Right call on deal-driven sign-ups: they joined for the discount and churned at 54%. Excluding them cuts an acquisition cost that never pays back.`},
     },
   },
+  breaking:[
+    {kind:'noise',source:'Board member',headline:'“My neighbour loves the subscription!”',
+      body:'A board member emails the team: <em>“My neighbour says auto-refill is the best thing you\'ve ever done. Roll it out to everyone before the competition does.”</em>',
+      catch:'One enthusiastic customer — who, it turns out, joined on the 30% launch discount. Satisfaction was never the open question; incrementality and churn are.'},
+    {kind:'ambiguous',source:'Finance',headline:'Delivery partner raises prices by 12%',
+      body:'The home-delivery partner announces a 12% price increase from next quarter. Every auto-refill order ships with free delivery.',
+      catch:'Cost-to-serve rises by about 0.4pp of margin per subscriber. It makes a broad, free-delivery rollout even weaker, but barely moves the case for self-care regulars, who order larger baskets.'},
+  ],
   disc:{lo:11,budget:21,red:25},
 },
 
@@ -1331,6 +1404,14 @@ const CASES=[
       C:{dec:'exclude',msg:`Right call on small-town stores: weak fit and dead stock tying up space and staff. Keeping them out protects the rollout's economics.`},
     },
   },
+  breaking:[
+    {kind:'noise',source:'Head of Retail',headline:'“The flagship sold out of protein bars in two days!”',
+      body:'The head of retail shares a photo of an empty shelf in the city flagship: <em>“Sold out in two days — this is a hit. Let\'s put it everywhere.”</em>',
+      catch:'The flagship is an urban store — already the strongest store type. And one sold-out shelf mostly reflects a small first delivery, not demand across 210 stores.'},
+    {kind:'ambiguous',source:'Market research',headline:'National survey: wellness spending up 20% among over-60s',
+      body:'A new national survey reports that wellness spending among people over 60 rose 20% last year — the core customer base of small-town stores.',
+      catch:'The growth is almost all online purchases of supplements, not in-store sports nutrition or devices. It strengthens the case for online and for keeping the test going, but doesn\'t change the small-town sell-through data from your trial.'},
+  ],
   disc:{lo:11,budget:21,red:25},
 },
 
@@ -1343,7 +1424,7 @@ let CASE=null;
 const selectedTimerMin=15;
 const S={spent:0,opened:new Set(),teamName:'',decisionStep:1,top3:new Set(),
   segmentDecisions:{},mainDecision:null,recommendation:'',uncertainties:new Set(),
-  timerMinutes:15,timerStarted:false,timerStartAt:null,timeUp:false};
+  timerMinutes:15,timerStarted:false,timerStartAt:null,timeUp:false,news:{}};
 
 const STEP_LABELS=['Decision','Evidence','Rationale'];
 
@@ -1351,7 +1432,7 @@ function resetState(){
   stopTimer();
   S.spent=0;S.opened=new Set();S.decisionStep=1;S.top3=new Set();
   S.mainDecision=null;S.recommendation='';S.uncertainties=new Set();
-  S.timerStarted=false;S.timerStartAt=null;S.timeUp=false;
+  S.timerStarted=false;S.timerStartAt=null;S.timeUp=false;S.news={};
   S.segmentDecisions={};CASE.segments.forEach(s=>S.segmentDecisions[s.id]={decision:null});
 }
 
@@ -1623,8 +1704,9 @@ function scoreRun(){
   const d=CASE.disc;
   const discPts=Math.round(discipline(S.spent,d.lo,d.budget,d.red));
   const over=Math.round(overshoot(S.spent,d.red));
-  const total=Math.max(0,Math.min(100,Math.round(decPts+segPts+evPts+discPts-over)));
-  return {decPts,segPts,evPts,discPts,over,total,dec};
+  const newsPts=newsResults().reduce((a,r)=>a+r.pts,0);
+  const total=Math.max(0,Math.min(100,Math.round(decPts+segPts+evPts+discPts-over+newsPts)));
+  return {decPts,segPts,evPts,discPts,over,newsPts,total,dec};
 }
 function verdict(total){
   if(total>=88)return {label:'Great call',color:C.good,sub:'You landed on the strongest decision and backed it with the evidence that mattered — at a sensible cost.'};
@@ -1650,6 +1732,15 @@ function renderResults(){
     {name:'Evidence quality',val:sc.evPts,max:18,color:C.blue,desc:'High-leverage insights in your top 3'},
     {name:'Analysis discipline',val:sc.discPts,max:12,color:C.yellow,desc:discDesc},
   ];
+  const nr=newsResults();
+  if(nr.length)scoreCells.push({name:'Breaking news',val:sc.newsPts,max:nr.length*3,signed:true,color:sc.newsPts>=0?C.good:C.crit,desc:'How you handled the news that came in'});
+  const newsSection=nr.length?`<div class="rbox news-recap"><h3>Breaking news — how you reacted</h3>${nr.map(r=>`
+    <div class="nr-item">
+      <div class="nr-top"><span class="nr-src">${r.ev.source}</span><span class="nr-pts ${r.pts>0?'pos':r.pts<0?'neg':''}">${r.pts>0?'+':''}${r.pts} pts</span></div>
+      <div class="nr-head">${r.ev.headline}</div>
+      <div class="nr-you">You: <strong>${NEWS_CHOICES[r.choice]}</strong> — ${r.verdict}</div>
+      <div class="nr-catch">${r.ev.catch}</div>
+    </div>`).join('')}</div>`:'';
 
   let segSection='';
   if(S.mainDecision==='targeted'){
@@ -1673,8 +1764,8 @@ function renderResults(){
 
     <div class="score-grid">${scoreCells.map(c=>`
       <div class="score-cell">
-        <div class="sc-top"><span class="sc-name">${c.name}</span><span class="sc-val">${c.val}/${c.max}</span></div>
-        <div class="sc-bar"><div class="sc-fill" style="width:${Math.round(c.val/c.max*100)}%;background:${c.color}"></div></div>
+        <div class="sc-top"><span class="sc-name">${c.name}</span><span class="sc-val">${c.signed&&c.val>0?'+':''}${c.val}${c.signed?' pts':'/'+c.max}</span></div>
+        <div class="sc-bar"><div class="sc-fill" style="width:${Math.max(0,Math.round(Math.abs(c.val)/c.max*100))}%;background:${c.color}"></div></div>
         <div class="sc-desc">${c.desc}</div>
       </div>`).join('')}</div>
     ${sc.over>0?`<div class="penalty-note">${icon('alert')} <span>Over-analysis penalty: <strong>−${sc.over} pts</strong> — you spent ${S.spent} tokens, past this case's red line of ${CASE.disc.red}. You could buy everything — but comfort analysis costs.</span></div>`:''}
@@ -1684,6 +1775,7 @@ function renderResults(){
       <div class="rbox"><h3>Recommended call</h3><div style="display:flex;gap:.75rem;align-items:flex-start"><div class="icon-chip rescall-chip">${icon(DEC_ICON[best.id])}</div><div><div style="font-weight:700">${best.label}</div><div style="font-size:.83rem;color:var(--ink2);margin-top:.25rem">${best.explanation}</div></div></div></div>
     </div>
     ${segSection}
+    ${newsSection}
     <div class="result-2col">
       <div class="rbox"><h3>Your strongest evidence</h3>${top3Cards.length?top3Cards.map(c=>`<div class="recap-item"><div class="recap-dot ${c.value==='high'?'green':c.value==='medium'?'amber':'red'}"></div><div><strong>${c.name}</strong><br><span style="font-size:.77rem;color:var(--muted)">${c.cat}</span></div></div>`).join(''):'<p style="font-size:.85rem;color:var(--muted)">None selected.</p>'}</div>
       <div class="rbox"><h3>Your rationale</h3>${S.recommendation?`<div class="rec-display">${S.recommendation}</div>`:'<p style="font-size:.85rem;color:var(--muted)">No rationale given.</p>'}${S.uncertainties.size?`<div style="margin-top:.7rem"><div style="font-size:.7rem;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:.3rem">Remaining uncertainty</div><div style="display:flex;flex-wrap:wrap;gap:.3rem">${[...S.uncertainties].map(u=>{const o=CASE.uncertainties.find(x=>x.id===u);return o?`<span class="badge badge-violet">${o.label}</span>`:'';}).join('')}</div></div>`:''}</div>
@@ -1733,7 +1825,7 @@ function generateFeedback(){
 // ═══════════════════════════════════════════════════════════════
 // LIVE SYNC  (reports this table's progress to the host dashboard, host.html)
 // ═══════════════════════════════════════════════════════════════
-const LIVE_VERSION=2;   // bump when the live data format changes; host.html flags tables on older versions
+const LIVE_VERSION=3;   // bump when the live data format changes; host.html flags tables on older versions
 const LIVE=(()=>{
   let ref=null,offset=0,dcSet=false;
   try{
@@ -1743,6 +1835,7 @@ const LIVE=(()=>{
       if(!id){id=Date.now().toString(36)+Math.random().toString(36).slice(2,7);try{sessionStorage.setItem('mtc-table',id);}catch(e){}}
       ref=firebase.database().ref('live/tables/'+id);
       firebase.database().ref('.info/serverTimeOffset').on('value',snap=>{offset=snap.val()||0;});
+      firebase.database().ref('live/state/news').on('value',snap=>{handleNews(snap.val(),offset);});
       firebase.database().ref('.info/connected').on('value',snap=>{
         if(snap.val()!==true)return;
         dcSet=false;
@@ -1762,6 +1855,7 @@ const LIVE=(()=>{
       spent:S.spent,budget:CASE.disc.budget,red:CASE.disc.red,opened:S.opened.size,totalCards:CASE.cards.length,
       timeUp:!!S.timeUp,durationSec:(S.timerMinutes||0)*60,decisionStep:st==='decision'?S.decisionStep:null,
       analysisStart:S.timerStarted&&S.timerStartAt?S.timerStartAt+offset:null,
+      news:Object.fromEntries(Object.entries(S.news).map(([k,v])=>[k,v.choice])),
       updatedAt:firebase.database.ServerValue.TIMESTAMP};
     Object.assign(data,extra||{});
     ref.update(data).then(()=>{if(!dcSet){dcSet=true;ref.onDisconnect().update({online:false}).catch(()=>{});}}).catch(e=>console.warn('Live sync failed',e));
@@ -1770,7 +1864,7 @@ const LIVE=(()=>{
     if(!ref||!S.teamName||!CASE)return;
     push({result:null});
   }
-  function analysisStarted(){push();}
+  function analysisStarted(){push();handleNews(newsMap,offset);}
   function done(){
     if(!ref)return;
     const sc=scoreRun(),v=verdict(sc.total),fb=CASE.feedback;
@@ -1779,6 +1873,7 @@ const LIVE=(()=>{
     const top3=CASE.cards.filter(c=>S.top3.has(c.id)).map(c=>({name:c.name,value:c.value,trap:c.id===fb.trapId}));
     push({result:{total:sc.total,decPts:sc.decPts,segPts:sc.segPts,evPts:sc.evPts,discPts:sc.discPts,over:sc.over,
       verdict:v.label,decision:sc.dec.label,quality:sc.dec.quality,bestDecision:best.label,
+      newsPts:sc.newsPts,newsReactions:newsResults().map(r=>({source:r.ev.source,headline:r.ev.headline.replace(/<[^>]+>/g,''),choice:r.choice,pts:r.pts})),
       segs,top3,spent:S.spent,budget:CASE.disc.budget,
       rationale:S.recommendation.trim().slice(0,600),
       unsure:[...S.uncertainties].map(u=>(CASE.uncertainties.find(o=>o.id===u)||{}).label).filter(Boolean),
@@ -1799,6 +1894,67 @@ const LIVE=(()=>{
 })();
 
 // ═══════════════════════════════════════════════════════════════
+// BREAKING NEWS  (host.html sends two events; each active table must take a stand)
+// ═══════════════════════════════════════════════════════════════
+const NEWS_CHOICES={change:'This changes our thinking',investigate:'Investigated',ignore:'Noise — stayed the course'};
+const NEWS_POINTS={noise:{ignore:3,investigate:0,change:-3},ambiguous:{investigate:3,ignore:0,change:-3}};
+const NEWS_VERDICT={
+  noise:{ignore:'right call. This was noise dressed up as a signal.',
+         investigate:'cautious, but you paid 2 tokens to check something your evidence already answered.',
+         change:'you let an anecdote move your thinking. This was noise.'},
+  ambiguous:{investigate:'right call. It sounded alarming; checking showed it shifts the numbers a little, not the decision.',
+             ignore:'you stayed the course — the right outcome, but you skipped a check that could have mattered.',
+             change:'you changed course on data you hadn\'t checked. It shifts the numbers slightly, not the decision.'}};
+let newsQueue=[],newsOpen=null,newsMap={};
+function newsResults(){
+  if(!CASE||!CASE.breaking)return [];
+  return ['n1','n2'].map((k,i)=>{const a=S.news[k];const ev=CASE.breaking[i];
+    if(!a||!ev||!NEWS_POINTS[ev.kind][a.choice]&&NEWS_POINTS[ev.kind][a.choice]!==0)return null;
+    return {key:k,ev,choice:a.choice,pts:NEWS_POINTS[ev.kind][a.choice],verdict:NEWS_VERDICT[ev.kind][a.choice]};}).filter(Boolean);
+}
+// Called whenever the host's news state changes (and once on load).
+function handleNews(map,offset){
+  newsMap=map||{};
+  ['n1','n2'].forEach((k,i)=>{
+    const sentAt=newsMap[k];if(!sentAt||!CASE||!S.teamName)return;
+    const cur=S.news[k];
+    if(cur&&cur.choice!=='pending')return;
+    if(!cur){
+      const inPlay=S.timerStarted&&S.timerStartAt&&activeScreen!=='results'&&activeScreen!=='landing';
+      const activeAtSend=inPlay&&(S.timerStartAt+offset)<=sentAt;
+      if(!activeAtSend){S.news[k]={choice:'missed'};saveState();return;}
+      S.news[k]={choice:'pending'};saveState();LIVE.push();
+    }
+    if(newsOpen!==k&&!newsQueue.includes(k))newsQueue.push(k);
+  });
+  showNextNews();
+}
+function showNextNews(){
+  if(newsOpen||!newsQueue.length)return;
+  const k=newsQueue.shift();const ev=CASE.breaking[k==='n1'?0:1];if(!ev)return;
+  newsOpen=k;dismissCoach();
+  document.getElementById('news-src').textContent=ev.source;
+  document.getElementById('news-head').innerHTML=ev.headline;
+  document.getElementById('news-body').innerHTML=ev.body;
+  document.getElementById('news-actions').hidden=false;
+  document.getElementById('news-catch').hidden=true;
+  document.getElementById('news').hidden=false;
+}
+function answerNews(choice){
+  const k=newsOpen;if(!k)return;
+  S.news[k]={choice,at:Date.now()};
+  if(choice==='investigate'){
+    S.spent+=2;updateCostTracker();if(activeScreen==='shop')updateRoomSummary();
+    const ev=CASE.breaking[k==='n1'?0:1];
+    document.getElementById('news-catch-text').innerHTML=ev.catch;
+    document.getElementById('news-actions').hidden=true;
+    document.getElementById('news-catch').hidden=false;
+  }else closeNews();
+  saveState();LIVE.push();
+}
+function closeNews(){document.getElementById('news').hidden=true;newsOpen=null;showNextNews();}
+
+// ═══════════════════════════════════════════════════════════════
 // RESUME  (a reload or reopened tab picks up where the table left off)
 // ═══════════════════════════════════════════════════════════════
 const SAVE_KEY='mtc-state';
@@ -1809,7 +1965,7 @@ function saveState(){
     spent:S.spent,opened:[...S.opened],decisionStep:S.decisionStep,top3:[...S.top3],
     segmentDecisions:S.segmentDecisions,mainDecision:S.mainDecision,recommendation:S.recommendation,
     uncertainties:[...S.uncertainties],timerMinutes:S.timerMinutes,timerStarted:S.timerStarted,
-    timerStartAt:S.timerStartAt,timeUp:S.timeUp,seenCoach:[...seenCoach]};
+    timerStartAt:S.timerStartAt,timeUp:S.timeUp,news:S.news,seenCoach:[...seenCoach]};
   try{sessionStorage.setItem(SAVE_KEY,JSON.stringify(data));}catch(e){}
 }
 function loadState(){
@@ -1819,7 +1975,7 @@ function loadState(){
   CASE=cs;resetState();
   Object.assign(S,{teamName:d.teamName,spent:d.spent,opened:new Set(d.opened),decisionStep:d.decisionStep,top3:new Set(d.top3),
     segmentDecisions:d.segmentDecisions,mainDecision:d.mainDecision,recommendation:d.recommendation||'',
-    uncertainties:new Set(d.uncertainties),timerMinutes:d.timerMinutes,timerStarted:d.timerStarted,timerStartAt:d.timerStartAt,timeUp:d.timeUp});
+    uncertainties:new Set(d.uncertainties),timerMinutes:d.timerMinutes,timerStarted:d.timerStarted,timerStartAt:d.timerStartAt,timeUp:d.timeUp,news:d.news||{}});
   (d.seenCoach||[]).forEach(k=>seenCoach.add(k));
   document.getElementById('team-name-input').value=S.teamName;checkName();
   if(S.timeUp){const hint=document.getElementById('cost-hint');hint.innerHTML=icon('lock')+' Time is up — analysis is closed.';hint.classList.add('penalty');}
@@ -1831,6 +1987,9 @@ function loadState(){
   // Restart the countdown after navigating, so a clock that ran out during the reload closes analysis properly.
   if(S.timerStarted&&!S.timeUp&&d.screen!=='results')runTimer();
   LIVE.push();
+  // re-open an unanswered news event
+  ['n1','n2'].forEach(k=>{if(S.news[k]&&S.news[k].choice==='pending'&&!newsQueue.includes(k))newsQueue.push(k);});
+  showNextNews();
   return true;
 }
 (()=>{
