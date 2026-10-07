@@ -193,10 +193,10 @@ function tileHtml(t){
 
 function resultHtml(t,rank,fresh,anim){
   const r=t.result;
-  const qLabel={best:'Strongest call',good:'Sound, cautious',poor:'Off the data'}[r.quality]||'';
+  const qLabel={best:'Strongest call',good:'Sound but cautious',poor:'Data pointed elsewhere'}[r.quality]||'';
   const segs=r.segs?`<div class="segs">${r.segs.map(s=>`<span class="seg ${s.dec===s.best?'ok':'no'}" title="${esc(s.name)}">${esc(s.id)} ${s.dec===s.best?'✓':'✗'} ${esc(s.dec||'—')}</span>`).join('')}</div>`:`<div class="na">Not a targeted rollout</div>`;
   const ev=(r.top3||[]).length?`<div class="ev">${r.top3.map(c=>`<div><i class="${esc(c.value)}"></i>${esc(c.name)}${c.trap?' <span class="trap">trap</span>':''}</div>`).join('')}</div>`:`<div class="na">No evidence picked</div>`;
-  const parts=[[r.decPts,'#1f6b4a','Decision'],[r.segPts,'#12a06f','Segments'],[r.evPts,'#2e7d5b','Evidence'],[r.discPts,'#c8860a','Discipline']];
+  const parts=[[r.decPts,'#1f6b4a','Decision'],[r.segPts,'#12a06f','Segment fit'],[r.evPts,'#2e7d5b','Evidence'],[r.discPts,'#c8860a','Discipline']];
   return `<div class="res ${fresh?'fresh':''} ${anim?'pop':''} ${rank===1?'winner':''}" ${anim?`style="animation-delay:${anim}s"`:''}>
     <div class="res-head">
       <div class="rank ${rank<=3?'r'+rank:''}">${rank}</div>

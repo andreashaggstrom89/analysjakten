@@ -355,7 +355,7 @@ svg .cx-v.tab{font-variant-numeric:tabular-nums;}
     <div class="eyebrow">The human in the AI loop</div>
     <h1 class="brand">MAKE THE CALL</h1>
     <p class="tag">AI delivers the insights. <strong>You</strong> make the decisions.</p>
-    <p class="landing-blurb">You lead a product decision at <strong>a Nordic pharmacy retailer</strong> with online sales and a big store network. Each round hands your table a real case and the analysis behind it — you decide what's worth knowing, and what to do about it. We'll guide you at each step.</p>
+    <p class="landing-blurb">You lead a product decision at <strong>a Nordic pharmacy retailer</strong> with online sales and a big store network. Each round deals your table a new case and a deck of AI-generated insights. You decide which are worth paying for — and what to do about it. We'll guide you at each step.</p>
     <span class="ai-chip"><span class="dot"></span> A new case each round · 15 min to analyse</span>
     <div class="start-row">
       <input type="text" id="team-name-input" placeholder="Table name" maxlength="40" required oninput="checkName()" onkeydown="if(event.key==='Enter')dealCase()" />
@@ -508,6 +508,11 @@ const ICONS={
 };
 function icon(name,cls){return `<svg class="ic ${cls||''}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[name]||ICONS.dot}</svg>`;}
 const DEC_ICON={broad:'globe',targeted:'target',stop:'ban',test:'flask'};
+function catTone(cat){const s=cat.toLowerCase();
+  if(s.includes('which')||s.includes('causal')||s.includes('trust'))return 'badge-violet';
+  if(s.includes('profit')||s.includes('external')||s.includes('operation'))return 'badge-amber';
+  if(s.includes('retention')||s.includes('after'))return 'badge-aqua';
+  return 'badge-blue';}
 function catIcon(cat){const s=cat.toLowerCase();
   if(s.includes('happen'))return 'activity';
   if(s.includes('which')||s.includes('segment'))return 'pie';
@@ -551,6 +556,7 @@ const CASES=[
 // ───────────────────────────────────────────────────────────────
 {
   id:'reco',
+  segNoun:'customer segments',
   name:'AI Recommendation Engine',
   scanNotes:['Loading app checkout logs…','Segmenting basket data…','Compiling insight deck…'],
   move:`The retailer ran a 6-week pilot of an <strong>AI "You might also need…" engine</strong> in its app and online checkout. It suggests extra health & self-care products at the basket. On the surface it looks like a hit — average basket size is up and more customers are adding a second item.`,
@@ -587,7 +593,7 @@ const CASES=[
     {id:'other',label:'Something else'},
   ],
   cards:[
-    {id:'attach_overview',name:'Basket & attach overview',cat:'What happened',tone:'badge-blue',cost:2,value:'low',
+    {id:'attach_overview',name:'Basket & attach overview',cat:'What happened',cost:2,value:'low',
       q:'How did basket size and attach rate move during the pilot?',
       viz:()=>tbl(['Metric','Pilot','Control'],[
         ['Avg basket',{t:'+14%',c:'pos'},'—'],
@@ -597,17 +603,17 @@ const CASES=[
       signal:'On aggregate the engine clearly lifted basket size, attach rate and revenue per session during the pilot.',
       limit:`It shows that baskets grew — not whether those extra sales were profitable, whether they'd have happened anyway, or which customers drove them.`},
 
-    {id:'segment_lift',name:'Incremental lift by segment',cat:'Which segments',tone:'badge-violet',cost:3,value:'high',
+    {id:'segment_lift',name:'Basket lift by segment',cat:'Which segments',cost:3,value:'high',
       q:'Where did the extra spend actually come from — which customer segments responded?',
       viz:()=>barsH('Basket lift vs control, by segment',[
-        {label:'Segment A',val:2,color:C.refDim,tag:'+2%'},
+        {label:'Segment A',val:2,color:C.blue,tag:'+2%'},
         {label:'Segment B',val:9,color:C.blue,tag:'+9%'},
         {label:'Segment C',val:19,color:C.blue,tag:'+19%'},
-        {label:'Segment D',val:26,color:C.refDim,tag:'+26%'}],{max:28}),
+        {label:'Segment D',val:26,color:C.blue,tag:'+26%'}],{max:28}),
       signal:'The lift is concentrated in occasional shoppers (C, +19%) and deal-driven new users (D, +26%). Prescription regulars (A) barely moved.',
       limit:`It shows who added more to the basket — not whether those items were profitable, whether they were kept, or whether the engine caused the change.`},
 
-    {id:'margin_mix',name:'Margin mix of recommended items',cat:'Profitability',tone:'badge-amber',cost:3,value:'high',
+    {id:'margin_mix',name:'Margin mix of recommended items',cat:'Profitability',cost:3,value:'high',
       q:'What kind of products did the engine push — and what did it do to margin?',
       viz:()=>tbl(['','Pilot','Control'],[
         ['Revenue','+9%','—'],
@@ -617,17 +623,17 @@ const CASES=[
       signal:'Revenue rose 9% but gross margin fell 3pp — the engine mostly attached low-margin impulse and seasonal items, so the extra revenue barely lifted contribution.',
       limit:`It's an aggregate view. It doesn't separate segments, and excludes the compute and licensing cost of running the engine at scale.`},
 
-    {id:'incrementality',name:'Incrementality holdout',cat:'Causality',tone:'badge-violet',cost:5,value:'high',
+    {id:'incrementality',name:'Incrementality holdout',cat:'Causality',cost:5,value:'high',
       q:'Would customers have bought these items anyway, without the AI nudge?',
       viz:()=>tbl(['Component','Estimate','CI'],[
-        ['Observed attach lift','+14%',{t:'—',c:'neu'}],
+        ['Observed basket lift','+14%',{t:'—',c:'neu'}],
         ['Would-buy-anyway (baseline)',{t:'~8pp',c:'neg'},'±3pp'],
         ['True incremental lift',{t:'~5–6%',c:'pos'},'±3pp'],
         ['Concentrated in','Seg C','—']]),
-      signal:'A small randomised holdout suggests only ~5–6 of the 14 points are truly incremental — much of the attach would have happened without the AI.',
+      signal:'A small randomised holdout suggests only ~5–6 of the 14 points are truly incremental — many of those extra items would have been bought without the AI.',
       limit:`The holdout was small, so the confidence interval is wide. It estimates the average effect, not the per-item or per-category detail.`},
 
-    {id:'returns_repeat',name:'Returns & repeat signal',cat:'Retention',tone:'badge-blue',cost:3,value:'high',
+    {id:'returns_repeat',name:'Returns & repeat signal',cat:'Retention',cost:3,value:'high',
       q:'Were the recommended items kept and repurchased — or returned?',
       viz:()=>tbl(['Segment','Return rate','Repeat in 60d'],[
         ['Segment A',{t:'4%',c:'pos'},{t:'high',c:'pos'}],
@@ -637,7 +643,7 @@ const CASES=[
       signal:'Deal-driven users (D) returned recommended items three times as often and rarely repurchased. Occasional shoppers (C) kept and re-bought at a healthy rate.',
       limit:`A 60-day window is short. Returns and repeat are signals of value, not a full profitability verdict.`},
 
-    {id:'csat',name:'Customer helpfulness rating',cat:'Experience',tone:'badge-blue',cost:2,value:'low',
+    {id:'csat',name:'Customer helpfulness rating',cat:'Experience',cost:2,value:'low',
       q:'How did customers rate the AI suggestions?',
       viz:()=>barsH('“Were the suggestions helpful?” (n=1,240)',[
         {label:'Very helpful',val:52,color:C.aqua,tag:'52%'},
@@ -647,7 +653,7 @@ const CASES=[
       signal:'Customers rated the engine highly — 4.6/5 average, 83% found the suggestions helpful.',
       limit:`Liking a suggestion is not the same as it creating value. A high rating can reflect convenience, not incremental or profitable sales — and satisfied customers can still be unprofitable ones.`},
 
-    {id:'trust_audit',name:'Recommendation trust audit',cat:'Trust & ethics',tone:'badge-violet',cost:3,value:'medium',
+    {id:'trust_audit',name:'Recommendation trust audit',cat:'Trust & ethics',cost:3,value:'medium',
       q:'Did the engine recommend anything customers found intrusive?',
       viz:()=>tbl(['Signal','Reading'],[
         ['Recs into sensitive health categories',{t:'flagged',c:'neg'}],
@@ -657,7 +663,7 @@ const CASES=[
       signal:'Prescription regulars (A) opted out most and drove most complaints — the engine kept suggesting products tied to their conditions, which felt intrusive.',
       limit:`These are qualitative and low-count signals. They flag a real trust risk but can't quantify its long-term revenue impact.`},
 
-    {id:'category_deep',name:'What got recommended',cat:'What happened',tone:'badge-blue',cost:2,value:'medium',
+    {id:'category_deep',name:'What got recommended',cat:'What happened',cost:2,value:'medium',
       q:'Which product categories did the attached items come from?',
       viz:()=>barsH('Share of attached revenue, by category',[
         {label:'Confectionery',val:29,color:C.yellow,tag:'29%'},
@@ -667,14 +673,14 @@ const CASES=[
       signal:'Over half the attached revenue came from confectionery and seasonal OTC — the lowest-margin corners of the range.',
       limit:`Descriptive only. It shows what was recommended, not what customers would have bought regardless.`},
 
-    {id:'seasonality',name:'External timing check',cat:'External factors',tone:'badge-amber',cost:2,value:'medium',
+    {id:'seasonality',name:'External timing check',cat:'External factors',cost:2,value:'medium',
       q:'Did anything outside the engine inflate the pilot numbers?',
       viz:()=>lineIdx('Category demand index (all channels)',[0.95,1.0,1.05,1.28,1.34,1.30,1.12,1.0],
         ['','','Pilot start','','','','Pilot end',''],[2,6,'Cold & flu peak']),
       signal:'The pilot overlapped the seasonal cold & flu peak, when attach rates rise anyway. Some of the observed lift is seasonal, not the engine.',
       limit:`Hard to separate the seasonal wave from the engine effect precisely without the holdout running across seasons.`},
 
-    {id:'roi_scenarios',name:'Rollout ROI scenarios',cat:'Profitability',tone:'badge-amber',cost:3,value:'medium',
+    {id:'roi_scenarios',name:'Rollout ROI scenarios',cat:'Profitability',cost:3,value:'medium',
       q:'Is a full rollout net-positive once compute and margin are counted?',
       viz:()=>tbl(['Scenario','Assumption','Net / year'],[
         ['Optimistic','High incrementality, low returns',{t:'+2.1M',c:'pos'}],
@@ -682,7 +688,7 @@ const CASES=[
         ['Conservative','Low incrementality, high returns',{t:'−1.4M',c:'neg'}]]),
       signal:'A broad rollout is net-thin to negative in the base and conservative cases. The value is real but concentrated — it survives only where incrementality is high.',
       limit:`Built on assumptions and cost allocations. It can't tell you on its own which segments carry the positive cases.`},
-    {id:'pull_forward',name:'Post-pilot purchase check',cat:'After-effects',tone:'badge-blue',cost:3,value:'medium',
+    {id:'pull_forward',name:'Post-pilot purchase check',cat:'After-effects',cost:3,value:'medium',
       q:'Did the extra items create new spend — or just pull future purchases forward?',
       viz:()=>tbl(['Segment','Spend 4 wks after pilot','vs baseline'],[
         ['Segment A','≈ normal',{t:'±0%',c:'neu'}],
@@ -692,7 +698,7 @@ const CASES=[
       signal:'Deal-driven users (D) spent noticeably less in the weeks after the pilot — part of their big baskets was buying ahead, not new demand. Occasional shoppers (C) kept spending.',
       limit:`Four weeks is a short window, and it overlaps the end of the cold & flu season. It hints at pull-forward but can't size it precisely.`},
 
-    {id:'benchmark',name:'Industry benchmark',cat:'External factors',tone:'badge-amber',cost:2,value:'low',
+    {id:'benchmark',name:'Industry benchmark',cat:'External factors',cost:2,value:'low',
       q:'How does the pilot compare with recommendation engines at other retailers?',
       viz:()=>barsH('Reported basket lift from AI recommenders',[
         {label:'Fashion e-com',val:18,color:C.ref,tag:'+18%'},
@@ -743,6 +749,7 @@ const CASES=[
 // ───────────────────────────────────────────────────────────────
 {
   id:'ownbrand',
+  segNoun:'categories',
   name:'Own-Brand Line',
   scanNotes:['Loading POS & range data…','Comparing to national brands…','Compiling insight deck…'],
   move:`The retailer launched a private-label range, <strong>"Pharmacy Basics"</strong>, across its stores and app over 8 weeks — vitamins, pain relief, skincare and everyday basics at a lower price than the national brands. Own-brand units sold strongly and total category revenue rose.`,
@@ -763,7 +770,7 @@ const CASES=[
   decisions:[
     {id:'broad',icon:'🚀',label:'Expand own-brand across all categories',desc:'Push Pharmacy Basics into every category, everywhere',quality:'poor',
       explanation:'Scales the margin loss. Own-brand mostly switches buyers off higher-margin national brands, and customers distrust own-brand medicines — a blanket push destroys value in exactly the categories that looked like volume wins.'},
-    {id:'targeted',icon:'🎯',label:'Expand where it is accretive, hold back elsewhere',desc:'Grow own-brand in trusting, price-driven categories only',quality:'best',
+    {id:'targeted',icon:'🎯',label:'Expand where it is accretive, hold back elsewhere',desc:'Grow own-brand only where shoppers trust it and margin beats the national brand',quality:'best',
       explanation:'The strongest call. Own-brand creates value only when it beats the margin of what it displaces and customers trust it — true for vitamins, false for trust-sensitive meds and margin-thin basics.'},
     {id:'stop',icon:'🛑',label:'Discontinue the own-brand line',desc:'Pull Pharmacy Basics from the range',quality:'poor',
       explanation:'An over-correction. Vitamins & supplements are a genuine margin win. Killing the whole line on aggregate caution throws away the category where private label clearly works.'},
@@ -779,7 +786,7 @@ const CASES=[
     {id:'other',label:'Something else'},
   ],
   cards:[
-    {id:'sales_overview',name:'Launch sales overview',cat:'What happened',tone:'badge-blue',cost:2,value:'low',
+    {id:'sales_overview',name:'Launch sales overview',cat:'What happened',cost:2,value:'low',
       q:'How did own-brand units and category revenue move at launch?',
       viz:()=>tbl(['Metric','Launch period'],[
         ['Own-brand share of units',{t:'11%',c:'pos'}],
@@ -789,17 +796,17 @@ const CASES=[
       signal:'Own-brand took 11% of units in eight weeks and category revenue rose 6% — a strong-looking launch on the surface.',
       limit:`It shows own-brand sold — not whether those sales grew the category or simply switched buyers off national brands, and not what that did to margin.`},
 
-    {id:'category_lift',name:'Own-brand share by category',cat:'Which categories',tone:'badge-violet',cost:3,value:'high',
+    {id:'category_lift',name:'Own-brand share by category',cat:'Which categories',cost:3,value:'high',
       q:'Where did own-brand win share — and where did customers resist?',
       viz:()=>barsH('Own-brand share of units, by category',[
         {label:'Vitamins',val:24,color:C.blue,tag:'24%'},
-        {label:'Pain relief',val:6,color:C.refDim,tag:'6%'},
+        {label:'Pain relief',val:6,color:C.blue,tag:'6%'},
         {label:'Skincare',val:15,color:C.blue,tag:'15%'},
         {label:'Hygiene',val:28,color:C.blue,tag:'28%'}],{max:32,labelW:78}),
       signal:'Own-brand won big in vitamins (24%) and hygiene basics (28%), moderately in skincare, and was rejected in pain relief (6%).',
       limit:`Share won is not value created. It doesn't show the margin of those categories, whether the sales were incremental, or whether buyers stick.`},
 
-    {id:'cannibalization',name:'Cannibalisation analysis',cat:'Causality',tone:'badge-violet',cost:4,value:'high',
+    {id:'cannibalization',name:'Cannibalisation analysis',cat:'Causality',cost:4,value:'high',
       q:'Did own-brand grow the category — or just take sales from national brands?',
       viz:()=>tbl(['Category','Switched from nat-brand','Net category margin'],[
         ['Vitamins',{t:'low',c:'pos'},{t:'up',c:'pos'}],
@@ -809,7 +816,7 @@ const CASES=[
       signal:'In pain relief and hygiene, own-brand mostly cannibalised higher-margin national brands, dragging category margin down. In vitamins it grew share without much cannibalisation.',
       limit:`It maps where value moved, not the precise margin figures or how loyal the new own-brand buyers will be.`},
 
-    {id:'margin_by_cat',name:'Margin by category',cat:'Profitability',tone:'badge-amber',cost:3,value:'high',
+    {id:'margin_by_cat',name:'Margin by category',cat:'Profitability',cost:3,value:'high',
       q:'Is own-brand margin actually better than the national brand it displaces?',
       viz:()=>tbl(['Category','Own-brand margin','vs national'],[
         ['Vitamins',{t:'42%',c:'pos'},{t:'+7pp',c:'pos'}],
@@ -819,7 +826,7 @@ const CASES=[
       signal:'Own-brand only beats the national brand on margin in vitamins (and marginally skincare). In pain relief and hygiene it had to be discounted so hard that margin fell below what it replaced.',
       limit:`Category-level margin, before shelf and marketing cost. It doesn't tell you how trust or repeat differ underneath.`},
 
-    {id:'repeat',name:'Repeat & reversion',cat:'Retention',tone:'badge-blue',cost:3,value:'high',
+    {id:'repeat',name:'Repeat & reversion',cat:'Retention',cost:3,value:'high',
       q:'Did own-brand buyers come back — or revert to the national brand?',
       viz:()=>tbl(['Category','Own-brand repeat','Reverted to nat-brand'],[
         ['Vitamins',{t:'high',c:'pos'},{t:'9%',c:'pos'}],
@@ -829,7 +836,7 @@ const CASES=[
       signal:'Vitamins buyers stuck with own-brand; pain-relief buyers reverted in droves (41%) after trying it once. Hygiene repeats well but on wafer-thin margin.',
       limit:`A repeat rate is a value signal, not a full P&L. High repeat on a low-margin line can still be a poor use of shelf.`},
 
-    {id:'trust_survey',name:'“Value for money” survey',cat:'Experience',tone:'badge-blue',cost:2,value:'low',
+    {id:'trust_survey',name:'“Value for money” survey',cat:'Experience',cost:2,value:'low',
       q:'What did customers think of the own-brand range?',
       viz:()=>barsH('“Pharmacy Basics is good value” (n=980)',[
         {label:'Strongly agree',val:48,color:C.aqua,tag:'48%'},
@@ -839,7 +846,7 @@ const CASES=[
       signal:'Customers rated Pharmacy Basics highly on value — 4.5/5, and 82% agreed it was good value for money.',
       limit:`Loving the price is not the same as the line being profitable. Customers praised the value in every category — including the ones losing money on margin.`},
 
-    {id:'brand_trust',name:'Own-brand trust by category',cat:'Trust & ethics',tone:'badge-violet',cost:3,value:'medium',
+    {id:'brand_trust',name:'Own-brand trust by category',cat:'Trust & ethics',cost:3,value:'medium',
       q:'Would customers trust an own-brand product in each category?',
       viz:()=>tbl(['Category','Would buy own-brand','Trust vs national'],[
         ['Vitamins',{t:'82%',c:'pos'},'equal'],
@@ -849,26 +856,26 @@ const CASES=[
       signal:'Trust in own-brand collapses for medicines: fewer than half would buy an own-brand painkiller, versus 80%+ for vitamins and hygiene.',
       limit:`Stated willingness, not observed behaviour. It flags where trust is a barrier but not exactly how much revenue it costs.`},
 
-    {id:'incrementality',name:'Incrementality estimate',cat:'Causality',tone:'badge-violet',cost:5,value:'medium',
+    {id:'incrementality',name:'Incrementality estimate',cat:'Causality',cost:5,value:'medium',
       q:'How much of own-brand revenue was genuinely new to the retailer?',
       viz:()=>tbl(['Component','Estimate','CI'],[
         ['Own-brand share gained','11%',{t:'—',c:'neu'}],
         ['Switched from national brand',{t:'~8pp',c:'neg'},'±2pp'],
-        ['Truly incremental sales',{t:'~3%',c:'neu'},'±2pp']]),
+        ['Truly incremental',{t:'~3pp',c:'neu'},'±2pp']]),
       signal:'Only ~3 of the 11 points are new business — most own-brand sales are national-brand buyers switching. So the line only helps where own-brand margin beats what it displaced.',
       limit:`A modelled estimate with real uncertainty. It gives the average picture, not a category-by-category incrementality figure.`},
 
-    {id:'elasticity',name:'Price sensitivity by category',cat:'Customer insight',tone:'badge-blue',cost:3,value:'medium',
+    {id:'elasticity',name:'Price sensitivity by category',cat:'Customer insight',cost:3,value:'medium',
       q:'How price-driven are shoppers in each category?',
       viz:()=>barsH('Price sensitivity (index, higher = more price-driven)',[
         {label:'Vitamins',val:8,color:C.blue,tag:'8'},
-        {label:'Pain relief',val:3,color:C.refDim,tag:'3'},
+        {label:'Pain relief',val:3,color:C.blue,tag:'3'},
         {label:'Skincare',val:5,color:C.blue,tag:'5'},
         {label:'Hygiene',val:9,color:C.blue,tag:'9'}],{max:11,labelW:78}),
       signal:'Vitamins and hygiene shoppers are highly price-driven (own-brand fits); pain-relief buyers are not — they pay up for the brand they trust.',
       limit:`Price sensitivity explains fit, not profitability. Hygiene is price-driven yet too thin-margin to be worth the shelf.`},
 
-    {id:'roi_scenarios',name:'Expansion ROI scenarios',cat:'Profitability',tone:'badge-amber',cost:3,value:'medium',
+    {id:'roi_scenarios',name:'Expansion ROI scenarios',cat:'Profitability',cost:3,value:'medium',
       q:'Is a full-range expansion net-positive on margin?',
       viz:()=>tbl(['Scenario','Assumption','Net margin / year'],[
         ['Optimistic','Low cannibalisation, high trust',{t:'+1.6M',c:'pos'}],
@@ -876,7 +883,7 @@ const CASES=[
         ['Conservative','High cannibalisation in meds',{t:'−1.1M',c:'neg'}]]),
       signal:'A blanket expansion is net-negative in the base and conservative cases — the vitamins win is outweighed by margin loss in meds and basics.',
       limit:`Assumption-driven. It can't tell you on its own which categories carry the positive cases — that's the segment insights' job.`},
-    {id:'supplier',name:'National-brand supplier response',cat:'External factors',tone:'badge-amber',cost:2,value:'medium',
+    {id:'supplier',name:'National-brand supplier response',cat:'External factors',cost:2,value:'medium',
       q:'How are the national-brand suppliers reacting to own-brand?',
       viz:()=>tbl(['Category','Supplier reaction','Promo funding at risk'],[
         ['Vitamins',{t:'neutral',c:'pos'},{t:'low',c:'pos'}],
@@ -886,7 +893,7 @@ const CASES=[
       signal:'Pain-relief and hygiene suppliers are signalling cuts to promotional funding if own-brand expands further. Vitamin suppliers are largely indifferent.',
       limit:`These are negotiating positions, not signed terms. It flags a hidden cost of expansion but not its final size.`},
 
-    {id:'shopper_basket',name:'Own-brand shopper profile',cat:'Customer insight',tone:'badge-blue',cost:2,value:'low',
+    {id:'shopper_basket',name:'Own-brand shopper profile',cat:'Customer insight',cost:2,value:'low',
       q:'Are own-brand buyers more valuable customers?',
       viz:()=>tbl(['Metric','Own-brand buyers','Other shoppers'],[
         ['Avg basket',{t:'€38',c:'pos'},'€31'],
@@ -902,9 +909,9 @@ const CASES=[
       ['Skincare & derma','Mixed: promising margin, uncertain trust. Worth a controlled test, not a full commitment.'],
       ['Everyday hygiene basics','High share but 19% margin and heavy cannibalisation. Volume without value.'],
     ],
-    trueEffect:`Category revenue rose 6% and own-brand took 11% of units — but only ~3 points were truly incremental. Most own-brand sales simply switched buyers off higher-margin national brands, so the category's blended margin fell everywhere except vitamins.`,
+    trueEffect:`Category revenue rose 6% and own-brand took 11% of units — but only ~3 points were truly incremental. Most own-brand sales simply switched buyers off higher-margin national brands, so blended margin fell in pain relief and hygiene, held flat in skincare, and only rose in vitamins.`,
     hidden:[
-      ['💊',`In pain relief, customers trust the national brand: 41% reverted, and own-brand only moved when discounted — margin fell 9pp.`],
+      ['💊',`In pain relief, customers trust the national brand: 41% reverted, and own-brand only moved when discounted — at a margin 9pp below the national brand.`],
       ['🧴',`Hygiene basics looked like a share winner but sit at 19% margin with heavy cannibalisation — volume, not value.`],
       ['💚',`Vitamins were the exception: price-driven shoppers, equal trust, and own-brand margin 7pp above the national brand it displaced.`],
       ['🗣️',`High "value for money" scores came from every category — including the ones losing money. Liking the price isn't the same as it being profitable.`],
@@ -936,6 +943,7 @@ const CASES=[
 // ───────────────────────────────────────────────────────────────
 {
   id:'refill',
+  segNoun:'customer segments',
   name:'Auto-Refill Subscription',
   scanNotes:['Loading subscription ledger…','Modelling churn & incrementality…','Compiling insight deck…'],
   move:`The retailer piloted an <strong>auto-refill subscription</strong> for 3 months — repeat prescriptions and recurring self-care items delivered automatically, with a 30% launch discount and free delivery. 12,400 customers signed up and subscriber revenue jumped.`,
@@ -943,7 +951,7 @@ const CASES=[
   stats:[
     {num:'12.4k',label:'Sign-ups'},
     {num:'+18%',label:'Subscriber revenue'},
-    {num:'84%',label:'90-day retention'},
+    {num:'76%',label:'90-day retention'},
     {num:'3 mo',label:'Pilot length'},
   ],
   segments:[
@@ -959,7 +967,7 @@ const CASES=[
     {id:'targeted',icon:'🎯',label:'Roll out where it is incremental & sticky, drop the discount',desc:'Target lapsing self-care buyers; retention play for chronic care',quality:'best',
       explanation:'The strongest call. The subscription genuinely lifts and retains lapsing self-care buyers, and locks in chronic-care patients — but only pays if you stop bribing deal-seekers to churn.'},
     {id:'stop',icon:'🛑',label:'Shut the subscription down',desc:'Drop auto-refill entirely',quality:'poor',
-      explanation:'An over-correction. There\'s a real incremental win in self-care regulars and a quiet retention win in chronic care. Aggregate skepticism shouldn\'t kill the parts that work.'},
+      explanation:'An over-correction. There\'s a real incremental win in self-care regulars and a quiet retention win in chronic care. Aggregate scepticism shouldn\'t kill the parts that work.'},
     {id:'test',icon:'🧪',label:'Test pricing & incrementality first',desc:'Controlled test before any rollout decision',quality:'good',
       explanation:'Methodologically right — you refuse to read sign-ups as profit. Slightly cautious, since the segment signals already point to a targeted rollout.'},
   ],
@@ -972,17 +980,17 @@ const CASES=[
     {id:'other',label:'Something else'},
   ],
   cards:[
-    {id:'adoption_overview',name:'Adoption overview',cat:'What happened',tone:'badge-blue',cost:2,value:'low',
+    {id:'adoption_overview',name:'Adoption overview',cat:'What happened',cost:2,value:'low',
       q:'How did sign-ups, subscriber revenue and retention look?',
       viz:()=>tbl(['Metric','Pilot'],[
         ['Sign-ups',{t:'12,400',c:'pos'}],
         ['Subscriber revenue',{t:'+18%',c:'pos'}],
-        ['90-day retention',{t:'84%',c:'pos'}],
+        ['90-day retention',{t:'76%',c:'pos'}],
         ['Orders / subscriber','+1.3']]),
-      signal:'Adoption looked strong — 12.4k sign-ups, subscriber revenue up 18%, and most subscribers still active at 90 days.',
+      signal:'Adoption looked strong — 12.4k sign-ups, subscriber revenue up 18%, and three in four subscribers still active at 90 days.',
       limit:`It shows people subscribed — not whether that revenue was new to the retailer, whether it's profitable after service cost, or who stays once the discount ends.`},
 
-    {id:'incrementality',name:'Incrementality holdout',cat:'Causality',tone:'badge-violet',cost:5,value:'high',
+    {id:'incrementality',name:'Incrementality holdout',cat:'Causality',cost:5,value:'high',
       q:'Would subscribers have bought these items anyway?',
       viz:()=>tbl(['Component','Estimate','CI'],[
         ['Subscriber revenue lift','+18%',{t:'—',c:'neu'}],
@@ -992,17 +1000,17 @@ const CASES=[
       signal:'Only ~5 of the 18 points are truly new. Chronic-care patients would have refilled anyway — the subscription mostly relabels existing purchases as recurring ones.',
       limit:`A modelled estimate with a wide interval. It gives the average incrementality, not a clean per-segment number.`},
 
-    {id:'segment_value',name:'Incremental revenue by segment',cat:'Which segments',tone:'badge-violet',cost:3,value:'high',
+    {id:'segment_value',name:'Incremental revenue by segment',cat:'Which segments',cost:3,value:'high',
       q:'Which customers actually spent more because of the subscription?',
       viz:()=>barsH('Incremental revenue vs baseline, by segment',[
-        {label:'Segment A',val:1,color:C.refDim,tag:'+1%'},
+        {label:'Segment A',val:1,color:C.blue,tag:'+1%'},
         {label:'Segment B',val:14,color:C.blue,tag:'+14%'},
-        {label:'Segment C',val:2,color:C.refDim,tag:'+2%'},
+        {label:'Segment C',val:2,color:C.blue,tag:'+2%'},
         {label:'Segment D',val:4,color:C.crit,tag:'−4%'}],{max:16}),
       signal:'Self-care regulars (B) genuinely spent more (+14%). Chronic-care patients (A) and occasional buyers (C) barely changed, and deal-driven sign-ups (D) were net-negative once the discount is counted.',
       limit:`It shows incremental revenue, not the service cost to deliver it or how long each segment stays.`},
 
-    {id:'service_cost',name:'Cost-to-serve a subscriber',cat:'Profitability',tone:'badge-amber',cost:3,value:'high',
+    {id:'service_cost',name:'Cost-to-serve a subscriber',cat:'Profitability',cost:3,value:'high',
       q:'What does running a subscription cost per customer?',
       viz:()=>tbl(['Cost line','Impact on margin'],[
         ['Free delivery on refills',{t:'−3pp',c:'neg'}],
@@ -1013,7 +1021,7 @@ const CASES=[
       signal:'A subscriber earns the retailer ~5pp less margin than the same customer buying one-off — the launch discount and free delivery outweigh the margin from more frequent orders.',
       limit:`Average cost-to-serve. It doesn't capture the defensive value of locking in a high-value customer for years.`},
 
-    {id:'churn',name:'Churn by segment',cat:'Retention',tone:'badge-blue',cost:3,value:'high',
+    {id:'churn',name:'Churn by segment',cat:'Retention',cost:3,value:'high',
       q:'Who stays subscribed — and who leaves when the discount ends?',
       viz:()=>tbl(['Segment','90-day churn','After discount ends'],[
         ['Segment A',{t:'6%',c:'pos'},{t:'stays',c:'pos'}],
@@ -1023,7 +1031,7 @@ const CASES=[
       signal:'Deal-driven sign-ups (D) churned at 54% the moment the discount ended. Chronic-care (A) and self-care regulars (B) stayed sticky.',
       limit:`A 90-day window is short. It shows early churn, not lifetime value.`},
 
-    {id:'csat',name:'Subscriber satisfaction',cat:'Experience',tone:'badge-blue',cost:2,value:'low',
+    {id:'csat',name:'Subscriber satisfaction',cat:'Experience',cost:2,value:'low',
       q:'How did subscribers rate the experience?',
       viz:()=>barsH('“How satisfied are you?” (n=1,510)',[
         {label:'Very satisfied',val:55,color:C.aqua,tag:'55%'},
@@ -1033,7 +1041,7 @@ const CASES=[
       signal:'Subscribers loved the convenience — 4.7/5 satisfaction and a subscriber NPS well above the store average.',
       limit:`A happy subscriber can still be an unprofitable, non-incremental one. Convenience satisfaction says nothing about whether the revenue is new or the margin holds.`},
 
-    {id:'adherence',name:'Adherence & lock-in',cat:'Retention',tone:'badge-violet',cost:3,value:'medium',
+    {id:'adherence',name:'Adherence & lock-in',cat:'Retention',cost:3,value:'medium',
       q:'Did the subscription change customer behaviour beyond revenue?',
       viz:()=>tbl(['Segment','Adherence change','Share-of-wallet'],[
         ['Segment A',{t:'+9pp',c:'pos'},{t:'locks in',c:'pos'}],
@@ -1043,27 +1051,27 @@ const CASES=[
       signal:'For chronic-care patients (A), auto-refill improved medication adherence and share-of-wallet — a real defensive, lock-in value even though it added little new revenue.',
       limit:`Lock-in value is real but hard to price. It argues for keeping A on a plan — not for discounting them.`},
 
-    {id:'discount_mix',name:'Who the discount attracted',cat:'External factors',tone:'badge-amber',cost:2,value:'medium',
+    {id:'discount_mix',name:'Who the discount attracted',cat:'External factors',cost:2,value:'medium',
       q:'Who did the 30% launch discount actually bring in?',
       viz:()=>barsH('Share of sign-ups by segment',[
         {label:'Segment A',val:22,color:C.blue,tag:'22%'},
         {label:'Segment B',val:28,color:C.blue,tag:'28%'},
         {label:'Segment C',val:21,color:C.blue,tag:'21%'},
-        {label:'Segment D',val:29,color:C.refDim,tag:'29%'}],{max:34}),
+        {label:'Segment D',val:29,color:C.blue,tag:'29%'}],{max:34}),
       signal:'The single biggest group of sign-ups (29%) were deal-driven — attracted by the discount, and the group that churned hardest when it ended.',
       limit:`Sign-up mix, not lifetime value. It flags that the headline sign-up number is inflated by unprofitable acquisitions.`},
 
-    {id:'base_retention',name:'Counterfactual retention',cat:'Causality',tone:'badge-blue',cost:3,value:'medium',
+    {id:'base_retention',name:'Counterfactual retention',cat:'Causality',cost:3,value:'medium',
       q:'Would these customers have stayed with the retailer anyway?',
       viz:()=>tbl(['Segment','Baseline retention','With subscription'],[
         ['Segment A',{t:'88%',c:'neu'},{t:'94%',c:'pos'}],
         ['Segment B',{t:'61%',c:'neu'},{t:'82%',c:'pos'}],
         ['Segment C',{t:'55%',c:'neu'},{t:'57%',c:'neu'}],
-        ['Segment D',{t:'40%',c:'neu'},{t:'44%',c:'neg'}]]),
+        ['Segment D',{t:'40%',c:'neu'},{t:'44%',c:'neu'}]]),
       signal:'The subscription lifts retention most where it was leakiest — self-care regulars (B) jump from 61% to 82%. Chronic-care were already loyal.',
       limit:`Retention isn't profit. A retained but discounted, costly-to-serve customer can still lose money.`},
 
-    {id:'roi_scenarios',name:'Rollout ROI scenarios',cat:'Profitability',tone:'badge-amber',cost:3,value:'medium',
+    {id:'roi_scenarios',name:'Rollout ROI scenarios',cat:'Profitability',cost:3,value:'medium',
       q:'Is a full rollout net-positive after discount and service cost?',
       viz:()=>tbl(['Scenario','Assumption','Net / year'],[
         ['Optimistic','High incrementality, no discount',{t:'+1.4M',c:'pos'}],
@@ -1071,14 +1079,14 @@ const CASES=[
         ['Conservative','Low incrementality, full discount',{t:'−1.6M',c:'neg'}]]),
       signal:'A broad discounted rollout is net-negative. It only turns positive when the discount is dropped and the offer is aimed at incremental, sticky segments.',
       limit:`Assumption-driven. It shows the shape of the answer, not which segments to include — that's the segment insights' job.`},
-    {id:'stockpiling',name:'Order timing & stockpiling',cat:'After-effects',tone:'badge-blue',cost:2,value:'medium',
+    {id:'stockpiling',name:'Order timing & stockpiling',cat:'After-effects',cost:2,value:'medium',
       q:'Was the revenue jump steady — or front-loaded at sign-up?',
-      viz:()=>lineIdx('Subscriber revenue per month (index)',[1.0,1.0,1.62,1.31,1.18,1.16],
+      viz:()=>lineIdx('Subscriber revenue per month (index)',[1.0,1.0,1.30,1.14,1.10,1.08],
         ['','','Month 1','Month 2','Month 3',''],[1.6,2.4,'Sign-up stock-up']),
-      signal:'Much of the revenue jump came in month one, when new subscribers stocked up while the 30% discount applied. By month three revenue settled far closer to the old level.',
+      signal:'Much of the revenue jump came in month one, when new subscribers stocked up while the 30% discount applied. By month three the lift had shrunk to about a third of its month-one peak.',
       limit:`Three months can't show the steady state. It flags front-loading but not who keeps ordering long-term.`},
 
-    {id:'fulfilment',name:'Fulfilment capacity at scale',cat:'Operations',tone:'badge-amber',cost:3,value:'medium',
+    {id:'fulfilment',name:'Fulfilment capacity at scale',cat:'Operations',cost:3,value:'medium',
       q:'Can the delivery network handle a full rollout — and at what cost?',
       viz:()=>tbl(['Rollout scope','Fits current network?','Extra cost / year'],[
         ['Pilot volume',{t:'yes',c:'pos'},'—'],
@@ -1109,7 +1117,7 @@ const CASES=[
     onBest:`You aimed the subscription at the segment where it's genuinely incremental and dropped the discount that manufactured churn. That's reading adoption as a means, not a goal.`,
     onGood:`Testing pricing and incrementality first is sound — you refuse to read sign-ups as profit. Slightly cautious, since the segment signals already point to a targeted rollout.`,
     onBroad:`You rolled out to everyone with the launch discount. The insights warned that most revenue isn't incremental and that the discount pulls in deal-seekers who churn — a broad, discounted rollout scales the cost, not the value.`,
-    onStop:`You shut it down. That throws away a real incremental win in self-care regulars and a quiet retention win in chronic care. Aggregate skepticism shouldn't kill the parts that work.`,
+    onStop:`You shut it down. That throws away a real incremental win in self-care regulars and a quiet retention win in chronic care. Aggregate scepticism shouldn't kill the parts that work.`,
     shallowMsg:`Your top insights show people signed up — not whether the revenue was incremental, profitable, or sticky. Incrementality, service cost and churn are what decide this.`,
     strongEvidenceMsg:`You leaned on incrementality, cost-to-serve and churn — the insights that tell you whether a subscription creates value or just relabels existing sales.`,
     trapMsg:`You ranked subscriber satisfaction among your key evidence. Subscribers love the convenience — but a happy subscriber can still be an unprofitable, non-incremental one. That's the trap card.`,
@@ -1128,12 +1136,13 @@ const CASES=[
 // ───────────────────────────────────────────────────────────────
 {
   id:'category',
+  segNoun:'store types',
   name:'New Wellness Category',
   scanNotes:['Loading store-level POS…','Modelling footfall & space…','Compiling insight deck…'],
-  move:`The retailer trialed a new in-store <strong>"Wellness" category</strong> — sports nutrition, supplements and wellness devices — across 40 of its 210 stores plus the app, for 10 weeks. Category sales looked promising and footfall rose in trial stores.`,
+  move:`The retailer trialled a new in-store <strong>"Wellness" category</strong> — sports nutrition, supplements and wellness devices — across 40 of its 210 stores plus the app, for 10 weeks. Sales in trial stores rose and footfall picked up.`,
   question:`Should the retailer roll out the wellness category — and to which store types?`,
   stats:[
-    {num:'+9%',label:'Category sales (trial)'},
+    {num:'+9%',label:'Sales in trial stores'},
     {num:'+4%',label:'Footfall in trial stores'},
     {num:'40/210',label:'Stores in trial'},
     {num:'10 wk',label:'Trial length'},
@@ -1164,37 +1173,37 @@ const CASES=[
     {id:'other',label:'Something else'},
   ],
   cards:[
-    {id:'sales_overview',name:'Trial sales overview',cat:'What happened',tone:'badge-blue',cost:2,value:'low',
-      q:'How did category sales and footfall move in trial stores?',
+    {id:'sales_overview',name:'Trial sales overview',cat:'What happened',cost:2,value:'low',
+      q:'How did sales and footfall move in the trial stores?',
       viz:()=>tbl(['Metric','Trial stores'],[
-        ['Wellness category sales',{t:'+9%',c:'pos'}],
+        ['Store sales incl. wellness',{t:'+9%',c:'pos'}],
         ['Footfall',{t:'+4%',c:'pos'}],
         ['Basket incl. wellness','+7%'],
         ['Stores in trial','40 of 210']]),
-      signal:'The trial looked promising on aggregate — category sales up 9%, footfall up 4%, and bigger baskets where wellness was added.',
+      signal:'The trial looked promising on aggregate — store sales up 9%, footfall up 4%, and bigger baskets where wellness was added.',
       limit:`It shows the category sold — not whether the footfall was new, whether it cannibalised other aisles, or which store types can actually carry it.`},
 
-    {id:'store_lift',name:'Lift by store type',cat:'Which store types',tone:'badge-violet',cost:3,value:'high',
+    {id:'store_lift',name:'Lift by store type',cat:'Which store types',cost:3,value:'high',
       q:'Where did the category sell — and where did it stall?',
-      viz:()=>barsH('Incremental wellness sales, by store type',[
+      viz:()=>barsH('Sales lift vs comparable stores, by store type',[
         {label:'Urban',val:22,color:C.blue,tag:'+22%'},
         {label:'Suburban',val:10,color:C.blue,tag:'+10%'},
-        {label:'Small-town',val:2,color:C.refDim,tag:'+2%'},
+        {label:'Small-town',val:2,color:C.blue,tag:'+2%'},
         {label:'Online',val:18,color:C.blue,tag:'+18%'}],{max:26,labelW:74}),
       signal:'The category flew in urban stores (+22%) and online (+18%), was moderate in suburban, and barely moved in small-town stores (+2%).',
       limit:`Sales lift isn't net value. It doesn't show what the category cannibalised or the space and staffing it consumed.`},
 
-    {id:'cannibalization',name:'Cannibalisation & space cost',cat:'Profitability',tone:'badge-amber',cost:4,value:'high',
+    {id:'cannibalization',name:'Cannibalisation & space cost',cat:'Profitability',cost:4,value:'high',
       q:'Did the category grow the store — or just move spend around it?',
       viz:()=>tbl(['','Effect'],[
-        ['Wellness gross sales',{t:'+9%',c:'pos'}],
+        ['Gross sales lift',{t:'+9%',c:'pos'}],
         ['Cannibalised adjacent aisles',{t:'−4pp',c:'neg'}],
         ['Shelf & staffing cost',{t:'−3pp',c:'neg'}],
         ['Net contribution',{t:'+2%',c:'neu'}]]),
       signal:'Once you subtract the adjacent categories it cannibalised and the shelf and staff it consumed, the +9% sales becomes just +2% net contribution — thin, and unevenly spread.',
       limit:`A blended figure. It doesn't show which store types carry the positive contribution and which sink it.`},
 
-    {id:'inventory',name:'Sell-through & dead stock',cat:'Operations',tone:'badge-blue',cost:3,value:'high',
+    {id:'inventory',name:'Sell-through & dead stock',cat:'Operations',cost:3,value:'high',
       q:'Does the stock actually sell through in every store type?',
       viz:()=>tbl(['Store type','Sell-through','Dead stock / returns'],[
         ['Urban',{t:'high',c:'pos'},{t:'low',c:'pos'}],
@@ -1204,7 +1213,7 @@ const CASES=[
       signal:'Small-town stores sat on dead stock; urban and online sold through cleanly. Wellness devices carry elevated returns everywhere.',
       limit:`Ten weeks is a short window for sell-through. It signals fit, not a full inventory economics verdict.`},
 
-    {id:'footfall_incrementality',name:'Footfall incrementality',cat:'Causality',tone:'badge-violet',cost:5,value:'high',
+    {id:'footfall_incrementality',name:'Footfall incrementality',cat:'Causality',cost:5,value:'high',
       q:'Was the footfall lift new visitors — or existing customers browsing?',
       viz:()=>tbl(['Component','Estimate','CI'],[
         ['Footfall lift','+4%',{t:'—',c:'neu'}],
@@ -1213,7 +1222,7 @@ const CASES=[
       signal:'Most of the footfall "lift" was existing customers browsing the new aisle, not new visits — spend shifted around the store rather than growing, except in urban and online.',
       limit:`A modelled estimate with a narrow but real interval. It can't attribute the incremental visits to store type precisely.`},
 
-    {id:'survey',name:'Customer range survey',cat:'Experience',tone:'badge-blue',cost:2,value:'low',
+    {id:'survey',name:'Customer range survey',cat:'Experience',cost:2,value:'low',
       q:'What did customers think of the new range?',
       viz:()=>barsH('“I love the new wellness range” (n=870)',[
         {label:'Strongly agree',val:46,color:C.aqua,tag:'46%'},
@@ -1223,7 +1232,7 @@ const CASES=[
       signal:'Customers loved the range — 4.4/5, and most said they wanted to see it in more stores.',
       limit:`Enthusiasm mostly came from urban and online shoppers who'd visit anyway. Liking a range doesn't tell you which stores can carry it profitably.`},
 
-    {id:'demographics',name:'Store-type demographic fit',cat:'Customer insight',tone:'badge-violet',cost:3,value:'medium',
+    {id:'demographics',name:'Store-type demographic fit',cat:'Customer insight',cost:3,value:'medium',
       q:'Does each store\'s catchment actually want wellness products?',
       viz:()=>tbl(['Store type','Demographic fit','Wellness demand'],[
         ['Urban',{t:'strong',c:'pos'},{t:'high',c:'pos'}],
@@ -1233,7 +1242,7 @@ const CASES=[
       signal:'Demand is demographic: young, affluent urban and online customers want the range; small-town catchments show little appetite for it.',
       limit:`Demographic fit predicts demand, not profitability — a store can have demand and still lose on space cost.`},
 
-    {id:'margin_product',name:'Margin & returns by product',cat:'Profitability',tone:'badge-amber',cost:3,value:'medium',
+    {id:'margin_product',name:'Margin & returns by product',cat:'Profitability',cost:3,value:'medium',
       q:'Which parts of the range actually make money?',
       viz:()=>tbl(['Product group','Margin','Returns'],[
         ['Sports nutrition',{t:'34%',c:'pos'},{t:'low',c:'pos'}],
@@ -1242,7 +1251,7 @@ const CASES=[
       signal:'The profit sits in supplements and nutrition. Wellness devices flatter the top line but carry low margin and a 16% return rate.',
       limit:`Product-level margin, not store-level. It says what to stock, not where to stock it.`},
 
-    {id:'space_roi',name:'Sales per shelf-metre',cat:'Operations',tone:'badge-blue',cost:3,value:'medium',
+    {id:'space_roi',name:'Sales per shelf-metre',cat:'Operations',cost:3,value:'medium',
       q:'Does the category earn its shelf space versus what it replaced?',
       viz:()=>tbl(['Store type','Sales / shelf-m','vs displaced aisle'],[
         ['Urban',{t:'high',c:'pos'},{t:'better',c:'pos'}],
@@ -1252,7 +1261,7 @@ const CASES=[
       signal:'Wellness earns its shelf space in urban stores and beats the aisle it replaced; in small-town stores it earns less than what it displaced. Online has no shelf cost at all.',
       limit:`Space productivity, at trial-period demand. It doesn't forecast how demand settles once novelty fades.`},
 
-    {id:'roi_scenarios',name:'Rollout ROI scenarios',cat:'Profitability',tone:'badge-amber',cost:3,value:'medium',
+    {id:'roi_scenarios',name:'Rollout ROI scenarios',cat:'Profitability',cost:3,value:'medium',
       q:'Is a full rollout net-positive after space and staffing?',
       viz:()=>tbl(['Scenario','Assumption','Net / year'],[
         ['Optimistic','Urban-led, online scales',{t:'+1.8M',c:'pos'}],
@@ -1260,14 +1269,14 @@ const CASES=[
         ['Conservative','All stores, high dead stock',{t:'−1.5M',c:'neg'}]]),
       signal:'A rollout to every store is net-negative — the urban and online wins are eaten by dead stock and space cost in stores that don\'t fit.',
       limit:`Assumption-driven. It shows a targeted rollout beats a blanket one, but the store insights are what tell you which stores.`},
-    {id:'novelty',name:'Novelty decay over the trial',cat:'After-effects',tone:'badge-blue',cost:3,value:'medium',
+    {id:'novelty',name:'Novelty decay over the trial',cat:'After-effects',cost:3,value:'medium',
       q:'Did sales hold up — or fade once the range stopped being new?',
       viz:()=>lineIdx('Weekly wellness sales (index, week 1 = 1.0)',[1.0,1.28,1.32,1.22,1.14,1.09,1.07,1.05,1.05,1.04],
         ['Wk 1','','Wk 3','','','Wk 6','','','','Wk 10'],[1,3,'Launch peak']),
       signal:'Sales peaked in weeks 2–3 and then settled only a few percent above launch level — part of the trial\'s +9% was novelty that has already faded.',
       limit:`An all-store average. It doesn't show which store types held their demand and which fell back.`},
 
-    {id:'staff_feedback',name:'Store staff feedback',cat:'Experience',tone:'badge-blue',cost:2,value:'low',
+    {id:'staff_feedback',name:'Store staff feedback',cat:'Experience',cost:2,value:'low',
       q:'What did store staff think of running the new category?',
       viz:()=>barsH('“The range is a good addition to my store” (n=212 staff)',[
         {label:'Agree',val:74,color:C.aqua,tag:'74%'},
@@ -1283,7 +1292,7 @@ const CASES=[
       ['Small-town stores','Weak demographic fit, low sell-through, dead stock tying up space and staff. Value-destroying.'],
       ['Online / app','Strong demand with no shelf or staffing constraint — almost pure upside.'],
     ],
-    trueEffect:`Category sales rose 9% and footfall 4% in trial stores — but most of that footfall was existing customers browsing the new aisle, not new visits. Once you count the adjacent aisles it cannibalised and the shelf and staffing it consumed, net contribution was a modest +2% — carried almost entirely by urban stores and online.`,
+    trueEffect:`Sales in trial stores rose 9% and footfall 4% — but most of that footfall was existing customers browsing the new aisle, not new visits. Once you count the adjacent aisles it cannibalised and the shelf and staffing it consumed, net contribution was a modest +2% — carried almost entirely by urban stores and online.`,
     hidden:[
       ['🏙️',`Demand is demographic: urban and online customers want sports nutrition and devices; small-town stores mostly ended up with dead stock.`],
       ['📦',`Wellness devices flatter the top line but carry 22% margin and a 16% return rate — the range's real profit is in supplements and nutrition.`],
@@ -1338,11 +1347,11 @@ function resetState(){
 // COACH MARKS  (guided pop-ups, shown once per session, re-openable via ? button)
 // ═══════════════════════════════════════════════════════════════
 const COACH={
-  brief:['folder','','Here\'s your case','You\'ve been handed a real product decision at a Nordic pharmacy retailer. Read the situation and the headline numbers up top — then step into the analysis room.'],
-  shop:['search','','Buy the insights you need','Every card is an analysis, and each one costs tokens. Open the ones that could actually change your decision — you can\'t afford them all. Move on when you know enough.'],
-  d1:['target','Step 1 of 3','Make your call','Pick the decision you\'d recommend to leadership. Choose “targeted” and you\'ll also say which segments are in, out, or worth a test.'],
-  d2:['star','Step 2 of 3','Show your evidence','Pick the up-to-3 insights your call really rests on. Choosing the right ones counts for more than choosing many.'],
-  d3:['edit','Step 3 of 3','Make it defensible','Justify your call in a sentence, and flag what you\'re still unsure about. Then make the call.'],
+  brief:['folder','','Here\'s your case','You\'ve been handed a product decision at a Nordic pharmacy retailer. Read the situation and the headline numbers — then step into the analysis room. Your 15 minutes start there.'],
+  shop:['search','','Buy the insights you need','Every card is an AI-generated insight, and each one costs tokens. Open the ones that could actually change your decision — you can\'t afford them all. Move on when you know enough.'],
+  d1:['target','Step 1 of 3','Make your call','Pick the decision you\'d recommend to leadership. If you go for a targeted rollout, you\'ll also decide which segments are in, out, or worth a test.'],
+  d2:['star','Step 2 of 3','Show your evidence','Pick up to three insights your call really rests on. Picking the right ones counts for more than picking many.'],
+  d3:['edit','Step 3 of 3','Make it defensible','Justify your call in two or three sentences and flag what you\'re still unsure about. Then make the call.'],
   results:['chart','','How did it land?','Here\'s your score, how your call compares to the recommendation, and what was really going on behind the numbers.'],
 };
 const seenCoach=new Set();
@@ -1461,7 +1470,7 @@ function renderCard(card){
   const isOpen=S.opened.has(card.id);
   return `<div class="acard ${isOpen?'opened':''}" id="card-${card.id}">
     <div class="acard-head"><div class="acard-title">${card.name}</div><div class="acard-cost"><span class="cr"></span>${card.cost}</div></div>
-    <div class="acard-cat"><span class="badge ${card.tone}">${icon(catIcon(card.cat))}${card.cat}</span></div>
+    <div class="acard-cat"><span class="badge ${catTone(card.cat)}">${icon(catIcon(card.cat))}${card.cat}</span></div>
     <div class="acard-q">${card.q}</div>
     ${isOpen?`<div class="reveal">
         <div class="rev-sec"><div class="rev-label">Result</div>${card.viz()}</div>
@@ -1514,8 +1523,8 @@ function canProceed(step){
   return true;
 }
 function validationMessage(step){
-  if(step===1){if(!S.mainDecision)return 'Pick a decision';if(S.mainDecision==='targeted')return 'Decide on every segment';return '';}
-  if(step===2)return 'Pick at least 1 insight';
+  if(step===1){if(!S.mainDecision)return 'Pick a decision';if(S.mainDecision==='targeted')return 'Make a call on every segment';return '';}
+  if(step===2)return 'Pick at least one insight';
   if(step===3)return 'Write a short rationale';
   return '';
 }
@@ -1527,8 +1536,8 @@ function renderStep1(){
     </div>`).join('')}</div>`;
   const segHtml=S.mainDecision==='targeted'?`
     <div style="margin-top:2rem">
-      <h3 style="margin-bottom:.35rem">Which segments are in?</h3>
-      <p style="margin-bottom:1rem">Make a call for every segment.</p>
+      <h3 style="margin-bottom:.35rem">Which ${CASE.segNoun} are in?</h3>
+      <p style="margin-bottom:1rem">Include, exclude or test each one.</p>
       <div class="seg-grid">${CASE.segments.map(seg=>{const sd=S.segmentDecisions[seg.id];
         return `<div class="seg-card">
           <div class="seg-head"><div class="seg-badge">${seg.id}</div><div class="seg-name">${seg.name}</div></div>
@@ -1556,9 +1565,9 @@ function renderStep2(){
 function toggleTop3(id){if(S.top3.has(id))S.top3.delete(id);else if(S.top3.size<3)S.top3.add(id);renderDecisionStep();}
 
 function renderStep3(){
-  return `<div class="step-header"><h2>Make it defensible</h2><p>Say why, in a sentence or two — and flag what you're still unsure about.</p></div>
+  return `<div class="step-header"><h2>Make it defensible</h2><p>Say why in two or three sentences — and flag what you're still unsure about.</p></div>
   <div class="rec-form">
-    <div class="rec-field"><label><strong>Justify your call in 2–3 sentences.</strong></label>
+    <div class="rec-field"><label><strong>Why this call?</strong></label>
       <textarea placeholder="We recommend… because… The biggest remaining uncertainty is…" oninput="S.recommendation=this.value" style="min-height:95px">${S.recommendation}</textarea></div>
     <div class="rec-field"><label><strong>What are you still most unsure about?</strong> (pick any)</label>
       <div class="chip-group">${CASE.uncertainties.map(o=>`<span class="chip ${S.uncertainties.has(o.id)?'checked':''}" onclick="toggleUnc('${o.id}')">${o.label}</span>`).join('')}</div></div>
@@ -1614,8 +1623,8 @@ function renderResults(){
   const d=CASE.disc;
   const discDesc=S.spent<=d.budget?`${S.spent} tokens · within budget (${d.budget})`:S.spent<=d.red?`${S.spent} tokens · in overdraft`:`${S.spent} tokens · over budget`;
   const scoreCells=[
-    {name:'Decision',val:sc.decPts,max:55,color:C.violet,desc:chosen.quality==='best'?'Strongest available call':chosen.quality==='good'?'Sound but cautious':'Not what the data supported'},
-    {name:'Segment fit',val:sc.segPts,max:15,color:C.aqua,desc:S.mainDecision==='targeted'?'How well your segment calls matched':'Only scored on a targeted rollout'},
+    {name:'Decision',val:sc.decPts,max:55,color:C.violet,desc:chosen.quality==='best'?'Strongest call':chosen.quality==='good'?'Sound but cautious':'Data pointed elsewhere'},
+    {name:'Segment fit',val:sc.segPts,max:15,color:C.aqua,desc:S.mainDecision==='targeted'?'How well your segment calls matched':'Only scored for a targeted rollout'},
     {name:'Evidence quality',val:sc.evPts,max:18,color:C.blue,desc:'High-leverage insights in your top 3'},
     {name:'Analysis discipline',val:sc.discPts,max:12,color:C.yellow,desc:discDesc},
   ];
