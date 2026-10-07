@@ -333,7 +333,7 @@ function render(){
 
 // ── Breaking news: two events at random times, sent to every active table at once ──
 const NEWS_TEST=new URLSearchParams(location.search).has('test');   // host.html?test → news after 1 and 2 min
-const NEWS_WINDOWS=NEWS_TEST?[[1,1],[2,2]]:[[4,7],[9,12]];   // minutes after the first table starts its analysis
+const NEWS_WINDOWS=NEWS_TEST?[[1,1],[2,2]]:[[7,7],[12,12]];   // minutes after the first table starts its analysis (fixed)
 function planNews(){
   if(newsPlan)return;
   const starts=active().filter(t=>t.analysisStart&&!t.result).map(t=>t.analysisStart);
