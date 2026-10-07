@@ -308,6 +308,19 @@ svg .cx-v.tab{font-variant-numeric:tabular-nums;}
 .coach-card p{font-size:.95rem;color:var(--ink2);margin-bottom:1.4rem;line-height:1.55;}
 #help-fab{position:fixed;right:18px;bottom:18px;z-index:350;width:46px;height:46px;border-radius:50%;border:1px solid var(--border);background:var(--surface);box-shadow:var(--shadow-lg);color:var(--accent);font-size:1.25rem;font-weight:800;cursor:pointer;display:none;align-items:center;justify-content:center;font-family:var(--font);}
 #help-fab.show{display:flex;}
+/* phones */
+@media(max-width:600px){
+  .container{padding:1.4rem 1rem calc(4.5rem + env(safe-area-inset-bottom,0px));}
+  .case-name{display:none;}
+  .room-actions,.step-nav{flex-direction:column-reverse;align-items:stretch;}
+  .room-actions .btn,.step-nav>.btn{width:100%;justify-content:center;}
+  .step-nav-right{flex-direction:column-reverse;align-items:stretch;gap:.5rem;}
+  .step-nav-right .btn{width:100%;justify-content:center;}
+  .step-nav-right .valid-msg{text-align:center;}
+  .restart-row .btn{flex:1 1 100%;justify-content:center;}
+  #help-fab{width:40px;height:40px;font-size:1.05rem;right:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));opacity:.92;}
+  .cost-hint{font-size:.7rem;}
+}
 #help-fab:hover{background:var(--accentDim);transform:translateY(-1px);}
 </style>
 </head>
@@ -1330,7 +1343,7 @@ let CASE=null;
 const selectedTimerMin=15;
 const S={spent:0,opened:new Set(),teamName:'',decisionStep:1,top3:new Set(),
   segmentDecisions:{},mainDecision:null,recommendation:'',uncertainties:new Set(),
-  timerMinutes:20,timerStarted:false,timeUp:false};
+  timerMinutes:15,timerStarted:false,timerStartAt:null,timeUp:false};
 
 const STEP_LABELS=['Decision','Evidence','Rationale'];
 
@@ -1338,7 +1351,7 @@ function resetState(){
   stopTimer();
   S.spent=0;S.opened=new Set();S.decisionStep=1;S.top3=new Set();
   S.mainDecision=null;S.recommendation='';S.uncertainties=new Set();
-  S.timerStarted=false;S.timeUp=false;
+  S.timerStarted=false;S.timerStartAt=null;S.timeUp=false;
   S.segmentDecisions={};CASE.segments.forEach(s=>S.segmentDecisions[s.id]={decision:null});
 }
 
@@ -1371,11 +1384,20 @@ function hideHelp(){dismissCoach();currentCoachKey=null;document.getElementById(
 let timerId=null,timeLeft=0;
 function startTimerIfNeeded(){
   if(S.timerStarted)return;
-  S.timerStarted=true;
+  S.timerStarted=true;S.timerStartAt=Date.now();
+  runTimer();
+}
+function runTimer(){
+  stopTimer();
   const pill=document.getElementById('timer-pill');
   if(!S.timerMinutes){pill.style.display='none';return;}
-  timeLeft=S.timerMinutes*60;pill.style.display='';updateTimerDisplay();
-  timerId=setInterval(()=>{timeLeft--;updateTimerDisplay();if(timeLeft<=0){stopTimer();onTimeUp();}},1000);
+  pill.style.display='';
+  const step=()=>{
+    timeLeft=S.timerMinutes*60-Math.floor((Date.now()-S.timerStartAt)/1000);
+    updateTimerDisplay();
+    if(timeLeft<=0){stopTimer();if(!S.timeUp)onTimeUp();}
+  };
+  step();if(timeLeft>0)timerId=setInterval(step,1000);
 }
 function stopTimer(){if(timerId){clearInterval(timerId);timerId=null;}}
 function updateTimerDisplay(){
@@ -1713,7 +1735,7 @@ function generateFeedback(){
 // ═══════════════════════════════════════════════════════════════
 const LIVE_VERSION=2;   // bump when the live data format changes; host.html flags tables on older versions
 const LIVE=(()=>{
-  let ref=null,startLocal=null,offset=0,dcSet=false;
+  let ref=null,offset=0,dcSet=false;
   try{
     if(window.FB_CONFIG&&window.firebase){
       firebase.initializeApp(window.FB_CONFIG);
@@ -1739,21 +1761,16 @@ const LIVE=(()=>{
     const data={v:LIVE_VERSION,name:S.teamName,caseId:CASE.id,caseName:CASE.name,stage:st,online:true,
       spent:S.spent,budget:CASE.disc.budget,red:CASE.disc.red,opened:S.opened.size,totalCards:CASE.cards.length,
       timeUp:!!S.timeUp,durationSec:(S.timerMinutes||0)*60,decisionStep:st==='decision'?S.decisionStep:null,
-      analysisStart:S.timerStarted&&startLocal?startLocal+offset:null,
+      analysisStart:S.timerStarted&&S.timerStartAt?S.timerStartAt+offset:null,
       updatedAt:firebase.database.ServerValue.TIMESTAMP};
     Object.assign(data,extra||{});
     ref.update(data).then(()=>{if(!dcSet){dcSet=true;ref.onDisconnect().update({online:false}).catch(()=>{});}}).catch(e=>console.warn('Live sync failed',e));
   }
   function newRound(){
-    startLocal=null;
     if(!ref||!S.teamName||!CASE)return;
     push({result:null});
   }
-  function analysisStarted(){
-    if(startLocal)return;
-    startLocal=Date.now();
-    push();
-  }
+  function analysisStarted(){push();}
   function done(){
     if(!ref)return;
     const sc=scoreRun(),v=verdict(sc.total),fb=CASE.feedback;
@@ -1781,7 +1798,48 @@ const LIVE=(()=>{
   wrap('submitDecision',()=>LIVE.done());
 })();
 
-showScreen('landing');
+// ═══════════════════════════════════════════════════════════════
+// RESUME  (a reload or reopened tab picks up where the table left off)
+// ═══════════════════════════════════════════════════════════════
+const SAVE_KEY='mtc-state';
+const SAVE_MAX_AGE=3*3600*1000;
+function saveState(){
+  if(!CASE||!S.teamName)return;
+  const data={savedAt:Date.now(),screen:activeScreen,caseId:CASE.id,teamName:S.teamName,
+    spent:S.spent,opened:[...S.opened],decisionStep:S.decisionStep,top3:[...S.top3],
+    segmentDecisions:S.segmentDecisions,mainDecision:S.mainDecision,recommendation:S.recommendation,
+    uncertainties:[...S.uncertainties],timerMinutes:S.timerMinutes,timerStarted:S.timerStarted,
+    timerStartAt:S.timerStartAt,timeUp:S.timeUp,seenCoach:[...seenCoach]};
+  try{sessionStorage.setItem(SAVE_KEY,JSON.stringify(data));}catch(e){}
+}
+function loadState(){
+  let d=null;try{d=JSON.parse(sessionStorage.getItem(SAVE_KEY)||'null');}catch(e){}
+  if(!d||Date.now()-d.savedAt>SAVE_MAX_AGE)return false;
+  const cs=CASES.find(c=>c.id===d.caseId);if(!cs)return false;
+  CASE=cs;resetState();
+  Object.assign(S,{teamName:d.teamName,spent:d.spent,opened:new Set(d.opened),decisionStep:d.decisionStep,top3:new Set(d.top3),
+    segmentDecisions:d.segmentDecisions,mainDecision:d.mainDecision,recommendation:d.recommendation||'',
+    uncertainties:new Set(d.uncertainties),timerMinutes:d.timerMinutes,timerStarted:d.timerStarted,timerStartAt:d.timerStartAt,timeUp:d.timeUp});
+  (d.seenCoach||[]).forEach(k=>seenCoach.add(k));
+  document.getElementById('team-name-input').value=S.teamName;checkName();
+  if(S.timeUp){const hint=document.getElementById('cost-hint');hint.innerHTML=icon('lock')+' Time is up — analysis is closed.';hint.classList.add('penalty');}
+  if(d.screen==='shop'){goToShop();}
+  else if(d.screen==='decision'){goToDecision();S.decisionStep=d.decisionStep;renderDecisionStep();}
+  else if(d.screen==='results'){renderResults();showScreen('results');showCoach('results');}
+  else if(d.screen==='brief'){renderBrief();showScreen('brief');}
+  else{showScreen('landing');}
+  // Restart the countdown after navigating, so a clock that ran out during the reload closes analysis properly.
+  if(S.timerStarted&&!S.timeUp&&d.screen!=='results')runTimer();
+  LIVE.push();
+  return true;
+}
+(()=>{
+  const wrap=(name)=>{const f=window[name];window[name]=function(...a){const r=f.apply(this,a);saveState();return r;};};
+  ['showScreen','openCard','nextStep','prevStep','selectMain','setSeg','toggleTop3','toggleUnc','onTimeUp','submitDecision','startTimerIfNeeded'].forEach(wrap);
+  document.addEventListener('input',e=>{if(e.target.tagName==='TEXTAREA')saveState();});
+})();
+
+if(!loadState())showScreen('landing');
 </script>
 </body>
 </html>
