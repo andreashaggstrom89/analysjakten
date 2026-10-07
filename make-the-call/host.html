@@ -61,6 +61,7 @@ body{font-family:var(--font);background:var(--plane);color:var(--ink);min-height
 .x{position:absolute;top:.6rem;right:.6rem;border:none;background:none;color:var(--muted);font-size:1rem;cursor:pointer;padding:2px 6px;border-radius:6px;font-family:var(--font);}
 .x:hover{background:var(--surface3);color:var(--ink);}
 .x.arm{background:var(--crit);color:#fff;font-size:.7rem;font-weight:700;}
+.outdated{margin-top:.45rem;font-size:.72rem;font-weight:700;color:#946608;background:#fbf1d8;border:1px solid #f2e3ba;border-radius:8px;padding:.3rem .55rem;}
 .offline{display:inline-block;margin-left:.4rem;font-size:.6rem;font-weight:800;letter-spacing:.5px;text-transform:uppercase;color:var(--crit);vertical-align:middle;}
 .pipe{display:flex;gap:4px;margin:.8rem 0 .7rem;}
 .pipe div{flex:1;}
@@ -150,6 +151,7 @@ body{font-family:var(--font);background:var(--plane);color:var(--ink);min-height
 <script>
 const STAGES=[['brief','Briefing'],['analysis','Analysis'],['decision','Decision'],['done','Done']];
 const STEP_LABELS=['Decision','Evidence','Rationale'];
+const LIVE_VERSION=2;          // must match index.html
 const MAX_AGE=12*3600*1000;   // ignore tables idle for more than 12 h
 let tables={},revealed=false,revealAnimated=new Set(),offset=0,connected=false,seenDone=new Set(),firstLoad=true,armed=null,armTimer=null,clearArmed=false;
 
@@ -190,6 +192,7 @@ function tileHtml(t){
   return `<div class="tile ${cls}">
     <button class="x ${armed===t.id?'arm':''}" onclick="removeTable('${t.id}')" title="Remove table">${armed===t.id?'Remove?':'×'}</button>
     <div class="tile-name">${esc(t.name)}${t.online===false?'<span class="offline">offline</span>':''}</div>
+    ${(t.v||0)<LIVE_VERSION&&t.online!==false?'<div class="outdated">Old game version — ask this table to reload the page</div>':''}
     <div class="tile-case">${esc(t.caseName||'')}</div>
     <div class="pipe">${STAGES.map(([k,l],i)=>`<div class="${i<stageIdx||(k==='done'&&t.stage==='done')?'on':i===stageIdx?'cur':''}"><i></i><span>${l}</span></div>`).join('')}</div>
     ${clock}<div class="status">${status}</div>

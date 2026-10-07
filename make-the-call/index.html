@@ -1711,6 +1711,7 @@ function generateFeedback(){
 // ═══════════════════════════════════════════════════════════════
 // LIVE SYNC  (reports this table's progress to the host dashboard, host.html)
 // ═══════════════════════════════════════════════════════════════
+const LIVE_VERSION=2;   // bump when the live data format changes; host.html flags tables on older versions
 const LIVE=(()=>{
   let ref=null,startLocal=null,offset=0,dcSet=false;
   try{
@@ -1735,7 +1736,7 @@ const LIVE=(()=>{
   function push(extra){
     if(!ref||!S.teamName||!CASE)return;
     const st=stage();
-    const data={name:S.teamName,caseId:CASE.id,caseName:CASE.name,stage:st,online:true,
+    const data={v:LIVE_VERSION,name:S.teamName,caseId:CASE.id,caseName:CASE.name,stage:st,online:true,
       spent:S.spent,budget:CASE.disc.budget,red:CASE.disc.red,opened:S.opened.size,totalCards:CASE.cards.length,
       timeUp:!!S.timeUp,durationSec:(S.timerMinutes||0)*60,decisionStep:st==='decision'?S.decisionStep:null,
       analysisStart:S.timerStarted&&startLocal?startLocal+offset:null,
