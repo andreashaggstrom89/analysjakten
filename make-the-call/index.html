@@ -1712,13 +1712,14 @@ function generateFeedback(){
 // LIVE SYNC  (reports this table's progress to the host dashboard, host.html)
 // ═══════════════════════════════════════════════════════════════
 const LIVE=(()=>{
-  let ref=null,startTs=null,dcSet=false;
+  let ref=null,startLocal=null,offset=0,dcSet=false;
   try{
     if(window.FB_CONFIG&&window.firebase){
       firebase.initializeApp(window.FB_CONFIG);
       let id=null;try{id=sessionStorage.getItem('mtc-table');}catch(e){}
       if(!id){id=Date.now().toString(36)+Math.random().toString(36).slice(2,7);try{sessionStorage.setItem('mtc-table',id);}catch(e){}}
       ref=firebase.database().ref('live/tables/'+id);
+      firebase.database().ref('.info/serverTimeOffset').on('value',snap=>{offset=snap.val()||0;});
       firebase.database().ref('.info/connected').on('value',snap=>{
         if(snap.val()!==true)return;
         dcSet=false;
@@ -1737,20 +1738,20 @@ const LIVE=(()=>{
     const data={name:S.teamName,caseId:CASE.id,caseName:CASE.name,stage:st,online:true,
       spent:S.spent,budget:CASE.disc.budget,red:CASE.disc.red,opened:S.opened.size,totalCards:CASE.cards.length,
       timeUp:!!S.timeUp,durationSec:(S.timerMinutes||0)*60,decisionStep:st==='decision'?S.decisionStep:null,
+      analysisStart:S.timerStarted&&startLocal?startLocal+offset:null,
       updatedAt:firebase.database.ServerValue.TIMESTAMP};
     Object.assign(data,extra||{});
     ref.update(data).then(()=>{if(!dcSet){dcSet=true;ref.onDisconnect().update({online:false}).catch(()=>{});}}).catch(e=>console.warn('Live sync failed',e));
   }
   function newRound(){
+    startLocal=null;
     if(!ref||!S.teamName||!CASE)return;
-    startTs=null;
-    ref.update({analysisStart:null,result:null}).catch(()=>{});
-    push();
+    push({result:null});
   }
   function analysisStarted(){
-    if(!ref||startTs)return;
-    startTs=true;
-    push({analysisStart:firebase.database.ServerValue.TIMESTAMP});
+    if(startLocal)return;
+    startLocal=Date.now();
+    push();
   }
   function done(){
     if(!ref)return;
