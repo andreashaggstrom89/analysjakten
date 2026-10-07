@@ -400,6 +400,9 @@ svg .cx-v.tab{font-variant-numeric:tabular-nums;}
 <div class="container" id="results-content"></div>
 </div>
 
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script src="firebase-config.js"></script>
 <script>
 // ═══════════════════════════════════════════════════════════════
 // PALETTE (from validated dataviz dark ramp)
@@ -1695,6 +1698,74 @@ function generateFeedback(){
   }
   return items;
 }
+
+// ═══════════════════════════════════════════════════════════════
+// LIVE SYNC  (reports this table's progress to the host dashboard, host.html)
+// ═══════════════════════════════════════════════════════════════
+const LIVE=(()=>{
+  let ref=null,startTs=null,dcSet=false;
+  try{
+    if(window.FB_CONFIG&&window.firebase){
+      firebase.initializeApp(window.FB_CONFIG);
+      let id=null;try{id=sessionStorage.getItem('mtc-table');}catch(e){}
+      if(!id){id=Date.now().toString(36)+Math.random().toString(36).slice(2,7);try{sessionStorage.setItem('mtc-table',id);}catch(e){}}
+      ref=firebase.database().ref('live/tables/'+id);
+      firebase.database().ref('.info/connected').on('value',snap=>{
+        if(snap.val()!==true)return;
+        dcSet=false;
+        if(S.teamName&&CASE)push();
+      });
+    }
+  }catch(e){console.warn('Live sync off',e);ref=null;}
+  const STAGE={landing:'lobby',brief:'brief',shop:'analysis',decision:'decision',results:'done'};
+  function stage(){
+    if(activeScreen==='brief'&&S.timerStarted)return 'analysis';
+    return STAGE[activeScreen]||'lobby';
+  }
+  function push(extra){
+    if(!ref||!S.teamName||!CASE)return;
+    const st=stage();
+    const data={name:S.teamName,caseId:CASE.id,caseName:CASE.name,stage:st,online:true,
+      spent:S.spent,budget:CASE.disc.budget,red:CASE.disc.red,opened:S.opened.size,totalCards:CASE.cards.length,
+      timeUp:!!S.timeUp,durationSec:(S.timerMinutes||0)*60,decisionStep:st==='decision'?S.decisionStep:null,
+      updatedAt:firebase.database.ServerValue.TIMESTAMP};
+    Object.assign(data,extra||{});
+    ref.update(data).then(()=>{if(!dcSet){dcSet=true;ref.onDisconnect().update({online:false}).catch(()=>{});}}).catch(e=>console.warn('Live sync failed',e));
+  }
+  function newRound(){
+    if(!ref||!S.teamName||!CASE)return;
+    startTs=null;
+    ref.update({analysisStart:null,result:null}).catch(()=>{});
+    push();
+  }
+  function analysisStarted(){
+    if(!ref||startTs)return;
+    startTs=true;
+    push({analysisStart:firebase.database.ServerValue.TIMESTAMP});
+  }
+  function done(){
+    if(!ref)return;
+    const sc=scoreRun(),v=verdict(sc.total),fb=CASE.feedback;
+    const best=CASE.decisions.find(d=>d.quality==='best');
+    const segs=S.mainDecision==='targeted'?CASE.segments.map(sg=>({id:sg.id,name:sg.name,dec:S.segmentDecisions[sg.id].decision||null,best:CASE.bestSegs[sg.id]})):null;
+    const top3=CASE.cards.filter(c=>S.top3.has(c.id)).map(c=>({name:c.name,value:c.value,trap:c.id===fb.trapId}));
+    push({result:{total:sc.total,decPts:sc.decPts,segPts:sc.segPts,evPts:sc.evPts,discPts:sc.discPts,over:sc.over,
+      verdict:v.label,decision:sc.dec.label,quality:sc.dec.quality,bestDecision:best.label,
+      segs,top3,spent:S.spent,budget:CASE.disc.budget,finishedAt:firebase.database.ServerValue.TIMESTAMP}});
+  }
+  return {push,newRound,analysisStarted,done};
+})();
+// Wrap the navigation/actions so every state change is reported.
+(()=>{
+  const wrap=(name,after)=>{const f=window[name];window[name]=function(...a){const r=f.apply(this,a);after(...a);return r;};};
+  wrap('showScreen',id=>{if(id==='brief'&&!S.timerStarted)LIVE.newRound();else if(id!=='results')LIVE.push();});
+  wrap('startTimerIfNeeded',()=>LIVE.analysisStarted());
+  wrap('openCard',()=>LIVE.push());
+  wrap('nextStep',()=>LIVE.push());
+  wrap('prevStep',()=>LIVE.push());
+  wrap('onTimeUp',()=>LIVE.push());
+  wrap('submitDecision',()=>LIVE.done());
+})();
 
 showScreen('landing');
 </script>

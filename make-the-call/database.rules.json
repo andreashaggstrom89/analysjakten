@@ -1,0 +1,16 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+    "live": {
+      "tables": {
+        ".read": true,
+        ".write": true,
+        "$table": {
+          ".validate": "newData.hasChild('name') && newData.child('name').isString() && newData.child('name').val().length <= 40",
+          "result": { ".validate": "newData.hasChild('total')" }
+        }
+      }
+    }
+  }
+}

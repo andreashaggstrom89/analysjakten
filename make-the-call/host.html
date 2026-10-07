@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="robots" content="noindex" />
+<title>Make the Call — Live board</title>
+<style>
+:root{
+  --plane:#f3efe6; --surface:#ffffff; --surface2:#f7f3ea; --surface3:#ece6d9;
+  --border:rgba(35,30,20,.11); --border2:rgba(35,30,20,.20);
+  --ink:#241f17; --ink2:#5f594d; --muted:#938c7d;
+  --accent:#1f6b4a; --accent2:#2e7d5b; --accentDim:rgba(31,107,74,.10);
+  --good:#0a9d34; --warn:#c2830a; --crit:#cf3b3b; --aqua:#12a06f;
+  --shadow:0 4px 16px -6px rgba(45,38,22,.16);
+  --font:system-ui,-apple-system,'Segoe UI',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:var(--font);background:var(--plane);color:var(--ink);min-height:100vh;line-height:1.45;
+  background-image:radial-gradient(760px 420px at 6% -60px,rgba(31,107,74,.11),transparent 64%),radial-gradient(720px 400px at 98% 2%,rgba(46,125,91,.10),transparent 60%);
+  background-attachment:fixed;}
+.wrap{padding:1.4rem clamp(16px,2.2vw,40px) 2rem;}
+
+/* top bar */
+.top{display:flex;align-items:center;gap:1.4rem;flex-wrap:wrap;margin-bottom:1.4rem;}
+.brand{font-size:clamp(1.6rem,2.4vw,2.4rem);font-weight:800;letter-spacing:-.8px;line-height:1;
+  background:linear-gradient(92deg,#123f2b,#1f6b4a 55%,#2e7d5b);-webkit-background-clip:text;background-clip:text;color:transparent;}
+.live{display:inline-flex;align-items:center;gap:7px;font-size:.75rem;font-weight:800;letter-spacing:.8px;text-transform:uppercase;color:var(--accent);
+  background:var(--accentDim);border:1px solid rgba(31,107,74,.28);padding:5px 12px;border-radius:99px;}
+.live .dot{width:8px;height:8px;border-radius:50%;background:var(--accent);animation:pulse 2s infinite;}
+.live.off{color:var(--crit);background:rgba(207,59,59,.08);border-color:rgba(207,59,59,.3);} .live.off .dot{background:var(--crit);animation:none;}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(31,107,74,.45);}70%{box-shadow:0 0 0 8px rgba(31,107,74,0);}100%{box-shadow:0 0 0 0 rgba(31,107,74,0);}}
+.stats{display:flex;gap:.6rem;flex-wrap:wrap;margin-left:auto;}
+.stat{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:.45rem 1rem;box-shadow:var(--shadow);text-align:center;min-width:92px;}
+.stat b{display:block;font-size:1.5rem;line-height:1.1;font-variant-numeric:tabular-nums;}
+.stat span{font-size:.68rem;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--muted);}
+.ctrl{display:flex;gap:.4rem;}
+.btn{border:1px solid var(--border);background:var(--surface2);color:var(--ink2);font-family:var(--font);font-size:.78rem;font-weight:650;
+  padding:.45rem .8rem;border-radius:9px;cursor:pointer;}
+.btn:hover{border-color:var(--border2);color:var(--ink);}
+.btn.danger{background:var(--crit);border-color:var(--crit);color:#fff;}
+
+/* layout */
+.cols{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:1.6rem;align-items:start;}
+@media (max-width:1100px){.cols{grid-template-columns:1fr;}}
+.sec-h{display:flex;align-items:baseline;gap:.6rem;margin-bottom:.8rem;}
+.sec-h h2{font-size:1.15rem;font-weight:750;letter-spacing:-.3px;}
+.sec-h span{font-size:.8rem;color:var(--muted);}
+.empty{border:1.5px dashed var(--border2);border-radius:18px;padding:2.2rem 1.4rem;text-align:center;color:var(--muted);font-size:.95rem;}
+
+/* table tiles */
+.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:.9rem;}
+.tile{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:1rem 1.1rem 1.05rem;box-shadow:var(--shadow);position:relative;
+  transition:border-color .3s,opacity .3s;}
+.tile.analysis{border-color:rgba(31,107,74,.35);}
+.tile.warn{border-color:rgba(194,131,10,.55);}
+.tile.danger{border-color:rgba(207,59,59,.6);}
+.tile.done,.tile.lobby{opacity:.72;}
+.tile-name{font-size:1.2rem;font-weight:750;letter-spacing:-.3px;padding-right:1.6rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.tile-case{font-size:.78rem;color:var(--muted);margin-top:1px;}
+.x{position:absolute;top:.6rem;right:.6rem;border:none;background:none;color:var(--muted);font-size:1rem;cursor:pointer;padding:2px 6px;border-radius:6px;font-family:var(--font);}
+.x:hover{background:var(--surface3);color:var(--ink);}
+.x.arm{background:var(--crit);color:#fff;font-size:.7rem;font-weight:700;}
+.offline{display:inline-block;margin-left:.4rem;font-size:.6rem;font-weight:800;letter-spacing:.5px;text-transform:uppercase;color:var(--crit);vertical-align:middle;}
+.pipe{display:flex;gap:4px;margin:.8rem 0 .7rem;}
+.pipe div{flex:1;}
+.pipe i{display:block;height:5px;border-radius:3px;background:var(--surface3);}
+.pipe div.on i{background:var(--accent);} .pipe div.cur i{background:var(--accent2);animation:blink 1.6s ease-in-out infinite;}
+.pipe span{display:block;font-size:.6rem;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:var(--muted);margin-top:4px;}
+.pipe div.cur span{color:var(--accent);}
+@keyframes blink{50%{opacity:.45;}}
+.clock{font-size:2.6rem;font-weight:800;letter-spacing:-1.5px;line-height:1;font-variant-numeric:tabular-nums;color:var(--accent);}
+.clock.warn{color:var(--warn);} .clock.danger{color:var(--crit);}
+.clock.small{font-size:1.25rem;letter-spacing:-.4px;color:var(--ink2);}
+.status{font-size:.82rem;color:var(--ink2);margin-top:.3rem;min-height:1.2em;}
+.meter{display:flex;align-items:center;gap:.5rem;margin-top:.7rem;font-size:.75rem;color:var(--muted);font-variant-numeric:tabular-nums;}
+.meter .bar{flex:1;height:6px;border-radius:3px;background:var(--surface3);overflow:hidden;}
+.meter .fill{height:100%;border-radius:3px;transition:width .4s;}
+
+/* leaderboard */
+.board{display:flex;flex-direction:column;gap:.9rem;}
+.res{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:1rem 1.15rem;box-shadow:var(--shadow);}
+.res.fresh{animation:fresh 2.4s ease;}
+@keyframes fresh{0%{box-shadow:0 0 0 4px rgba(31,107,74,.55);transform:scale(1.015);}100%{box-shadow:var(--shadow);transform:none;}}
+.res-head{display:flex;align-items:center;gap:.9rem;}
+.rank{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1.1rem;flex-shrink:0;
+  background:var(--surface3);color:var(--ink2);}
+.rank.r1{background:#d9a514;color:#fff;} .rank.r2{background:#a8aab0;color:#fff;} .rank.r3{background:#b8763e;color:#fff;}
+.res-name{font-size:1.2rem;font-weight:750;letter-spacing:-.3px;line-height:1.15;}
+.res-case{font-size:.76rem;color:var(--muted);}
+.res-score{margin-left:auto;text-align:right;}
+.res-score b{display:block;font-size:2.3rem;font-weight:800;letter-spacing:-1px;line-height:1;font-variant-numeric:tabular-nums;}
+.res-score span{font-size:.68rem;font-weight:800;letter-spacing:.5px;text-transform:uppercase;}
+.res-body{display:grid;grid-template-columns:1fr 1fr;gap:.6rem 1.1rem;margin-top:.85rem;padding-top:.8rem;border-top:1px solid var(--border);}
+@media (max-width:560px){.res-body{grid-template-columns:1fr;}}
+.lbl{font-size:.62rem;font-weight:800;letter-spacing:.6px;text-transform:uppercase;color:var(--muted);margin-bottom:.25rem;}
+.call{font-size:.86rem;font-weight:650;line-height:1.3;}
+.q{display:inline-block;font-size:.62rem;font-weight:800;letter-spacing:.4px;text-transform:uppercase;padding:2px 8px;border-radius:99px;margin-top:.3rem;}
+.q.best{background:#dff5ec;color:#0c7c54;} .q.good{background:#fbf1d8;color:#946608;} .q.poor{background:#fbe4e4;color:#b83636;}
+.segs{display:flex;gap:.3rem;flex-wrap:wrap;}
+.seg{font-size:.72rem;font-weight:700;padding:3px 8px;border-radius:7px;border:1px solid;}
+.seg.ok{background:#dff5ec;color:#0c7c54;border-color:#c2ead9;} .seg.no{background:#fbe4e4;color:#b83636;border-color:#f2caca;}
+.na{font-size:.78rem;color:var(--muted);}
+.ev{display:flex;flex-direction:column;gap:.2rem;}
+.ev div{font-size:.8rem;display:flex;align-items:center;gap:.4rem;line-height:1.25;}
+.ev i{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.ev i.high{background:var(--good);} .ev i.medium{background:var(--warn);} .ev i.low{background:var(--crit);}
+.trap{font-size:.58rem;font-weight:800;letter-spacing:.4px;text-transform:uppercase;color:#fff;background:var(--crit);padding:1px 6px;border-radius:99px;}
+.split{display:flex;height:8px;border-radius:4px;overflow:hidden;background:var(--surface3);margin-top:.35rem;}
+.split div{height:100%;}
+.legend{display:flex;gap:.7rem;flex-wrap:wrap;font-size:.68rem;color:var(--muted);margin-top:.3rem;}
+.legend i{display:inline-block;width:7px;height:7px;border-radius:2px;margin-right:4px;vertical-align:0;}
+.setup{max-width:640px;margin:12vh auto;background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:2rem;box-shadow:var(--shadow);}
+.setup h2{margin-bottom:.6rem;} .setup p{color:var(--ink2);}
+</style>
+</head>
+<body>
+<div class="wrap" id="app"></div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script src="firebase-config.js"></script>
+<script>
+const STAGES=[['brief','Briefing'],['analysis','Analysis'],['decision','Decision'],['done','Done']];
+const STEP_LABELS=['Decision','Evidence','Rationale'];
+const MAX_AGE=12*3600*1000;   // ignore tables idle for more than 12 h
+let tables={},offset=0,connected=false,seenDone=new Set(),firstLoad=true,armed=null,armTimer=null,clearArmed=false;
+
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const now=()=>Date.now()+offset;
+const fmt=ms=>{const t=Math.max(0,Math.ceil(ms/1000));return Math.floor(t/60)+':'+String(t%60).padStart(2,'0');};
+const verdictColor=t=>t>=88?'var(--good)':t>=68?'var(--aqua)':t>=50?'var(--warn)':'var(--crit)';
+
+function remaining(t){
+  if(!t.analysisStart||!t.durationSec)return null;
+  return t.analysisStart+t.durationSec*1000-now();
+}
+function active(){
+  const n=now();
+  return Object.entries(tables).filter(([,t])=>t&&t.name&&(!t.updatedAt||n-t.updatedAt<MAX_AGE)).map(([id,t])=>({id,...t}));
+}
+
+function tileHtml(t){
+  const stageIdx=STAGES.findIndex(s=>s[0]===t.stage);
+  const rem=remaining(t);
+  let cls=t.stage||'lobby',clock='',status='';
+  if(t.stage==='analysis'){
+    if(rem===null){clock=`<div class="clock small">Reading the case</div>`;}
+    else if(rem<=0||t.timeUp){clock=`<div class="clock danger">0:00</div>`;status='Time is up';cls+=' danger';}
+    else{const c=rem<=60000?'danger':rem<=300000?'warn':'';clock=`<div class="clock ${c}" data-clock="${t.id}">${fmt(rem)}</div>`;if(c)cls+=' '+c;}
+  }
+  if(t.stage==='brief'){clock=`<div class="clock small">Reading the case</div>`;}
+  if(t.stage==='analysis'&&!status)status=`Opening insights`;
+  if(t.stage==='decision'){
+    const step=t.decisionStep||1;
+    clock=`<div class="clock small">Deciding</div>`;
+    status=`Decision room · step ${step}/3 — ${STEP_LABELS[step-1]||''}`;
+  }
+  if(t.stage==='done'&&t.result){clock=`<div class="clock small" style="color:${verdictColor(t.result.total)}">${t.result.total} pts</div>`;status=esc(t.result.verdict);}
+  if(t.stage==='lobby'){clock=`<div class="clock small">Between rounds</div>`;status=t.result?`Last score ${t.result.total} pts`:'';}
+  const pct=t.budget?Math.min(100,Math.round((t.spent||0)/t.budget*100)):0;
+  const fill=(t.spent||0)<=t.budget?'var(--aqua)':(t.spent||0)<=t.red?'var(--warn)':'var(--crit)';
+  return `<div class="tile ${cls}">
+    <button class="x ${armed===t.id?'arm':''}" onclick="removeTable('${t.id}')" title="Remove table">${armed===t.id?'Remove?':'×'}</button>
+    <div class="tile-name">${esc(t.name)}${t.online===false?'<span class="offline">offline</span>':''}</div>
+    <div class="tile-case">${esc(t.caseName||'')}</div>
+    <div class="pipe">${STAGES.map(([k,l],i)=>`<div class="${i<stageIdx||(k==='done'&&t.stage==='done')?'on':i===stageIdx?'cur':''}"><i></i><span>${l}</span></div>`).join('')}</div>
+    ${clock}<div class="status">${status}</div>
+    <div class="meter"><span>${t.opened||0}/${t.totalCards||12} insights</span><div class="bar"><div class="fill" style="width:${pct}%;background:${fill}"></div></div><span>${t.spent||0}/${t.budget||'–'} tokens</span></div>
+  </div>`;
+}
+
+function resultHtml(t,rank,fresh){
+  const r=t.result;
+  const qLabel={best:'Strongest call',good:'Sound, cautious',poor:'Off the data'}[r.quality]||'';
+  const segs=r.segs?`<div class="segs">${r.segs.map(s=>`<span class="seg ${s.dec===s.best?'ok':'no'}" title="${esc(s.name)}">${esc(s.id)} ${s.dec===s.best?'✓':'✗'} ${esc(s.dec||'—')}</span>`).join('')}</div>`:`<div class="na">Not a targeted rollout</div>`;
+  const ev=(r.top3||[]).length?`<div class="ev">${r.top3.map(c=>`<div><i class="${esc(c.value)}"></i>${esc(c.name)}${c.trap?' <span class="trap">trap</span>':''}</div>`).join('')}</div>`:`<div class="na">No evidence picked</div>`;
+  const parts=[[r.decPts,'#1f6b4a','Decision'],[r.segPts,'#12a06f','Segments'],[r.evPts,'#2e7d5b','Evidence'],[r.discPts,'#c8860a','Discipline']];
+  return `<div class="res ${fresh?'fresh':''}">
+    <div class="res-head">
+      <div class="rank ${rank<=3?'r'+rank:''}">${rank}</div>
+      <div><div class="res-name">${esc(t.name)}</div><div class="res-case">${esc(t.caseName||'')} · ${r.spent}/${r.budget} tokens</div></div>
+      <div class="res-score"><b style="color:${verdictColor(r.total)}">${r.total}</b><span style="color:${verdictColor(r.total)}">${esc(r.verdict)}</span></div>
+    </div>
+    <div class="res-body">
+      <div><div class="lbl">Their call</div><div class="call">${esc(r.decision)}</div><span class="q ${esc(r.quality)}">${qLabel}</span></div>
+      <div><div class="lbl">Segment calls</div>${segs}</div>
+      <div><div class="lbl">Top 3 evidence</div>${ev}</div>
+      <div><div class="lbl">Score build-up${r.over?` · −${r.over} over-analysis`:''}</div>
+        <div class="split">${parts.map(([v,c])=>`<div style="width:${v}%;background:${c}"></div>`).join('')}</div>
+        <div class="legend">${parts.map(([v,c,l])=>`<span><i style="background:${c}"></i>${l} ${v}</span>`).join('')}</div></div>
+    </div>
+  </div>`;
+}
+
+function render(){
+  const list=active();
+  const order={analysis:0,brief:1,decision:2,lobby:3,done:4};
+  const inPlay=list.slice().sort((a,b)=>(order[a.stage]??5)-(order[b.stage]??5)||String(a.name).localeCompare(b.name));
+  const done=list.filter(t=>t.result).sort((a,b)=>b.result.total-a.result.total||a.result.spent-b.result.spent);
+  const count=k=>list.filter(t=>t.stage===k).length;
+  const fresh=new Set();
+  done.forEach(t=>{const key=t.id+':'+t.result.finishedAt;if(!seenDone.has(key)){seenDone.add(key);if(!firstLoad)fresh.add(t.id);}});
+  firstLoad=false;
+  document.getElementById('app').innerHTML=`
+    <div class="top">
+      <div class="brand">MAKE THE CALL</div>
+      <span class="live ${connected?'':'off'}"><span class="dot"></span>${connected?'Live':'Connecting…'}</span>
+      <div class="stats">
+        <div class="stat"><b>${list.length}</b><span>Tables</span></div>
+        <div class="stat"><b>${count('analysis')+count('brief')}</b><span>Analysing</span></div>
+        <div class="stat"><b>${count('decision')}</b><span>Deciding</span></div>
+        <div class="stat"><b>${done.length}</b><span>Finished</span></div>
+      </div>
+      <div class="ctrl">
+        <button class="btn" onclick="toggleFs()">Full screen</button>
+        <button class="btn ${clearArmed?'danger':''}" onclick="clearBoard()">${clearArmed?'Click again to clear':'Clear board'}</button>
+      </div>
+    </div>
+    <div class="cols">
+      <section>
+        <div class="sec-h"><h2>Tables in play</h2><span>15 min in the analysis room</span></div>
+        ${inPlay.length?`<div class="tiles">${inPlay.map(tileHtml).join('')}</div>`:`<div class="empty">Waiting for tables… They appear here as soon as they enter a name and deal their case.</div>`}
+      </section>
+      <section>
+        <div class="sec-h"><h2>Leaderboard</h2><span>live as tables finish</span></div>
+        ${done.length?`<div class="board">${done.map((t,i)=>resultHtml(t,i+1,fresh.has(t.id))).join('')}</div>`:`<div class="empty">No results yet. Scores land here the moment a table submits its decision.</div>`}
+      </section>
+    </div>`;
+}
+
+// Only the clocks change every second — update them in place.
+function tick(){
+  const list=active();let needFull=false;
+  list.forEach(t=>{
+    const el=document.querySelector(`[data-clock="${t.id}"]`);if(!el)return;
+    const rem=remaining(t);
+    if(rem===null||rem<=0||(rem<=300000&&!el.classList.contains('warn')&&!el.classList.contains('danger'))||(rem<=60000&&!el.classList.contains('danger'))){needFull=true;return;}
+    el.textContent=fmt(rem);
+  });
+  if(needFull)render();
+}
+
+function removeTable(id){
+  if(armed!==id){armed=id;clearTimeout(armTimer);armTimer=setTimeout(()=>{armed=null;render();},3000);render();return;}
+  armed=null;firebase.database().ref('live/tables/'+id).remove();
+}
+function clearBoard(){
+  if(!clearArmed){clearArmed=true;render();setTimeout(()=>{clearArmed=false;render();},3000);return;}
+  clearArmed=false;firebase.database().ref('live/tables').remove();
+}
+function toggleFs(){if(document.fullscreenElement)document.exitFullscreen();else document.documentElement.requestFullscreen&&document.documentElement.requestFullscreen();}
+
+if(!window.FB_CONFIG){
+  document.getElementById('app').innerHTML=`<div class="setup"><h2>Live board isn't connected yet</h2><p>Add your Firebase config to <code>firebase-config.js</code> to see the tables here.</p></div>`;
+}else{
+  firebase.initializeApp(window.FB_CONFIG);
+  const db=firebase.database();
+  db.ref('.info/serverTimeOffset').on('value',s=>{offset=s.val()||0;});
+  db.ref('.info/connected').on('value',s=>{connected=s.val()===true;render();});
+  db.ref('live/tables').on('value',s=>{tables=s.val()||{};render();});
+  render();
+  setInterval(tick,1000);
+}
+</script>
+</body>
+</html>
