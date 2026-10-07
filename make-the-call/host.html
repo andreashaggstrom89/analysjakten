@@ -143,23 +143,40 @@ body{font-family:var(--font);background:var(--plane);color:var(--ink);min-height
 .unsure{display:flex;flex-wrap:wrap;gap:.35rem;align-items:center;margin-top:.6rem;}
 .unsure .lbl{margin:0 .2rem 0 0;}
 .unsure .u{font-size:.72rem;font-weight:650;padding:2px 8px;border-radius:99px;background:var(--accentDim);color:var(--accent);}
-.newsbar{display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;margin:-.4rem 0 1.2rem;font-size:.8rem;color:var(--ink2);}
-.nb-flag{font-size:.66rem;font-weight:800;letter-spacing:.8px;text-transform:uppercase;color:#fff;background:var(--crit);padding:3px 9px;border-radius:99px;}
-.nb-item{padding:3px 10px;border-radius:99px;background:var(--surface);border:1px solid var(--border);}
-.nb-item.sent{background:#fbe4e4;border-color:#f2caca;color:#b83636;font-weight:650;}
-.nb-ctrl{display:flex;gap:.35rem;margin-left:.3rem;}
-.nb-ctrl .btn{font-size:.72rem;padding:.3rem .65rem;}
 .reading{margin-top:.5rem;font-size:.72rem;font-weight:800;letter-spacing:.4px;text-transform:uppercase;color:#fff;background:var(--crit);display:inline-block;padding:3px 9px;border-radius:99px;animation:blink 1.4s ease-in-out infinite;}
 .newsrow{display:flex;flex-wrap:wrap;gap:.35rem;align-items:center;margin-top:.8rem;}
 .newsrow .lbl{margin:0 .2rem 0 0;}
 .nr{font-size:.72rem;font-weight:700;padding:3px 9px;border-radius:7px;border:1px solid var(--border);background:var(--surface2);color:var(--ink2);}
 .nr.ok{background:#dff5ec;color:#0c7c54;border-color:#c2ead9;} .nr.no{background:#fbe4e4;color:#b83636;border-color:#f2caca;}
+[hidden]{display:none!important;}
+#news-banner{position:fixed;inset:0;z-index:60;display:flex;align-items:center;justify-content:center;padding:24px;background:rgba(36,31,23,.45);backdrop-filter:blur(3px);animation:bnin .45s ease;}
+@keyframes bnin{from{opacity:0;}to{opacity:1;}}
+.bn-box{background:var(--surface);border-radius:28px;max-width:980px;width:100%;padding:3rem 3.2rem 2.6rem;text-align:center;border-top:12px solid var(--crit);
+  box-shadow:0 40px 90px -30px rgba(0,0,0,.55);animation:bnpop .6s cubic-bezier(.2,.9,.3,1.25);}
+@keyframes bnpop{from{transform:scale(.85);opacity:0;}to{transform:none;opacity:1;}}
+.bn-flag{display:inline-flex;align-items:center;gap:12px;font-size:clamp(1rem,1.6vw,1.4rem);font-weight:900;letter-spacing:3px;text-transform:uppercase;color:#fff;background:var(--crit);padding:.55rem 1.4rem;border-radius:99px;}
+.bn-dot{width:14px;height:14px;border-radius:50%;background:#fff;animation:bnblink 1s infinite;}
+@keyframes bnblink{50%{opacity:.2;}}
+.bn-title{font-size:clamp(2rem,4.2vw,3.6rem);font-weight:850;letter-spacing:-1.5px;line-height:1.08;margin:1.4rem 0 .7rem;}
+.bn-sub{font-size:clamp(1.05rem,1.7vw,1.5rem);color:var(--ink2);}
+.bn-count{font-size:1.05rem;font-weight:700;color:var(--accent);margin-top:1.3rem;min-height:1.4em;}
+.bn-bar{height:8px;border-radius:4px;background:var(--surface3);overflow:hidden;margin-top:1.4rem;}
+.bn-fill{height:100%;background:var(--crit);transition:width 1s linear;}
 .setup{max-width:640px;margin:12vh auto;background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:2rem;box-shadow:var(--shadow);}
 .setup h2{margin-bottom:.6rem;} .setup p{color:var(--ink2);}
 </style>
 </head>
 <body>
 <div class="wrap" id="app"></div>
+<div id="news-banner" hidden>
+  <div class="bn-box">
+    <div class="bn-flag"><span class="bn-dot"></span>Breaking news</div>
+    <div class="bn-title">New information just landed on every table</div>
+    <div class="bn-sub">Signal or noise? Each table has to take a stand — right now.</div>
+    <div class="bn-count"></div>
+    <div class="bn-bar"><div class="bn-fill"></div></div>
+  </div>
+</div>
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
@@ -169,7 +186,7 @@ const STAGES=[['brief','Briefing'],['analysis','Analysis'],['decision','Decision
 const STEP_LABELS=['Decision','Evidence','Rationale'];
 const LIVE_VERSION=3;          // must match index.html
 const MAX_AGE=12*3600*1000;   // ignore tables idle for more than 12 h
-let tables={},revealed=false,newsState={},newsPlan=null,newsOff=false,revealAnimated=new Set(),offset=0,connected=false,seenDone=new Set(),firstLoad=true,armed=null,armTimer=null,clearArmed=false;
+let tables={},revealed=false,newsState={},newsPlan=null,revealAnimated=new Set(),offset=0,connected=false,seenDone=new Set(),firstLoad=true,armed=null,armTimer=null,clearArmed=false;
 
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const now=()=>Date.now()+offset;
@@ -295,7 +312,7 @@ function render(){
 
   const finishedNames=done.map(t=>`<span class="done-chip">✓ ${esc(t.name)}</span>`).join('');
   const waitingNames=inPlay.filter(t=>!t.result).map(t=>`<span class="done-chip wait">${esc(t.name)}</span>`).join('');
-  document.getElementById('app').innerHTML=topBar+newsBar(list)+`
+  document.getElementById('app').innerHTML=topBar+`
     <div class="cols">
       <section>
         <div class="sec-h"><h2>Tables in play</h2><span>15 min in the analysis room</span></div>
@@ -318,7 +335,7 @@ function render(){
 const NEWS_TEST=new URLSearchParams(location.search).has('test');   // host.html?test → news after 1 and 2 min
 const NEWS_WINDOWS=NEWS_TEST?[[1,1],[2,2]]:[[4,7],[9,12]];   // minutes after the first table starts its analysis
 function planNews(){
-  if(newsOff||newsPlan)return;
+  if(newsPlan)return;
   const starts=active().filter(t=>t.analysisStart&&!t.result).map(t=>t.analysisStart);
   if(!starts.length)return;
   const first=Math.min(...starts),rnd=([a,b])=>Math.round((a+Math.random()*(b-a))*60000);
@@ -330,27 +347,28 @@ function sendNews(k){
     .catch(e=>alertBar('Could not send breaking news: '+e.message));
 }
 function checkNews(){
-  if(newsOff)return;
   planNews();
   if(!newsPlan)return;
   if(!newsState.n1&&now()>=newsPlan.at1)sendNews('n1');
   else if(newsState.n1&&!newsState.n2&&now()>=newsPlan.at2)sendNews('n2');
 }
-function sendNextNews(){sendNews(newsState.n1?'n2':'n1');}
-function toggleNews(){firebase.database().ref('live/state/newsOff').set(!newsOff);}
-function newsBar(list){
-  const sent=['n1','n2'].filter(k=>newsState[k]);
-  const resp=k=>{const got=list.filter(t=>t.news&&t.news[k]&&t.news[k]!=='missed');
-    const done=got.filter(t=>t.news[k]!=='pending').length;return got.length?` · ${done}/${got.length} answered`:'';};
-  const items=['n1','n2'].map((k,i)=>newsState[k]?`<span class="nb-item sent">${i+1} sent${resp(k)}</span>`:`<span class="nb-item">${i+1} ${newsOff?'paused':'pending'}</span>`).join('');
-  return `<div class="newsbar"><span class="nb-flag">Breaking news</span>${NEWS_TEST?'<span class="nb-item">Test timing: 1 & 2 min</span>':''}${items}
-    <span class="nb-ctrl">${sent.length<2?`<button class="btn" onclick="sendNextNews()">Send ${sent.length?'#2':'#1'} now</button>`:''}
-    ${sent.length<2?`<button class="btn" onclick="toggleNews()">${newsOff?'Resume auto':'Pause auto'}</button>`:''}</span></div>`;
+// Big on-screen banner for 30 s whenever an event goes out to the tables.
+const BANNER_MS=30000;
+function updateNewsBanner(){
+  const el=document.getElementById('news-banner');
+  const k=['n2','n1'].find(k=>newsState[k]&&now()-newsState[k]<BANNER_MS);
+  if(!k){el.hidden=true;return;}
+  const left=BANNER_MS-(now()-newsState[k]);
+  const got=active().filter(t=>t.news&&t.news[k]&&t.news[k]!=='missed');
+  const done=got.filter(t=>t.news[k]!=='pending').length;
+  el.hidden=false;
+  el.querySelector('.bn-count').textContent=got.length?`${done} of ${got.length} table${got.length!==1?'s have':' has'} taken a stand`:'';
+  el.querySelector('.bn-fill').style.width=Math.max(0,left/BANNER_MS*100)+'%';
 }
 
 // Only the clocks change every second — update them in place.
 function tick(){
-  checkNews();
+  checkNews();updateNewsBanner();
   const list=active();let needFull=false;
   list.forEach(t=>{
     const el=document.querySelector(`[data-clock="${t.id}"]`);if(!el)return;
@@ -387,9 +405,8 @@ if(!window.FB_CONFIG){
   db.ref('.info/serverTimeOffset').on('value',s=>{offset=s.val()||0;});
   db.ref('.info/connected').on('value',s=>{connected=s.val()===true;render();});
   db.ref('live/tables').on('value',s=>{tables=s.val()||{};render();});
-  db.ref('live/state/news').on('value',s=>{newsState=s.val()||{};render();});
+  db.ref('live/state/news').on('value',s=>{newsState=s.val()||{};render();updateNewsBanner();});
   db.ref('live/state/newsPlan').on('value',s=>{newsPlan=s.val();});
-  db.ref('live/state/newsOff').on('value',s=>{newsOff=s.val()===true;render();});
   db.ref('live/state/revealed').on('value',s=>{const v=s.val()===true;if(v!==revealed){revealed=v;if(!v)revealAnimated.clear();render();}});
   render();
   setInterval(tick,1000);
