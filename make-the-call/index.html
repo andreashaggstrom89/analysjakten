@@ -1827,7 +1827,7 @@ function generateFeedback(){
 // ═══════════════════════════════════════════════════════════════
 const LIVE_VERSION=3;   // bump when the live data format changes; host.html flags tables on older versions
 const LIVE=(()=>{
-  let ref=null,offset=0,dcSet=false;
+  let ref=null,offset=0,dcSet=false,lastActivity=0;
   try{
     if(window.FB_CONFIG&&window.firebase){
       firebase.initializeApp(window.FB_CONFIG);
@@ -1879,6 +1879,15 @@ const LIVE=(()=>{
       unsure:[...S.uncertainties].map(u=>(CASE.uncertainties.find(o=>o.id===u)||{}).label).filter(Boolean),
       finishedAt:firebase.database.ServerValue.TIMESTAMP}});
   }
+  // Any click, key press or scroll counts as activity; throttled so it costs at most one write per 20 s.
+  function activity(){
+    if(!ref||!S.teamName||!CASE)return;
+    const st=stage();if(st==='lobby'||st==='done')return;
+    if(Date.now()-lastActivity<20000)return;
+    lastActivity=Date.now();
+    ref.update({activeAt:firebase.database.ServerValue.TIMESTAMP}).catch(()=>{});
+  }
+  ['pointerdown','keydown','scroll','input'].forEach(ev=>window.addEventListener(ev,()=>setTimeout(activity,0),{passive:true}));
   return {push,newRound,analysisStarted,done};
 })();
 // Wrap the navigation/actions so every state change is reported.

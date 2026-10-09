@@ -162,6 +162,8 @@ body{font-family:var(--font);background:var(--plane);color:var(--ink);min-height
 .bn-count{font-size:1.05rem;font-weight:700;color:var(--accent);margin-top:1.3rem;min-height:1.4em;}
 .bn-bar{height:8px;border-radius:4px;background:var(--surface3);overflow:hidden;margin-top:1.4rem;}
 .bn-fill{height:100%;background:var(--crit);transition:width 1s linear;}
+.tile.is-idle{border-color:rgba(194,131,10,.7);box-shadow:0 0 0 3px rgba(194,131,10,.12),var(--shadow);}
+.idle{display:inline-block;margin:.55rem 0 .1rem;font-size:.72rem;font-weight:800;letter-spacing:.3px;color:#946608;background:#fbf1d8;border:1px solid #f2e3ba;border-radius:8px;padding:.25rem .55rem;}
 .setup{max-width:640px;margin:12vh auto;background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:2rem;box-shadow:var(--shadow);}
 .setup h2{margin-bottom:.6rem;} .setup p{color:var(--ink2);}
 </style>
@@ -185,7 +187,8 @@ body{font-family:var(--font);background:var(--plane);color:var(--ink);min-height
 const STAGES=[['brief','Briefing'],['analysis','Analysis'],['decision','Decision'],['done','Done']];
 const STEP_LABELS=['Decision','Evidence','Rationale'];
 const LIVE_VERSION=3;          // must match index.html
-const MAX_AGE=12*3600*1000;   // ignore tables idle for more than 12 h
+const MAX_AGE=12*3600*1000;
+const IDLE_MS=3*60*1000;       // no clicks/keys/scroll for this long → flagged idle   // ignore tables idle for more than 12 h
 let tables={},revealed=false,newsState={},newsPlan=null,revealAnimated=new Set(),offset=0,connected=false,seenDone=new Set(),firstLoad=true,armed=null,armTimer=null,clearArmed=false;
 
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -202,6 +205,11 @@ function active(){
   return Object.entries(tables).filter(([,t])=>t&&t.name&&(!t.updatedAt||n-t.updatedAt<MAX_AGE)).map(([id,t])=>({id,...t}));
 }
 
+function idleMin(t){
+  if(!['brief','analysis','decision'].includes(t.stage))return 0;
+  const ms=now()-(t.activeAt||t.updatedAt||now());
+  return ms>=IDLE_MS?Math.floor(ms/60000):0;
+}
 function tileHtml(t){
   const stageIdx=STAGES.findIndex(s=>s[0]===t.stage);
   const rem=remaining(t);
@@ -222,12 +230,14 @@ function tileHtml(t){
   if(t.stage==='lobby'){clock=`<div class="clock small">Between rounds</div>`;status=revealed&&t.result?`Last score ${t.result.total} pts`:'';}
   const pct=t.budget?Math.min(100,Math.round((t.spent||0)/t.budget*100)):0;
   const fill=(t.spent||0)<=t.budget?'var(--aqua)':(t.spent||0)<=t.red?'var(--warn)':'var(--crit)';
+  if(idleMin(t))cls+=' is-idle';
   return `<div class="tile ${cls}">
     <button class="x ${armed===t.id?'arm':''}" onclick="removeTable('${t.id}')" title="Remove table">${armed===t.id?'Remove?':'×'}</button>
     <div class="tile-name">${esc(t.name)}${t.online===false?'<span class="offline">offline</span>':''}</div>
     ${(t.v||0)<LIVE_VERSION&&t.online!==false?'<div class="outdated">Old game version — ask this table to reload the page</div>':''}
     <div class="tile-case">${esc(t.caseName||'')}</div>
     <div class="pipe">${STAGES.map(([k,l],i)=>`<div class="${i<stageIdx||(k==='done'&&t.stage==='done')?'on':i===stageIdx?'cur':''}"><i></i><span>${l}</span></div>`).join('')}</div>
+    ${idleMin(t)?`<div class="idle">Idle · no activity for ${idleMin(t)} min</div>`:''}
     ${clock}<div class="status">${status}</div>
     ${t.news&&Object.values(t.news).includes('pending')?'<div class="reading">Breaking news on screen</div>':''}
     ${revealed?`<div class="meter"><span>${t.opened||0}/${t.totalCards||12} insights</span><div class="bar"><div class="fill" style="width:${pct}%;background:${fill}"></div></div><span>${t.spent||0}/${t.budget||'–'} tokens</span></div>`:''}
@@ -367,8 +377,11 @@ function updateNewsBanner(){
 }
 
 // Only the clocks change every second — update them in place.
+let idleSig='';
 function tick(){
   checkNews();updateNewsBanner();
+  const sig=active().map(t=>t.id+':'+idleMin(t)).join('|');
+  if(sig!==idleSig){idleSig=sig;if(!revealed){render();return;}}
   const list=active();let needFull=false;
   list.forEach(t=>{
     const el=document.querySelector(`[data-clock="${t.id}"]`);if(!el)return;
